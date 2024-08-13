@@ -3,9 +3,7 @@
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
-use Illuminate\Http\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
-
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -20,7 +18,7 @@ return Application::configure(basePath: dirname(__DIR__))
     })
     ->withExceptions(function (Exceptions $exceptions) {
         $exceptions->respond(function (Response $response) {
-            if ($response->getStatusCode() === JsonResponse::HTTP_INTERNAL_SERVER_ERROR) {
+            if ($response->getStatusCode() === Response::HTTP_INTERNAL_SERVER_ERROR) {
                 return view("errors.internal-server");
             }
 
