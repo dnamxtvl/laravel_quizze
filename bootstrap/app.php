@@ -1,8 +1,10 @@
 <?php
 
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 return Application::configure(basePath: dirname(__DIR__))
@@ -14,9 +16,16 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        //
+
     })
     ->withExceptions(function (Exceptions $exceptions) {
+//        $exceptions->render(function (AuthenticationException $e, Request $request) {
+//            if ($request->is('api/*')) {
+//                return response()->json([
+//                    'message' => $e->getMessage(),
+//                ], 401);
+//            }
+//        });
         $exceptions->respond(function (Response $response) {
             if ($response->getStatusCode() === Response::HTTP_INTERNAL_SERVER_ERROR) {
                 return view("errors.internal-server");
