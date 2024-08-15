@@ -31,4 +31,14 @@ class AuthController extends Controller
             return $this->respondWithJsonError(e: $th);
         }
     }
+
+    public function logout(): JsonResponse
+    {
+        try {
+            $this->authService->logout();
+            return $this->respondWithJson(content: []);
+        } catch (Throwable $th) {
+            return $this->respondWithJsonError(e: $th);
+        }
+    }
 }
