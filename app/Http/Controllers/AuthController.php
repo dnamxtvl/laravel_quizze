@@ -19,9 +19,9 @@ class AuthController extends Controller
     {
         try {
             $adminLoginDto = new AdminLoginDTOs(
-                email: $request->input('email'),
-                password: $request->input('password'),
-                rememberMe: $request->input('remember_me'),
+                email: $request->input(key: 'email'),
+                password: $request->input(key: 'password'),
+                rememberMe: $request->input(key: 'remember_me', default: false),
             );
 
             $adminInfo = $this->authService->login(credentials: $adminLoginDto);

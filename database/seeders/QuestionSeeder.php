@@ -17,13 +17,13 @@ class QuestionSeeder extends Seeder
     {
         Question::query()->truncate();
         $dataQuestionSeeder = [];
-        $quizzeIds = Quizze::query()->pluck('id')->toArray();
+        $quizzeIds = Quizze::query()->pluck(column: 'id')->toArray();
         $now = now();
         for ($i = 0; $i < self::QUESTION_FAKE_COUNT; $i++) {
             $dataQuestionSeeder[] = [
                 'id' => Str::uuid(),
                 'title' => fake()->sentence,
-                'quizze_id' => array_rand(array: $quizzeIds),
+                'quizze_id' => $quizzeIds[array_rand($quizzeIds)],
                 'created_at' => $now,
                 'updated_at' => $now,
             ];

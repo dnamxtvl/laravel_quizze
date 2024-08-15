@@ -123,4 +123,8 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    'quizzes' => [
+        'limit_pagination' => 6,
+        'room_code_length' => 6,
+    ],
 ];

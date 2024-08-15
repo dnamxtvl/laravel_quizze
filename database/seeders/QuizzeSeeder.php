@@ -17,15 +17,15 @@ class QuizzeSeeder extends Seeder
     public function run(): void
     {
         Quizze::query()->truncate();
-        $categoryIds = Category::query()->pluck('id')->toArray();
-        $userIds = User::query()->pluck('id')->toArray();
+        $categoryIds = Category::query()->pluck(column: 'id')->toArray();
+        $userIds = User::query()->pluck(column: 'id')->toArray();
         $dataQuizzeSeeder = [];
         for ($i = 0; $i < self::QUIZZE_FAKE_COUNT; $i++) {
             $dataQuizzeSeeder[] = [
                 'id' => Str::uuid(),
                 'title' => fake()->sentence,
-                'category_id' => array_rand(array: $categoryIds),
-                'user_id' => array_rand(array: $userIds),
+                'category_id' => $categoryIds[array_rand($categoryIds)],
+                'user_id' => $userIds[array_rand($userIds)],
                 'created_at' => now(),
                 'updated_at' => now(),
             ];
