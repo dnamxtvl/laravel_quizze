@@ -18,6 +18,7 @@ return new class extends Migration
             $table->uuid('room_id')->index();
             $table->index(['gamer_id', 'room_id']);
             $table->integer('answer_in_time')->nullable();
+            $table->integer('score');
             $table->timestamps();
         });
     }
