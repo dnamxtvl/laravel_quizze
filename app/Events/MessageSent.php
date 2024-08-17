@@ -25,7 +25,7 @@ class MessageSent implements ShouldBroadcast
     public function broadcastOn(): array
     {
         return [
-            new PresenceChannel(name: 'channel_for_everyone')
+            new Channel(name: 'channel_for_everyone')
         ];
     }
 }

@@ -51,5 +51,10 @@ return [
     ],
     'user_code' => [
         'length' => 8
+    ],
+    'gamer' => [
+        'name' => [
+            'max_length' => 255
+        ],
     ]
 ];

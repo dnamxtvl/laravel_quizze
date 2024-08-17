@@ -2,6 +2,7 @@
 
 namespace App\Repository\Implement;
 
+use App\DTOs\Room\SetNextQuestionRoomDTO;
 use App\Enums\Room\RoomStatusEnum;
 use App\Models\Room;
 use App\Pipeline\Global\QuizzIdFilter;
@@ -54,6 +55,23 @@ readonly class RoomRepository implements RoomRepositoryInterface
 
     public function findById(string $roomId): ?Model
     {
-        return $this->room->query()->find(id: $roomId);
+        return $this->room->query()->with('gamers')->find(id: $roomId);
+    }
+
+    public function updateRoomAfterNextQuestion(Room $room, SetNextQuestionRoomDTO $nextQuestionRoomDTO): Room
+    {
+        $room->current_question_id = $nextQuestionRoomDTO->getCurrentQuestionId();
+        $room->current_question_start_at = $nextQuestionRoomDTO->getCurrentQuestionStartAt();
+        $room->current_question_end_at = $nextQuestionRoomDTO->getCurrentQuestionEndAt();
+        $room->status = $nextQuestionRoomDTO->getStatus()->value;
+        if ($nextQuestionRoomDTO->getStartAt()) {
+            $room->start_at = $nextQuestionRoomDTO->getStartAt();
+        }
+        if ($nextQuestionRoomDTO->getEndAt()) {
+            $room->end_at = $nextQuestionRoomDTO->getEndAt();
+        }
+        $room->save();
+
+        return $room;
     }
 }

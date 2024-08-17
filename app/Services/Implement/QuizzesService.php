@@ -6,6 +6,7 @@ use App\Repository\Interface\QuizzesRepositoryInterface;
 use App\Services\Interface\QuizzesServiceInterface;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\Auth;
 
 readonly class QuizzesService implements QuizzesServiceInterface
 {
@@ -15,6 +16,6 @@ readonly class QuizzesService implements QuizzesServiceInterface
     }
     public function listQuizzes(): Collection | LengthAwarePaginator
     {
-        return $this->quizzesRepository->listQuizzes(isPaginate: true);
+        return $this->quizzesRepository->listQuizzes(isPaginate: true, filters: ['user_id' => Auth::id()]);
     }
 }

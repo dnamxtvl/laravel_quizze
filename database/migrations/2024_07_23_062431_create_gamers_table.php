@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('country_name')->nullable();
             $table->string('city_name')->nullable();
             $table->string('user_agent')->nullable();
+            $table->boolean('display_meme')->default(false);
             $table->timestamps();
             $table->softDeletes();
         });

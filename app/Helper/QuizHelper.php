@@ -4,6 +4,7 @@ namespace App\Helper;
 
 use App\Enums\Room\RoomStatusEnum;
 use App\Repository\Interface\RoomRepositoryInterface;
+use Illuminate\Support\Facades\DB;
 
 readonly class QuizHelper
 {
@@ -27,5 +28,22 @@ readonly class QuizHelper
         }
 
         return $code;
+    }
+
+    public function scheduleRoomStatusPending(string $roomId, RoomStatusEnum $status): void
+    {
+        $eventName = 'update_room_status_' . $roomId;
+        $timeInterval = (int) config('app.quizzes.time_reply');
+
+        $sql = sprintf("
+        CREATE EVENT IF NOT EXISTS %s
+        ON SCHEDULE AT CURRENT_TIMESTAMP + INTERVAL %d SECOND
+        DO
+            UPDATE rooms
+            SET status = %d
+            WHERE id = '%s';
+        ", $eventName, $timeInterval, $status->value, $roomId);
+
+        DB::unprepared($sql);
     }
 }

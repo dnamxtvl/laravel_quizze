@@ -2,14 +2,24 @@
 
 namespace App\Providers;
 
+use App\Repository\Implement\AnswerRepository;
+use App\Repository\Implement\GamerRepository;
+use App\Repository\Implement\GamerTokenRepository;
+use App\Repository\Implement\QuestionRepository;
 use App\Repository\Implement\QuizzesRepository;
 use App\Repository\Implement\RoomRepository;
+use App\Repository\Interface\AnswerRepositoryInterface;
+use App\Repository\Interface\GamerRepositoryInterface;
+use App\Repository\Interface\GamerTokenRepositoryInterface;
+use App\Repository\Interface\QuestionRepositoryInterface;
 use App\Repository\Interface\QuizzesRepositoryInterface;
 use App\Repository\Interface\RoomRepositoryInterface;
 use App\Services\Implement\AuthService;
+use App\Services\Implement\GamerService;
 use App\Services\Implement\QuizzesService;
 use App\Services\Implement\RoomService;
 use App\Services\Interface\AuthServiceInterface;
+use App\Services\Interface\GamerServiceInterface;
 use App\Services\Interface\QuizzesServiceInterface;
 use App\Services\Interface\RoomServiceInterface;
 use Illuminate\Support\ServiceProvider;
@@ -30,6 +40,11 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(abstract: QuizzesRepositoryInterface::class, concrete: QuizzesRepository::class);
         $this->app->singleton(abstract: RoomServiceInterface::class, concrete: RoomService::class);
         $this->app->singleton(abstract: RoomRepositoryInterface::class, concrete: RoomRepository::class);
+        $this->app->singleton(abstract: GamerRepositoryInterface::class, concrete: GamerRepository::class);
+        $this->app->singleton(abstract: GamerTokenRepositoryInterface::class, concrete: GamerTokenRepository::class);
+        $this->app->singleton(abstract: GamerServiceInterface::class, concrete: GamerService::class);
+        $this->app->singleton(abstract: QuestionRepositoryInterface::class, concrete: QuestionRepository::class);
+        $this->app->singleton(abstract: AnswerRepositoryInterface::class, concrete: AnswerRepository::class);
     }
 
     /**

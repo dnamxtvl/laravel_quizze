@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\GamerMiddleware;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -27,9 +28,9 @@ return Application::configure(basePath: dirname(__DIR__))
 //            }
 //        });
         $exceptions->respond(function (Response $response) {
-            if ($response->getStatusCode() === Response::HTTP_INTERNAL_SERVER_ERROR) {
-                return view("errors.internal-server");
-            }
+//            if ($response->getStatusCode() === Response::HTTP_INTERNAL_SERVER_ERROR) {
+//                return view("errors.internal-server");
+//            }
 
             return $response;
         });

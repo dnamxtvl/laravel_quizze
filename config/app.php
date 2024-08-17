@@ -99,6 +99,8 @@ return [
 
     'key' => env('APP_KEY'),
 
+    'Location' => Stevebauman\Location\Facades\Location::class,
+
     'previous_keys' => [
         ...array_filter(
             explode(',', env('APP_PREVIOUS_KEYS', ''))
@@ -126,5 +128,8 @@ return [
     'quizzes' => [
         'limit_pagination' => 6,
         'room_code_length' => 6,
+        'min_answer' => 2,
+        'time_reply' => 30,
+        'max_score' => 1000,
     ],
 ];

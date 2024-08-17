@@ -3,6 +3,7 @@
 namespace App\Repository\Implement;
 
 use App\Models\Quizze;
+use App\Pipeline\Global\UserIdFilter;
 use App\Pipeline\Quizzes\CategoryIdFilter;
 use App\Repository\Interface\QuizzesRepositoryInterface;
 use Illuminate\Database\Eloquent\Builder;
@@ -28,6 +29,7 @@ readonly class QuizzesRepository implements QuizzesRepositoryInterface
             ->send($query)
             ->through([
                 new CategoryIdFilter(filters: $filters),
+                new UserIdFilter(filters: $filters),
             ])
             ->thenReturn();
     }
@@ -35,13 +37,13 @@ readonly class QuizzesRepository implements QuizzesRepositoryInterface
     public function listQuizzes(array $columnSelects = [], bool $isPaginate = false, array $filters = []): Collection | LengthAwarePaginator
     {
         if (!$isPaginate) {
-            return $this->getQuery()
+            return $this->getQuery(filters: $filters)
                 ->withCount(['questions', 'rooms'])
                 ->with(relations: 'category:id,name')
                 ->get();
         }
 
-        return $this->getQuery()
+        return $this->getQuery(filters: $filters)
             ->withCount(['questions', 'rooms'])
             ->with(relations: 'category:id,name')
             ->paginate(perPage: config(key: 'app.quizzes.limit_pagination'));
