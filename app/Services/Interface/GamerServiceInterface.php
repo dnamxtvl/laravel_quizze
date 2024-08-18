@@ -10,4 +10,6 @@ interface GamerServiceInterface
     public function createGameSetting(string $token, string $gamerId, CreateGameSettingDTO $createGameSettingDTO): Model;
 
     public function submitAnswer(string $token, int $answerId): Model;
+
+    public function userOutGame(string $token): void;
 }

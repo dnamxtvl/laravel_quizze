@@ -62,8 +62,8 @@ class RoomController extends Controller
     public function listQuestionOfRoom(string $roomToken): JsonResponse
     {
         try {
-            [$room, $questions, $gamer] = $this->roomService->listQuestionOfRoom(token: $roomToken);
-            return $this->respondWithJson(content: ['room' => $room->toArray(), 'questions' => $questions->toArray(), 'gamer' => $gamer->toArray()]);
+            $questions = $this->roomService->listQuestionOfRoom(token: $roomToken);
+            return $this->respondWithJson(content: $questions->toArray());
         } catch (Throwable $e) {
             return $this->respondWithJsonError(e: $e);
         }
@@ -87,6 +87,16 @@ class RoomController extends Controller
                 questionId: $request->input(key: 'question_id')
             );
 
+            return $this->respondWithJson(content: []);
+        } catch (Throwable $e) {
+            return $this->respondWithJsonError(e: $e);
+        }
+    }
+
+    public function adminEndGame(string $roomId): JsonResponse
+    {
+        try {
+            $this->roomService->adminEndGame(roomId: $roomId);
             return $this->respondWithJson(content: []);
         } catch (Throwable $e) {
             return $this->respondWithJsonError(e: $e);

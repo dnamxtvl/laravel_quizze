@@ -32,11 +32,11 @@ readonly class QuizHelper
 
     public function scheduleRoomStatusPending(string $roomId, RoomStatusEnum $status): void
     {
-        $eventName = 'update_room_status_' . $roomId;
+        $eventName = 'update_room_status_' . str_replace('-', '_', $roomId);
         $timeInterval = (int) config('app.quizzes.time_reply');
 
         $sql = sprintf("
-        CREATE EVENT IF NOT EXISTS %s
+        CREATE EVENT IF NOT EXISTS `%s`  -- Sử dụng backtick để bao tên sự kiện
         ON SCHEDULE AT CURRENT_TIMESTAMP + INTERVAL %d SECOND
         DO
             UPDATE rooms

@@ -58,7 +58,10 @@ readonly class GamerService implements GamerServiceInterface
         }
 
         if ($room->status != RoomStatusEnum::HAPPENING->value || $now->gt(Carbon::parse($room->current_question_end_at))) {
-            throw new BadRequestHttpException(message: 'Đã hết thời gian trả lời câu hỏi này!', code: ExceptionCodeEnum::EXPIRED_QUESTION->value);
+            throw new BadRequestHttpException(
+                message: 'Đã hết thời gian trả lời câu hỏi này, vui lòng đợi admin bấm chuyển sang câu tiếp theo!',
+                code: ExceptionCodeEnum::EXPIRED_QUESTION->value
+            );
         }
 
         $answer = $this->answerRepository->findById(answerId: $answerId);
@@ -70,14 +73,14 @@ readonly class GamerService implements GamerServiceInterface
             throw new BadRequestHttpException(message: 'Câu trả lời không hợp lệ!', code: ExceptionCodeEnum::INVALID_ANSWER->value);
         }
 
-        $isExistGamerAnswer = $this->answerRepository->getQuery(filters: ['gamer_id' => $gamer->id, 'room_id' => $room->id])->exists();
+        $isExistGamerAnswer = $this->answerRepository->getQuery(filters: ['gamer_id' => $gamer->id, 'question_id' => $room->current_question_id])->exists();
         if ($isExistGamerAnswer) {
             throw new BadRequestHttpException(message: 'Bạn đã trả lời câu hỏi này rồi!', code: ExceptionCodeEnum::EXIST_GAMER_ANSWER->value);
         }
 
         $maxTime = ((int) config(key: 'app.quizzes.time_reply')) * 1000;
         $maxScore = (int) config(key: 'app.quizzes.max_score');
-        $diffInMilliseconds = $now->diffInMilliseconds(Carbon::parse($room->current_question_start_at));
+        $diffInMilliseconds = (int) Carbon::parse($room->current_question_start_at)->diffInMilliseconds($now);
         /* @var Answer $answer */
         $score = $answer->is_correct ? $maxScore - (($diffInMilliseconds / $maxTime) * $maxScore) : 0;
         Log::info('diffInMilliseconds: ' . $diffInMilliseconds);
@@ -86,6 +89,7 @@ readonly class GamerService implements GamerServiceInterface
         Log::info('maxScore: ' . $maxScore);
         $saveAnswerDTO = new SaveAnswerDTO(
             gamerId: $gamer->id,
+            questionId: $room->current_question_id,
             answerId: $answerId,
             roomId: $room->id,
             answerInTime: $diffInMilliseconds,
@@ -93,5 +97,15 @@ readonly class GamerService implements GamerServiceInterface
         );
 
         return $this->answerRepository->saveAnswer(saveAnswer: $saveAnswerDTO);
+    }
+
+    public function userOutGame(string $token): void
+    {
+        $gamerToken = $this->gamerTokenRepository->getQuery(filters: ['token' => $token])->first();
+        if (is_null($gamerToken) || $gamerToken->expired_at < now()) {
+            throw new NotFoundHttpException(message: 'Token không hợp lệ hoặc đã hết hạn!', code: ExceptionCodeEnum::INVALID_GAME_TOKEN->value);
+        }
+        $gamerToken->expired_at = now();
+        $gamerToken->save();
     }
 }

@@ -2,15 +2,16 @@
 
 namespace App\DTOs\Room;
 
+use App\Models\Gamer;
 use App\Models\Room;
 use Illuminate\Database\Eloquent\Collection;
 
-readonly class CheckValidRoomResponseDTO
+readonly class QuestionsOfRoomResponseDTO
 {
     public function __construct(
         private Room $room,
         private Collection $questions,
-        private Collection $gamers,
+        private Gamer $gamer,
         private int $timeRemaining,
     ) {
     }
@@ -20,7 +21,7 @@ readonly class CheckValidRoomResponseDTO
         return [
             'room' => $this->room,
             'questions' => $this->questions,
-            'gamers' => $this->gamers,
+            'gamer' => $this->gamer,
             'time_remaining' => $this->timeRemaining,
         ];
     }

@@ -39,6 +39,7 @@ readonly class QuestionRepository implements QuestionRepositoryInterface
     public function findNextQuestion(string $quzId, string $questionId): ?Question
     {
         return $this->question->query()
+            ->where('quizze_id', $quzId)
             ->where('id', '>', $questionId)
             ->orderBy('id')
             ->first();

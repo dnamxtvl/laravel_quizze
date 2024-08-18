@@ -47,4 +47,14 @@ class GamerController extends Controller
             return $this->respondWithJsonError(e: $e);
         }
     }
+
+    public function userOutGame(string $token): JsonResponse
+    {
+        try {
+            $this->gamerService->userOutGame(token: $token);
+            return $this->respondWithJson(content: []);
+        } catch (Throwable $e) {
+            return $this->respondWithJsonError(e: $e);
+        }
+    }
 }

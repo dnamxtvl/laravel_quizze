@@ -17,4 +17,5 @@ enum ExceptionCodeEnum: int
     case EXPIRED_QUESTION = 1001882;
     case EXIST_GAMER_ANSWER = 1001883;
     case INVALID_ANSWER = 1001884;
+    case NOT_PERMISSION_END_ROOM = 1001885;
 }

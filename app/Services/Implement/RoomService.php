@@ -3,12 +3,14 @@
 namespace App\Services\Implement;
 
 use App\DTOs\Room\CheckValidRoomResponseDTO;
+use App\DTOs\Room\QuestionsOfRoomResponseDTO;
 use App\DTOs\Room\SetNextQuestionRoomDTO;
 use App\DTOs\User\CreateGamerTokenDTO;
 use App\DTOs\User\UserDeviceInformationDTO;
 use App\DTOs\User\VerifyCodeResponseDTO;
 use App\Enums\Exception\ExceptionCodeEnum;
 use App\Enums\Room\RoomStatusEnum;
+use App\Events\AdminEndgameEvent;
 use App\Events\NextQuestionEvent;
 use App\Events\StartGameEvent;
 use App\Exceptions\Admin\UnAuthorizationStartRoomException;
@@ -30,6 +32,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use InvalidArgumentException;
+use Symfony\Component\CssSelector\Exception\InternalErrorException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Throwable;
@@ -62,8 +65,13 @@ readonly class RoomService implements RoomServiceInterface
             throw new BadRequestHttpException(message: 'Màn chơi đã cancel trước đó!', code: ExceptionCodeEnum::ROOM_CANCELLED->value);
         }
         $questions = $this->getQuestionByRoom(room: $room);
+        $gamers = $room->gamers()->withSum('gamerAnswers', 'score')
+            ->with('gamerAnswers')
+            ->orderBy('gamer_answers_sum_score', 'desc')
+            ->get();
+        $timeRemaining = (int) Carbon::parse($room->current_question_end_at)->diffInSeconds(now());
 
-        return new CheckValidRoomResponseDTO(room: $room, questions: $questions);
+        return new CheckValidRoomResponseDTO(room: $room, questions: $questions, gamers: $gamers, timeRemaining: $timeRemaining);
     }
 
     public function validateRoomCode(int $code, UserDeviceInformationDTO $gamerInfo): VerifyCodeResponseDTO
@@ -99,7 +107,7 @@ readonly class RoomService implements RoomServiceInterface
         }
     }
 
-    public function listQuestionOfRoom(string $token): array
+    public function listQuestionOfRoom(string $token): QuestionsOfRoomResponseDTO
     {
         $gamerToken = $this->gamerTokenRepository->getQuery(filters: ['token' => $token])->first();
         if (is_null($gamerToken) || $gamerToken->expired_at < now()) {
@@ -107,13 +115,23 @@ readonly class RoomService implements RoomServiceInterface
         }
 
         $room = $gamerToken->room;
-        $gamer = $gamerToken->gamer;
+        $gamer = $gamerToken->gamer()
+            ->withSum('gamerAnswers', 'score')
+            ->with('gamerAnswers')
+            ->first();
+
         if (is_null($gamer) || is_null($room) || $room->status == RoomStatusEnum::FINISHED->value || $room->status == RoomStatusEnum::CANCELLED->value) {
             throw new NotFoundHttpException(message: 'Room không hợp lệ!', code: ExceptionCodeEnum::INVALID_ROOM->value);
         }
         $questions = $this->getQuestionByRoom(room: $room);
+        $timeRemaining = (int) now()->diffInSeconds(Carbon::parse($room->current_question_end_at));
 
-        return [$room, $questions, $gamer];
+        return new QuestionsOfRoomResponseDTO(
+            room: $room,
+            questions: $questions,
+            gamer: $gamer,
+            timeRemaining: $timeRemaining,
+        );
     }
 
     public function startRoom(string $roomId): void
@@ -177,44 +195,80 @@ readonly class RoomService implements RoomServiceInterface
         return $questions;
     }
 
-    public function nextQuestion(string $roomId, int $questionId): void
+    /**
+     * @throws InternalErrorException
+     */
+    public function nextQuestion(string $roomId, string $questionId): void
+    {
+        DB::beginTransaction();
+        try {
+            $room = $this->roomRepository->findById(roomId: $roomId);
+            /* @var Room $room */
+            if (is_null($room)) {
+                throw new NotFoundHttpException(message: 'Màn chơi không tồn tại hoặc không ở trạng thái diễn ra!');
+            }
+
+            if ($room->status != RoomStatusEnum::PENDING->value) {
+                throw new BadRequestHttpException(message: 'Đang trong thời gian trả lời câu hỏi!');
+            }
+
+            $quiz = $room->quizze;
+            if (is_null($quiz)) {
+                throw new NotFoundHttpException(message: 'Quizz đã bị xóa!');
+            }
+
+            if ($quiz->user_id != Auth::id()) {
+                throw new UnAuthorizationStartRoomException(
+                    message: 'Bạn không có quyền thực hiện hành động này!',
+                    code: ExceptionCodeEnum::NOT_PERMISSION_START_ROOM->value
+                );
+            }
+
+            $nextQuestion = $this->questionRepository->findNextQuestion(quzId: $room->quizze_id, questionId: $questionId);
+            if (is_null($nextQuestion)) {
+                throw new BadRequestHttpException(message: 'Bạn đang ở câu hỏi cuối cùng!');
+            }
+            $setNextQuestionRoomDTO = new SetNextQuestionRoomDTO(
+                currentQuestionId: $nextQuestion->id,
+                currentQuestionStartAt: now(),
+                currentQuestionEndAt: now()->addSeconds(value: config(key: 'app.quizzes.time_reply')),
+                status: RoomStatusEnum::HAPPENING,
+            );
+            $this->roomRepository->updateRoomAfterNextQuestion(room: $room, nextQuestionRoomDTO: $setNextQuestionRoomDTO);
+            broadcast(new NextQuestionEvent(roomId: $room->id, questionId: $nextQuestion->id))->toOthers();
+            $status = is_null($this->questionRepository->findNextQuestion(quzId: $room->quizze_id, questionId: $nextQuestion->id)) ?
+                RoomStatusEnum::PREPARE_FINISH : RoomStatusEnum::PENDING;
+            DB::commit();
+            $this->quizHelper->scheduleRoomStatusPending(roomId: $room->id, status: $status);
+        } catch (Throwable $e) {
+            DB::rollBack();
+            Log::error(message: $e->getMessage());
+            throw new InternalErrorException(message: 'Có lỗi xảy ra, vui lòng thử lại sau!');
+        }
+    }
+
+    public function adminEndGame(string $roomId): void
     {
         $room = $this->roomRepository->findById(roomId: $roomId);
         /* @var Room $room */
         if (is_null($room)) {
-            throw new NotFoundHttpException(message: 'Màn chơi không tồn tại hoặc không ở trạng thái diễn ra!');
+            throw new NotFoundHttpException(message: 'Màn chơi không tồn tại!');
         }
 
-        if ($room->status != RoomStatusEnum::PENDING->value) {
-            throw new BadRequestHttpException(message: 'Đang trong thời gian trả lời câu hỏi!');
+        if ($room->status == RoomStatusEnum::FINISHED->value || $room->status == RoomStatusEnum::CANCELLED->value) {
+            throw new BadRequestHttpException(message: 'Màn chơi đã kết thúc trước đó!');
         }
 
-        $quiz = $room->quizze;
-        if (is_null($quiz)) {
-            throw new NotFoundHttpException(message: 'Quizz đã bị xóa!');
-        }
-
-        if ($quiz->user_id != Auth::id()) {
+        if (Auth::id() != $room->quizze->user_id) {
             throw new UnAuthorizationStartRoomException(
                 message: 'Bạn không có quyền thực hiện hành động này!',
-                code: ExceptionCodeEnum::NOT_PERMISSION_START_ROOM->value
+                code: ExceptionCodeEnum::NOT_PERMISSION_END_ROOM->value
             );
         }
 
-        $nextQuestion = $this->questionRepository->findNextQuestion(quzId: $room->quizze_id, questionId: $questionId);
-        if (is_null($nextQuestion)) {
-            throw new BadRequestHttpException(message: 'Bạn đang ở câu hỏi cuối cùng!');
-        }
-        $setNextQuestionRoomDTO = new SetNextQuestionRoomDTO(
-            currentQuestionId: $nextQuestion->id,
-            currentQuestionStartAt: now(),
-            currentQuestionEndAt: now()->addSeconds(value: config(key: 'app.quizzes.time_reply')),
-            status: RoomStatusEnum::HAPPENING,
-        );
-        $this->roomRepository->updateRoomAfterNextQuestion(room: $room, nextQuestionRoomDTO: $setNextQuestionRoomDTO);
-        broadcast(new NextQuestionEvent(roomId: $room->id, questionId: $nextQuestion->id))->toOthers();
-        $status = is_null($this->questionRepository->findNextQuestion(quzId: $room->quizze_id, questionId: $nextQuestion->id)) ?
-            RoomStatusEnum::PREPARE_FINISH : RoomStatusEnum::PENDING;
-        $this->quizHelper->scheduleRoomStatusPending(roomId: $room->id, status: $status);
+        $room->status = RoomStatusEnum::FINISHED->value;
+        $room->ended_at = now();
+        $room->save();
+        broadcast(new AdminEndgameEvent(roomId: $room->id))->toOthers();
     }
 }

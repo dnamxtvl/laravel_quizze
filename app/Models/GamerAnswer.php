@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property int|mixed $answer_in_time
  * @property int|mixed $score
  * @property mixed|string $room_id
+ * @property mixed|string $question_id
  */
 class GamerAnswer extends Model
 {

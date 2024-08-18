@@ -8,7 +8,7 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class NextQuestionEvent implements ShouldBroadcast
+class AdminEndgameEvent implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
@@ -17,7 +17,6 @@ class NextQuestionEvent implements ShouldBroadcast
      */
     public function __construct(
         public readonly string $roomId,
-        public readonly string $questionId,
     ) {
     }
 

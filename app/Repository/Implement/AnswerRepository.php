@@ -6,6 +6,7 @@ use App\DTOs\Gamer\SaveAnswerDTO;
 use App\Models\Answer;
 use App\Models\GamerAnswer;
 use App\Pipeline\Room\GamerIdFiler;
+use App\Pipeline\Room\QuestionIdFilter;
 use App\Pipeline\Room\RoomIdFilter;
 use App\Repository\Interface\AnswerRepositoryInterface;
 use Illuminate\Database\Eloquent\Builder;
@@ -32,6 +33,7 @@ readonly class AnswerRepository implements AnswerRepositoryInterface
             ->through([
                 new GamerIdFiler(filters: $filters),
                 new RoomIdFilter(filters: $filters),
+                new QuestionIdFilter(filters: $filters),
             ])
             ->thenReturn();
     }
@@ -45,6 +47,7 @@ readonly class AnswerRepository implements AnswerRepositoryInterface
     {
         $gamerAnswer = new GamerAnswer();
         $gamerAnswer->gamer_id = $saveAnswer->getGamerId();
+        $gamerAnswer->question_id = $saveAnswer->getQuestionId();
         $gamerAnswer->answer_id = $saveAnswer->getAnswerId();
         $gamerAnswer->answer_in_time = $saveAnswer->getAnswerInTime();
         $gamerAnswer->score = $saveAnswer->getScore();

@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('gamer_answers', function (Blueprint $table) {
             $table->id();
             $table->uuid('gamer_id')->index();
+            $table->uuid('question_id')->index();
             $table->integer('answer_id')->index();
             $table->uuid('room_id')->index();
             $table->index(['gamer_id', 'room_id']);

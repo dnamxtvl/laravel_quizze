@@ -3,6 +3,7 @@
 namespace App\Services\Interface;
 
 use App\DTOs\Room\CheckValidRoomResponseDTO;
+use App\DTOs\Room\QuestionsOfRoomResponseDTO;
 use App\DTOs\User\UserDeviceInformationDTO;
 use App\DTOs\User\VerifyCodeResponseDTO;
 use Illuminate\Database\Eloquent\Collection;
@@ -16,9 +17,11 @@ interface RoomServiceInterface
 
     public function validateRoomCode(int $code, UserDeviceInformationDTO $gamerInfo): VerifyCodeResponseDTO;
 
-    public function listQuestionOfRoom(string $token): array;
+    public function listQuestionOfRoom(string $token): QuestionsOfRoomResponseDTO;
 
     public function startRoom(string $roomId): void;
 
-    public function nextQuestion(string $roomId, int $questionId): void;
+    public function nextQuestion(string $roomId, string $questionId): void;
+
+    public function adminEndGame(string $roomId): void;
 }

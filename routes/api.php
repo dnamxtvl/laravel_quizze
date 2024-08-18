@@ -24,6 +24,7 @@ Route::group(['middleware' => ['auth:api', 'verified']], function () {
             Route::get('/check-valid/{quizId}', [RoomController::class, 'checkValidRoom'])->name('rooms.check-valid');
             Route::post('/start', [RoomController::class, 'startRoom'])->name('rooms.start');
             Route::post('/next-question', [RoomController::class, 'nextQuestion'])->name('rooms.next-question');
+            Route::post('/end-game/{roomId}', [RoomController::class, 'adminEndGame'])->name('rooms.end-game');
         });
     });
 });
@@ -36,5 +37,6 @@ Route::prefix('user')->group(function () {
     Route::prefix('gamer')->group(function () {
         Route::post('/create-setting', [GamerController::class, 'createGameSetting'])->name('gamer.create-setting');
         Route::post('/submit-answer', [GamerController::class, 'submitAnswer'])->name('gamer.submit-answer');
+        Route::post('/out-game/{token}', [GamerController::class, 'userOutGame'])->name('gamer.out-game');
     });
 })->middleware(GamerMiddleware::class);

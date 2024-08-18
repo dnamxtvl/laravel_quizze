@@ -2,11 +2,11 @@
 
 namespace App\DTOs\User;
 
-class CreateGameSettingDTO
+readonly class CreateGameSettingDTO
 {
     public function __construct(
-        private readonly string $name,
-        private readonly bool $isMeme
+        private string $name,
+        private bool $isMeme
     ) {
     }
 

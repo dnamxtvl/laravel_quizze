@@ -65,10 +65,10 @@ readonly class RoomRepository implements RoomRepositoryInterface
         $room->current_question_end_at = $nextQuestionRoomDTO->getCurrentQuestionEndAt();
         $room->status = $nextQuestionRoomDTO->getStatus()->value;
         if ($nextQuestionRoomDTO->getStartAt()) {
-            $room->start_at = $nextQuestionRoomDTO->getStartAt();
+            $room->started_at = $nextQuestionRoomDTO->getStartAt();
         }
         if ($nextQuestionRoomDTO->getEndAt()) {
-            $room->end_at = $nextQuestionRoomDTO->getEndAt();
+            $room->ended_at = $nextQuestionRoomDTO->getEndAt();
         }
         $room->save();
 
