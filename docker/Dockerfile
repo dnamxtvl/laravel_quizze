@@ -19,7 +19,8 @@ RUN apt-get update && apt-get install -y \
     libsodium-dev \
     pkg-config \
     libcurl4-openssl-dev \
-    libssl-dev
+    libssl-dev \
+    supervisor
 
 # Clear cache
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
@@ -47,26 +48,13 @@ RUN docker-php-ext-install zip
 RUN curl -sS https://getcomposer.org/installer | \
     php -- --install-dir=/usr/local/bin --filename=composer
 
-# Install nodejs
-ENV NODE_VERSION 20.10.0
-ENV NODE_PACKAGE_URL  https://unofficial-builds.nodejs.org/download/release/v$NODE_VERSION/node-v$NODE_VERSION-linux-x64-musl.tar.gz
-
-RUN apk add libstdc++
-WORKDIR /opt
-RUN wget $NODE_PACKAGE_URL  \
-    && mkdir -p /opt/nodejs  \
-    && tar -zxvf *.tar.gz --directory /opt/nodejs --strip-components=1  \
-    && rm *.tar.gz  \
-    && ln -s /opt/nodejs/bin/node /usr/local/bin/node  \
-    && ln -s /opt/nodejs/bin/npm /usr/local/bin/npm
-
 # Set new UID for user www-data
 RUN usermod -u 1000 www-data
 
 WORKDIR /var/www/
 COPY . .
 # Copy the supervisor configuration
-COPY docker/supervisor/supervisor.conf /etc/supervisor/supervisor.conf
 EXPOSE 9000
+COPY docker/supervisor/supervisor.conf /etc/supervisor/supervisor.conf
 CMD ["supervisord", "-c", "/etc/supervisor/supervisor.conf"]
 
