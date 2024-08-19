@@ -9,7 +9,6 @@ services:
                 PHP_FPM_PORT: 9000
         ports:
             - "80:80"
-            - "443:443"
         depends_on:
             - php
         volumes:
