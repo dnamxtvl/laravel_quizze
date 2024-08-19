@@ -69,7 +69,7 @@ readonly class RoomService implements RoomServiceInterface
             ->with('gamerAnswers')
             ->orderBy('gamer_answers_sum_score', 'desc')
             ->get();
-        $timeRemaining = (int) Carbon::parse($room->current_question_end_at)->diffInSeconds(now());
+        $timeRemaining = (int) now()->diffInSeconds(Carbon::parse($room->current_question_end_at));
 
         return new CheckValidRoomResponseDTO(room: $room, questions: $questions, gamers: $gamers, timeRemaining: $timeRemaining);
     }
@@ -169,8 +169,8 @@ readonly class RoomService implements RoomServiceInterface
             startAt: $now,
         );
         $this->roomRepository->updateRoomAfterNextQuestion(room: $room, nextQuestionRoomDTO: $setNextQuestionRoomDTO);
-        broadcast(new StartGameEvent(roomId: $room->id))->toOthers();
         $this->quizHelper->scheduleRoomStatusPending(roomId: $room->id, status: RoomStatusEnum::PENDING);
+        broadcast(new StartGameEvent(roomId: $room->id))->toOthers();
     }
 
     private function getQuestionByRoom(Room $room): Collection
@@ -200,7 +200,7 @@ readonly class RoomService implements RoomServiceInterface
      */
     public function nextQuestion(string $roomId, string $questionId): void
     {
-        DB::beginTransaction();
+        $now = now();
         try {
             $room = $this->roomRepository->findById(roomId: $roomId);
             /* @var Room $room */
@@ -230,18 +230,16 @@ readonly class RoomService implements RoomServiceInterface
             }
             $setNextQuestionRoomDTO = new SetNextQuestionRoomDTO(
                 currentQuestionId: $nextQuestion->id,
-                currentQuestionStartAt: now(),
-                currentQuestionEndAt: now()->addSeconds(value: config(key: 'app.quizzes.time_reply')),
+                currentQuestionStartAt: $now,
+                currentQuestionEndAt: $now->addSeconds(value: config(key: 'app.quizzes.time_reply')),
                 status: RoomStatusEnum::HAPPENING,
             );
             $this->roomRepository->updateRoomAfterNextQuestion(room: $room, nextQuestionRoomDTO: $setNextQuestionRoomDTO);
-            broadcast(new NextQuestionEvent(roomId: $room->id, questionId: $nextQuestion->id))->toOthers();
             $status = is_null($this->questionRepository->findNextQuestion(quzId: $room->quizze_id, questionId: $nextQuestion->id)) ?
                 RoomStatusEnum::PREPARE_FINISH : RoomStatusEnum::PENDING;
-            DB::commit();
             $this->quizHelper->scheduleRoomStatusPending(roomId: $room->id, status: $status);
+            broadcast(new NextQuestionEvent(roomId: $room->id, questionId: $nextQuestion->id))->toOthers();
         } catch (Throwable $e) {
-            DB::rollBack();
             Log::error(message: $e->getMessage());
             throw new InternalErrorException(message: 'Có lỗi xảy ra, vui lòng thử lại sau!');
         }

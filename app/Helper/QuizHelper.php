@@ -17,7 +17,7 @@ readonly class QuizHelper
     {
         $code = '';
         for ($i = 0; $i < $length; $i++) {
-            $code .= rand(0, 9);
+            $code .= rand(1, 9);
         }
 
         $code = (int) $code;
