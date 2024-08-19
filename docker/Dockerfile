@@ -53,8 +53,6 @@ RUN usermod -u 1000 www-data
 
 WORKDIR /var/www/
 COPY . .
-# Copy the supervisor configuration
 EXPOSE 9000
-COPY docker/supervisor/supervisor.conf /etc/supervisor/supervisor.conf
+COPY ./docker/supervisor.conf /etc/supervisor/supervisor.conf
 CMD ["supervisord", "-c", "/etc/supervisor/supervisor.conf"]
-

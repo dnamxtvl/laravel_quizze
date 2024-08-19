@@ -8,7 +8,7 @@ services:
                 PHP_FPM_SERVER: php
                 PHP_FPM_PORT: 9000
         ports:
-            - 8001:80
+            - 8002:80
         depends_on:
             - php
         volumes:
@@ -44,7 +44,7 @@ services:
         volumes:
             - mysqldb:/var/lib/mysql
         environment:
-            MYSQL_DATABASE: laravel_quizze
+            MYSQL_DATABASE: laravel_broadcasting
             MYSQL_ROOT_PASSWORD: root
             MYSQL_ALLOW_EMPTY_PASSWORD: "true"
         ports:
