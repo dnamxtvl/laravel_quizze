@@ -61,8 +61,8 @@ readonly class RoomService implements RoomServiceInterface
             throw new NotFoundHttpException(message: 'Màn chơi không tồn tại!');
         }
         /* @var Room $room */
-        if ($room->status == RoomStatusEnum::CANCELLED->value) {
-            throw new BadRequestHttpException(message: 'Màn chơi đã cancel trước đó!', code: ExceptionCodeEnum::ROOM_CANCELLED->value);
+        if ($room->status == RoomStatusEnum::CANCELLED->value || $room->status == RoomStatusEnum::FINISHED->value) {
+            throw new BadRequestHttpException(message: 'Màn chơi đã kết thúc trước đó!', code: ExceptionCodeEnum::ROOM_CANCELLED->value);
         }
         $questions = $this->getQuestionByRoom(room: $room);
         $gamers = $room->gamers()->withSum('gamerAnswers', 'score')
@@ -115,6 +115,7 @@ readonly class RoomService implements RoomServiceInterface
         }
 
         $room = $gamerToken->room;
+
         $gamer = $gamerToken->gamer()
             ->withSum('gamerAnswers', 'score')
             ->with('gamerAnswers')
