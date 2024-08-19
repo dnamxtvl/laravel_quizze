@@ -44,7 +44,7 @@ services:
         volumes:
             - mysqldb:/var/lib/mysql
         environment:
-            MYSQL_DATABASE: laravel_broadcasting
+            MYSQL_DATABASE: laravel_quizze
             MYSQL_ROOT_PASSWORD: root
             MYSQL_ALLOW_EMPTY_PASSWORD: "true"
         ports:
