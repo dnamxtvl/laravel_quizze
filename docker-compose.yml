@@ -27,6 +27,8 @@ services:
             - ./docker/php.ini:/usr/local/etc/php/conf.d/php.ini
         environment:
             APP_ENV: local
+        ports:
+            - "8080:8080"
         networks:
             - backend
         depends_on:
@@ -50,18 +52,6 @@ services:
         ports:
             - "3309:3306"
         command: [ 'mysqld', '--character-set-server=utf8mb4', '--collation-server=utf8mb4_unicode_ci' ]
-        networks:
-            - backend
-
-    supervisor:
-        build:
-            context: .
-            dockerfile: docker/Dockerfile.supervisor
-        ports:
-            - "8080:8080"
-        volumes:
-            - .:/var/www/
-            - ./docker/supervisord.conf:/etc/supervisor/supervisord.conf
         networks:
             - backend
 
