@@ -19,7 +19,8 @@ RUN apt-get update && apt-get install -y \
     libsodium-dev \
     pkg-config \
     libcurl4-openssl-dev \
-    libssl-dev
+    libssl-dev \
+    supervisor
 
 # Clear cache
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
@@ -53,7 +54,7 @@ RUN usermod -u 1000 www-data
 WORKDIR /var/www/
 COPY . .
 EXPOSE 9000
-# COPY ./docker/supervisor.conf /etc/supervisor/supervisor.conf
-# CMD ["supervisord", "-c", "/etc/supervisor/supervisor.conf"]
+COPY ./docker/supervisord.conf /etc/supervisor/supervisord.conf
+CMD ["supervisord", "-c", "/etc/supervisor/supervisord.conf"]
 # Chạy PHP-FPM
-CMD ["php-fpm"]
+# CMD ["php-fpm"]

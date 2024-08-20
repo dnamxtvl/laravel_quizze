@@ -460,3 +460,11 @@
 2024-08-19 12:51:44,075 INFO spawned: 'laravel-worker_00' with pid 30
 2024-08-19 12:51:44,233 WARN exited: laravel-worker_00 (exit status 1; not expected)
 2024-08-19 12:51:44,665 INFO gave up: laravel-worker_00 entered FATAL state, too many start retries too quickly
+2024-08-20 11:58:09,611 CRIT Supervisor is running as root.  Privileges were not dropped because no user is specified in the config file.  If you intend to run as root, you can set user=root in the config file to avoid this message.
+2024-08-20 11:58:09,615 INFO supervisord started with pid 1
+2024-08-20 11:58:10,616 INFO spawned: 'laravel-reverb' with pid 7
+2024-08-20 11:58:10,617 INFO spawned: 'laravel-worker_00' with pid 8
+2024-08-20 11:58:10,618 INFO spawned: 'php-fpm' with pid 9
+2024-08-20 11:58:11,781 INFO success: laravel-reverb entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2024-08-20 11:58:11,782 INFO success: laravel-worker_00 entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2024-08-20 11:58:11,782 INFO success: php-fpm entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
