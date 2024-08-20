@@ -19,7 +19,7 @@ RUN apt-get update && apt-get install -y \
     libsodium-dev \
     pkg-config \
     libcurl4-openssl-dev \
-    libssl-dev \
+    libssl-dev
 
 # Clear cache
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
