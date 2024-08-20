@@ -8,7 +8,7 @@ services:
                 PHP_FPM_SERVER: php
                 PHP_FPM_PORT: 9000
         ports:
-            - "80:80"
+            - "8002:80"
         depends_on:
             - php
         volumes:
@@ -50,6 +50,17 @@ services:
         ports:
             - "3309:3306"
         command: [ 'mysqld', '--character-set-server=utf8mb4', '--collation-server=utf8mb4_unicode_ci' ]
+        networks:
+            - backend
+
+    supervisor:
+        build:
+        context: .
+        ports:
+            - "8080:8080"
+        volumes:
+            - ./src:/var/www/
+            - .docker/reverb/supervisord.conf:/etc/supervisor/supervisord.conf
         networks:
             - backend
 
