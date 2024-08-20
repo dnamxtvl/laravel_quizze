@@ -55,8 +55,8 @@ services:
 
     supervisor:
         build:
-        context: .
-        dockerfile: docker/Dockerfile.supervisor
+            context: .
+            dockerfile: docker/Dockerfile.supervisor
         ports:
             - "8080:8080"
         volumes:
