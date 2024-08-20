@@ -1,0 +1,33 @@
+# Sử dụng cùng base image với PHP Dockerfile nhưng sử dụng PHP 8.2
+FROM php:8.2-cli
+
+# Cài đặt Supervisor
+RUN apt-get update && apt-get install -y \
+    supervisor
+
+# Cài đặt các package PHP từ composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+# Tạo thư mục cho ứng dụng
+WORKDIR /var/www
+
+# Copy mã nguồn vào container
+COPY . /var/www
+
+# Chỉnh sửa quyền để phù hợp với www-data user
+RUN chown -R www-data:www-data /var/www \
+    && chmod -R 755 /var/www
+
+# Cài đặt các package PHP từ composer
+RUN composer install --no-dev --optimize-autoloader
+
+# Copy file cấu hình supervisord
+COPY ./.docker/supervisord.conf /etc/supervisor/supervisord.conf
+
+# Expose port để quản lý Supervisor (tùy chọn)
+EXPOSE 8080
+
+# Khởi động Supervisor
+# CMD ["/usr/bin/supervisord"]
+
+CMD ["supervisord", "-c", "/etc/supervisor/supervisor.conf"]

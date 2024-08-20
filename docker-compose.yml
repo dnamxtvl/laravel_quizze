@@ -56,11 +56,12 @@ services:
     supervisor:
         build:
         context: .
+        dockerfile: docker/Dockerfile.supervisor
         ports:
             - "8080:8080"
         volumes:
             - ./src:/var/www/
-            - .docker/reverb/supervisord.conf:/etc/supervisor/supervisord.conf
+            - .docker/supervisord.conf:/etc/supervisor/supervisord.conf
         networks:
             - backend
 
