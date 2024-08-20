@@ -60,8 +60,8 @@ services:
         ports:
             - "8080:8080"
         volumes:
-            - ./src:/var/www/
-            - .docker/supervisord.conf:/etc/supervisor/supervisord.conf
+            - .:/var/www/
+            - ./docker/supervisord.conf:/etc/supervisor/supervisord.conf
         networks:
             - backend
 
