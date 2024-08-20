@@ -23,7 +23,7 @@ RUN chown -R www-data:www-data /var/www \
 RUN composer install --no-dev --optimize-autoloader
 
 # Copy file cấu hình supervisord
-COPY ./.docker/supervisord.conf /etc/supervisor/supervisord.conf
+COPY ./docker/supervisord.conf /etc/supervisor/supervisord.conf
 
 # Expose port để quản lý Supervisor (tùy chọn)
 EXPOSE 8080
