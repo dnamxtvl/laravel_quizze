@@ -31,4 +31,4 @@ EXPOSE 8080
 # Khởi động Supervisor
 # CMD ["/usr/bin/supervisord"]
 
-CMD ["supervisord", "-c", "/etc/supervisor/supervisor.conf"]
+CMD ["supervisord", "-c", "/etc/supervisor/supervisord.conf"]
