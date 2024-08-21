@@ -2,6 +2,7 @@
 
 namespace App\Repository\Implement;
 
+use App\DTOs\Quizz\CreateQuizzDTO;
 use App\Models\Quizze;
 use App\Pipeline\Global\UserIdFilter;
 use App\Pipeline\Quizzes\CategoryIdFilter;
@@ -40,12 +41,25 @@ readonly class QuizzesRepository implements QuizzesRepositoryInterface
             return $this->getQuery(filters: $filters)
                 ->withCount(['questions', 'rooms'])
                 ->with(relations: 'category:id,name')
+                ->orderBy('created_at', 'desc')
                 ->get();
         }
 
         return $this->getQuery(filters: $filters)
             ->withCount(['questions', 'rooms'])
             ->with(relations: 'category:id,name')
+            ->orderBy('created_at', 'desc')
             ->paginate(perPage: config(key: 'app.quizzes.limit_pagination'));
+    }
+
+    public function createQuiz(CreateQuizzDTO $quizDTO): Quizze
+    {
+        $quiz = new Quizze();
+        $quiz->title = $quizDTO->getTitle();
+        $quiz->category_id = $quizDTO->getCategoryId();
+        $quiz->user_id = $quizDTO->getUserId();
+        $quiz->save();
+
+        return $quiz;
     }
 }

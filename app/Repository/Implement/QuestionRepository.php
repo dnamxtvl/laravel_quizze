@@ -2,17 +2,22 @@
 
 namespace App\Repository\Implement;
 
+use App\DTOs\Answer\CreateAnswerDTO;
+use App\DTOs\Question\CreateQuestionDTO;
+use App\Models\Answer;
 use App\Models\Question;
 use App\Pipeline\Global\QuizzIdFilter;
 use App\Repository\Interface\QuestionRepositoryInterface;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pipeline\Pipeline;
+use Illuminate\Support\Str;
 
 readonly class QuestionRepository implements QuestionRepositoryInterface
 {
     public function __construct(
-        private Question $question
+        private Question $question,
+        private Answer $answer,
     ) {
     }
 
@@ -43,5 +48,37 @@ readonly class QuestionRepository implements QuestionRepositoryInterface
             ->where('id', '>', $questionId)
             ->orderBy('id')
             ->first();
+    }
+
+    public function insertQuestions(array $questions, string $quizId): array
+    {
+        $now = now();
+        $questionsInsert = [];
+        $answersInsert = [];
+        foreach ($questions as $question) {
+            $questionId = Str::uuid();
+            /* @var CreateQuestionDTO $question */
+            $questionsInsert[] = [
+                'id' => $questionId,
+                'quizze_id' => $quizId,
+                'title' => $question->getTitle(),
+                'created_at' => $now,
+                'updated_at' => $now,
+            ];
+            foreach ($question->getAnswers() as $answer) {
+                /* @var CreateAnswerDTO $answer */
+                $answersInsert[] = [
+                    'question_id' => $questionId,
+                    'answer' => $answer->getAnswer(),
+                    'is_correct' => $answer->getIsCorrect(),
+                    'created_at' => $now,
+                    'updated_at' => $now,
+                ];
+            }
+        }
+        $this->question->query()->insert($questionsInsert);
+        $this->answer->query()->insert($answersInsert);
+
+        return collect($questionsInsert)->pluck('id')->toArray();
     }
 }

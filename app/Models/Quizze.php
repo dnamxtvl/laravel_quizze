@@ -8,6 +8,12 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+/**
+ * @property mixed|string $title
+ * @property int|mixed $category_id
+ * @property mixed|string $user_id
+ * @property mixed $id
+ */
 class Quizze extends Model
 {
     use HasFactory, HasUuids;

@@ -18,6 +18,7 @@ Route::group(['middleware' => ['auth:api', 'verified']], function () {
         Route::post('/logout', [AuthController::class, 'logout'])->name('auth.admin.logout');
         Route::prefix('quizzes')->group(function () {
             Route::get('/list', [QuizzesController::class, 'listQuizzesPagination'])->name('quizzes.list');
+            Route::post('/create', [QuizzesController::class, 'createQuiz'])->name('quizzes.create');
         });
         Route::prefix('room')->group(function () {
             Route::post('/create/{quizId}', [RoomController::class, 'createRoom'])->name('rooms.create');
