@@ -16,8 +16,7 @@ readonly class QuizzesRepository implements QuizzesRepositoryInterface
 {
     public function __construct(
         private Quizze $quizzes
-    ) {
-    }
+    ) {}
 
     public function getQuery(array $columnSelects = [], array $filters = []): Builder
     {
@@ -35,9 +34,9 @@ readonly class QuizzesRepository implements QuizzesRepositoryInterface
             ->thenReturn();
     }
 
-    public function listQuizzes(array $columnSelects = [], bool $isPaginate = false, array $filters = []): Collection | LengthAwarePaginator
+    public function listQuizzes(array $columnSelects = [], bool $isPaginate = false, array $filters = []): Collection|LengthAwarePaginator
     {
-        if (!$isPaginate) {
+        if (! $isPaginate) {
             return $this->getQuery(filters: $filters)
                 ->withCount(['questions', 'rooms'])
                 ->with(relations: 'category:id,name')
@@ -54,7 +53,7 @@ readonly class QuizzesRepository implements QuizzesRepositoryInterface
 
     public function createQuiz(CreateQuizzDTO $quizDTO): Quizze
     {
-        $quiz = new Quizze();
+        $quiz = new Quizze;
         $quiz->title = $quizDTO->getTitle();
         $quiz->category_id = $quizDTO->getCategoryId();
         $quiz->user_id = $quizDTO->getUserId();

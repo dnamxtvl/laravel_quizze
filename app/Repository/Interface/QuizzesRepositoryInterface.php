@@ -9,7 +9,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
 
 interface QuizzesRepositoryInterface
 {
-    public function listQuizzes(array $columnSelects = [], bool $isPaginate = false, array $filters = []): Collection | LengthAwarePaginator;
+    public function listQuizzes(array $columnSelects = [], bool $isPaginate = false, array $filters = []): Collection|LengthAwarePaginator;
 
     public function createQuiz(CreateQuizzDTO $quizDTO): Quizze;
 }

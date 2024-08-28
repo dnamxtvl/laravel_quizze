@@ -14,5 +14,6 @@ class Answer extends Model
     use HasFactory;
 
     protected $table = 'answers';
+
     protected $primaryKey = 'id';
 }

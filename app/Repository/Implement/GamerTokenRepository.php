@@ -15,8 +15,7 @@ readonly class GamerTokenRepository implements GamerTokenRepositoryInterface
 {
     public function __construct(
         private GamerToken $gamerToken
-    ) {
-    }
+    ) {}
 
     public function getQuery(array $columnSelects = [], array $filters = []): Builder
     {
@@ -33,9 +32,10 @@ readonly class GamerTokenRepository implements GamerTokenRepositoryInterface
             ])
             ->thenReturn();
     }
+
     public function createGamerToken(CreateGamerTokenDTO $gamerTokenDTO): Model
     {
-        $gamerToken = new GamerToken();
+        $gamerToken = new GamerToken;
         $gamerToken->gamer_id = $gamerTokenDTO->getGamerId();
         $gamerToken->token = $gamerTokenDTO->getToken();
         $gamerToken->room_id = $gamerTokenDTO->getRoomId();

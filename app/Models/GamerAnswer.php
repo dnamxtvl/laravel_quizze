@@ -18,5 +18,6 @@ class GamerAnswer extends Model
     use HasFactory;
 
     protected $table = 'gamer_answers';
+
     protected $primaryKey = 'id';
 }

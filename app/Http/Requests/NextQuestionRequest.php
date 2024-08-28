@@ -21,4 +21,14 @@ class NextQuestionRequest extends FormRequest
             'room_id' => 'required|string',
         ];
     }
+
+    public function messages(): array
+    {
+        return [
+            'question_id.required' => 'Question id không được để trống',
+            'question_id.string' => 'Question id phải là chuỗi',
+            'room_id.required' => 'Room id không được để trống',
+            'room_id.string' => 'Room id phải là chuỗi',
+        ];
+    }
 }

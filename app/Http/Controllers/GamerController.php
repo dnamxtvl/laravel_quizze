@@ -13,8 +13,7 @@ class GamerController extends Controller
 {
     public function __construct(
         private readonly GamerServiceInterface $gamerService
-    ) {
-    }
+    ) {}
 
     public function createGameSetting(CreateGameSettingRequest $request): JsonResponse
     {
@@ -52,6 +51,7 @@ class GamerController extends Controller
     {
         try {
             $this->gamerService->userOutGame(token: $token);
+
             return $this->respondWithJson(content: []);
         } catch (Throwable $e) {
             return $this->respondWithJsonError(e: $e);

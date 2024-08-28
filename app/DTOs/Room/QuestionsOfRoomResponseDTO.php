@@ -13,8 +13,7 @@ readonly class QuestionsOfRoomResponseDTO
         private Collection $questions,
         private Gamer $gamer,
         private int $timeRemaining,
-    ) {
-    }
+    ) {}
 
     public function toArray(): array
     {

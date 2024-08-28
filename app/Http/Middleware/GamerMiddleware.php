@@ -17,6 +17,7 @@ class GamerMiddleware
                     'code' => 0,
                 ],
             ];
+
             return response()->json($content, Response::HTTP_UNAUTHORIZED);
         }
 

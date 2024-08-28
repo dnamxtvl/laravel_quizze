@@ -8,14 +8,13 @@ use Carbon\Carbon;
 readonly class SetNextQuestionRoomDTO
 {
     public function __construct(
-        private string  $currentQuestionId,
-        private Carbon  $currentQuestionStartAt,
-        private Carbon  $currentQuestionEndAt,
+        private string $currentQuestionId,
+        private Carbon $currentQuestionStartAt,
+        private Carbon $currentQuestionEndAt,
         private RoomStatusEnum $status,
         private ?Carbon $startAt = null,
         private ?Carbon $endAt = null,
-    ) {
-    }
+    ) {}
 
     public function getStatus(): RoomStatusEnum
     {

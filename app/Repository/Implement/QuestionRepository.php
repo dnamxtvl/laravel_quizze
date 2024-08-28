@@ -18,8 +18,7 @@ readonly class QuestionRepository implements QuestionRepositoryInterface
     public function __construct(
         private Question $question,
         private Answer $answer,
-    ) {
-    }
+    ) {}
 
     public function getQuery(array $columnSelects = [], array $filters = []): Builder
     {

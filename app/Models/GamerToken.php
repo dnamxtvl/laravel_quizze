@@ -17,6 +17,7 @@ class GamerToken extends Model
     use HasFactory;
 
     protected $table = 'gamer_token';
+
     protected $primaryKey = 'id';
 
     protected $casts = [

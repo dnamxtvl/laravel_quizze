@@ -8,8 +8,7 @@ class CreateQuestionDTO
         private readonly string $title,
         private array $answers,
         private ?string $quizId = null,
-    ) {
-    }
+    ) {}
 
     public function getQuizId(): string
     {

@@ -16,8 +16,7 @@ readonly class RoomRepository implements RoomRepositoryInterface
 {
     public function __construct(
         private Room $room
-    ) {
-    }
+    ) {}
 
     public function getQuery(array $columnSelects = [], array $filters = []): Builder
     {
@@ -37,7 +36,7 @@ readonly class RoomRepository implements RoomRepositoryInterface
 
     public function createRoom(string $quizId, int $code): Model
     {
-        $room = new Room();
+        $room = new Room;
         $room->quizze_id = $quizId;
         $room->code = $code;
         $room->status = RoomStatusEnum::PREPARE->value;

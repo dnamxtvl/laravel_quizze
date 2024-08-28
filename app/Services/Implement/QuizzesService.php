@@ -18,9 +18,9 @@ readonly class QuizzesService implements QuizzesServiceInterface
     public function __construct(
         private QuizzesRepositoryInterface $quizzesRepository,
         private QuestionRepositoryInterface $questionRepository,
-    ) {
-    }
-    public function listQuizzes(): Collection | LengthAwarePaginator
+    ) {}
+
+    public function listQuizzes(): Collection|LengthAwarePaginator
     {
         return $this->quizzesRepository->listQuizzes(isPaginate: true, filters: ['user_id' => Auth::id()]);
     }
@@ -28,7 +28,7 @@ readonly class QuizzesService implements QuizzesServiceInterface
     /**
      * @throws InternalErrorException
      */
-    public function createQuiz(CreateQuizzDTO $quizDTO, Array $questionDTO): void
+    public function createQuiz(CreateQuizzDTO $quizDTO, array $questionDTO): void
     {
         DB::beginTransaction();
         try {

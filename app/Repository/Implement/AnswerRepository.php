@@ -18,8 +18,7 @@ readonly class AnswerRepository implements AnswerRepositoryInterface
     public function __construct(
         private GamerAnswer $gamerAnswer,
         private Answer $answer,
-    ) {
-    }
+    ) {}
 
     public function getQuery(array $columnSelects = [], array $filters = []): Builder
     {
@@ -45,7 +44,7 @@ readonly class AnswerRepository implements AnswerRepositoryInterface
 
     public function saveAnswer(SaveAnswerDTO $saveAnswer): Model
     {
-        $gamerAnswer = new GamerAnswer();
+        $gamerAnswer = new GamerAnswer;
         $gamerAnswer->gamer_id = $saveAnswer->getGamerId();
         $gamerAnswer->question_id = $saveAnswer->getQuestionId();
         $gamerAnswer->answer_id = $saveAnswer->getAnswerId();

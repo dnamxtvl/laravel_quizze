@@ -7,21 +7,21 @@ use App\Http\Requests\NextQuestionRequest;
 use App\Http\Requests\StartRoomRequest;
 use App\Services\Interface\RoomServiceInterface;
 use Illuminate\Http\Request;
+use Stevebauman\Location\Facades\Location;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Throwable;
-use Stevebauman\Location\Facades\Location;
 
 class RoomController extends Controller
 {
     public function __construct(
         private readonly RoomServiceInterface $roomService
-    ) {
-    }
+    ) {}
 
     public function createRoom(string $quizId): JsonResponse
     {
         try {
             $newRoom = $this->roomService->createRoom(quizId: $quizId);
+
             return $this->respondWithJson(content: $newRoom->toArray());
         } catch (Throwable $e) {
             return $this->respondWithJsonError(e: $e);
@@ -32,6 +32,7 @@ class RoomController extends Controller
     {
         try {
             $checkRoomValidResponse = $this->roomService->checkValidRoom(roomId: $roomId);
+
             return $this->respondWithJson(content: $checkRoomValidResponse->toArray());
         } catch (Throwable $e) {
             return $this->respondWithJsonError(e: $e);
@@ -63,6 +64,7 @@ class RoomController extends Controller
     {
         try {
             $questions = $this->roomService->listQuestionOfRoom(token: $roomToken);
+
             return $this->respondWithJson(content: $questions->toArray());
         } catch (Throwable $e) {
             return $this->respondWithJsonError(e: $e);
@@ -73,6 +75,7 @@ class RoomController extends Controller
     {
         try {
             $this->roomService->startRoom(roomId: $request->input(key: 'room_id'));
+
             return $this->respondWithJson(content: []);
         } catch (Throwable $e) {
             return $this->respondWithJsonError(e: $e);
@@ -97,6 +100,7 @@ class RoomController extends Controller
     {
         try {
             $this->roomService->adminEndGame(roomId: $roomId);
+
             return $this->respondWithJson(content: []);
         } catch (Throwable $e) {
             return $this->respondWithJsonError(e: $e);

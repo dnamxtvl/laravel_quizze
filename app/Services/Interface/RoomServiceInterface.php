@@ -6,7 +6,6 @@ use App\DTOs\Room\CheckValidRoomResponseDTO;
 use App\DTOs\Room\QuestionsOfRoomResponseDTO;
 use App\DTOs\User\UserDeviceInformationDTO;
 use App\DTOs\User\VerifyCodeResponseDTO;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
 interface RoomServiceInterface

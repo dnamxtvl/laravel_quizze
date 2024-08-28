@@ -10,8 +10,7 @@ readonly class QuizHelper
 {
     public function __construct(
         private RoomRepositoryInterface $roomRepository
-    ) {
-    }
+    ) {}
 
     public function generateCode(int $length = 6): int
     {
@@ -32,7 +31,7 @@ readonly class QuizHelper
 
     public function scheduleRoomStatusPending(string $roomId, RoomStatusEnum $status): void
     {
-        $eventName = 'update_room_status_' . str_replace('-', '_', $roomId);
+        $eventName = 'update_room_status_'.str_replace('-', '_', $roomId);
         $timeInterval = (int) config('app.quizzes.time_reply');
 
         $sql = sprintf("

@@ -11,8 +11,7 @@ readonly class SaveAnswerDTO
         private string $roomId,
         private int $answerInTime,
         private int $score,
-    ) {
-    }
+    ) {}
 
     public function getGamerId(): string
     {

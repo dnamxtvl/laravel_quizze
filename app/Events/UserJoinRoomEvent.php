@@ -4,7 +4,6 @@ namespace App\Events;
 
 use App\Repository\Interface\GamerRepositoryInterface;
 use App\Repository\Interface\RoomRepositoryInterface;
-use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
@@ -23,8 +22,7 @@ class UserJoinRoomEvent implements ShouldBroadcast
         public readonly string $roomId,
         public readonly string $userId,
         public readonly string $username,
-    ) {
-    }
+    ) {}
 
     /**
      * @throws BindingResolutionException
@@ -34,6 +32,7 @@ class UserJoinRoomEvent implements ShouldBroadcast
         $room = app()->make(abstract: RoomRepositoryInterface::class)->findById(roomId: $this->roomId);
         $gamerRepository = app()->make(abstract: GamerRepositoryInterface::class);
         $userIds = $room->gamerTokens->pluck('gamer_id')->toArray();
+
         return [
             'roomId' => $this->roomId,
             'gamers' => $gamerRepository->findByIds(ids: $userIds)->toArray(),
@@ -43,7 +42,7 @@ class UserJoinRoomEvent implements ShouldBroadcast
     public function broadcastOn(): array
     {
         return [
-            new PrivateChannel('user.join-room.' . $this->roomId),
+            new PrivateChannel(name: 'user.join-room.'.$this->roomId),
         ];
     }
 }

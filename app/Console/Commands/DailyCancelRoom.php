@@ -8,7 +8,8 @@ use Illuminate\Console\Command;
 
 class DailyCancelRoom extends Command
 {
-    CONST CHUNK = 100;
+    const CHUNK = 100;
+
     /**
      * The name and signature of the console command.
      *

@@ -8,8 +8,7 @@ class CreateAnswerDTO
         private readonly string $answer,
         private readonly bool $isCorrect,
         private ?string $questionId = null,
-    ) {
-    }
+    ) {}
 
     public function getQuestionId(): ?string
     {

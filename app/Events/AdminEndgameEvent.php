@@ -17,13 +17,12 @@ class AdminEndgameEvent implements ShouldBroadcast
      */
     public function __construct(
         public readonly string $roomId,
-    ) {
-    }
+    ) {}
 
     public function broadcastOn(): array
     {
         return [
-            new Channel('admin.start-game.' . $this->roomId),
+            new Channel(name: 'admin.start-game.'.$this->roomId),
         ];
     }
 }

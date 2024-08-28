@@ -9,8 +9,7 @@ readonly class CreateGamerTokenDTO
         private string $token,
         private string $roomId,
         private string $expiredAt,
-    ) {
-    }
+    ) {}
 
     public function getGamerId(): string
     {

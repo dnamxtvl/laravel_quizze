@@ -8,8 +8,7 @@ readonly class UserIdFilter
 {
     public function __construct(
         private array $filters,
-    ) {
-    }
+    ) {}
 
     public function handle(Builder $query, $next)
     {

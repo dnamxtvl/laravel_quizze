@@ -12,11 +12,11 @@ readonly class GamerRepository implements GamerRepositoryInterface
 {
     public function __construct(
         private Gamer $gamer
-    ) {
-    }
+    ) {}
+
     public function createGamer(UserDeviceInformationDTO $gamerInfo): Model
     {
-        $gamer = new Gamer();
+        $gamer = new Gamer;
         $gamer->longitude = $gamerInfo->getLongitude();
         $gamer->latitude = $gamerInfo->getLatitude();
         $gamer->ip_address = $gamerInfo->getIp();

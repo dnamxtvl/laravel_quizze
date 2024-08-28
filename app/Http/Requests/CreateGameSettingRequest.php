@@ -17,7 +17,7 @@ class CreateGameSettingRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string|max:' . config('validation.gamer.name.max_length'),
+            'name' => 'required|string|max:'.config('validation.gamer.name.max_length'),
             'display_meme' => 'boolean',
             'token' => 'required|string',
             'gamer_id' => 'required|string',
@@ -29,7 +29,7 @@ class CreateGameSettingRequest extends FormRequest
         return [
             'name.required' => 'Name không được để trống',
             'name.string' => 'Name phải là chuỗi',
-            'name.max' => 'Name không được vượt quá ' . config('validation.gamer.name.max_length') . ' ký tự',
+            'name.max' => 'Name không được vượt quá '.config('validation.gamer.name.max_length').' ký tự',
             'display_meme.boolean' => 'Display meme phải là boolean',
         ];
     }

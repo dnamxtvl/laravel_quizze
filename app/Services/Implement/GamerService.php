@@ -15,7 +15,6 @@ use App\Repository\Interface\GamerTokenRepositoryInterface;
 use App\Services\Interface\GamerServiceInterface;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
@@ -25,8 +24,8 @@ readonly class GamerService implements GamerServiceInterface
         private GamerRepositoryInterface $gamerRepository,
         private GamerTokenRepositoryInterface $gamerTokenRepository,
         private AnswerRepositoryInterface $answerRepository,
-    ) {
-    }
+    ) {}
+
     public function createGameSetting(string $token, string $gamerId, CreateGameSettingDTO $createGameSettingDTO): Model
     {
         $gamer = $this->gamerRepository->findById(gamerId: $gamerId);
@@ -38,7 +37,6 @@ readonly class GamerService implements GamerServiceInterface
         $gamer->name = $createGameSettingDTO->getName();
         $gamer->display_meme = $createGameSettingDTO->getIsMeme();
         $gamer->save();
-        Log::info('Room ' . $gamer->gamerToken->room_id);
         broadcast(new UserJoinRoomEvent(roomId: $gamer->gamerToken->room_id, userId: $gamer->id, username: $gamer->name))->toOthers();
 
         return $gamer;
@@ -83,10 +81,6 @@ readonly class GamerService implements GamerServiceInterface
         $diffInMilliseconds = (int) now()->diffInMilliseconds(Carbon::parse($room->current_question_start_at));
         /* @var Answer $answer */
         $score = $answer->is_correct ? abs((($diffInMilliseconds / $maxTime)) * $maxScore) : 0;
-        Log::info('diffInMilliseconds: ' . $diffInMilliseconds);
-        Log::info('score: ' . $score);
-        Log::info('maxTime: ' . $maxTime);
-        Log::info('maxScore: ' . $maxScore);
         $saveAnswerDTO = new SaveAnswerDTO(
             gamerId: $gamer->id,
             questionId: $room->current_question_id,

@@ -5,14 +5,13 @@ namespace App\DTOs\User;
 readonly class UserDeviceInformationDTO
 {
     public function __construct(
-        private string  $ip,
-        private string  $device,
+        private string $ip,
+        private string $device,
         private ?string $longitude = null,
         private ?string $latitude = null,
         private ?string $country = null,
         private ?string $city = null,
-    ) {
-    }
+    ) {}
 
     public function getIp(): string
     {

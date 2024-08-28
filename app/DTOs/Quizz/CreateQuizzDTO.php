@@ -8,8 +8,7 @@ readonly class CreateQuizzDTO
         private string $title,
         private int $categoryId,
         private string $userId,
-    ) {
-    }
+    ) {}
 
     public function getTitle(): string
     {

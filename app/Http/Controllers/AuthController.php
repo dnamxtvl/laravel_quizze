@@ -12,8 +12,7 @@ class AuthController extends Controller
 {
     public function __construct(
         private readonly AuthServiceInterface $authService
-    ) {
-    }
+    ) {}
 
     public function login(AdminLoginRequest $request): JsonResponse
     {
@@ -21,7 +20,6 @@ class AuthController extends Controller
             $adminLoginDto = new AdminLoginDTOs(
                 email: $request->input(key: 'email'),
                 password: $request->input(key: 'password'),
-                rememberMe: $request->input(key: 'remember_me', default: false),
             );
 
             $adminInfo = $this->authService->login(credentials: $adminLoginDto);
@@ -36,6 +34,7 @@ class AuthController extends Controller
     {
         try {
             $this->authService->logout();
+
             return $this->respondWithJson(content: []);
         } catch (Throwable $th) {
             return $this->respondWithJsonError(e: $th);

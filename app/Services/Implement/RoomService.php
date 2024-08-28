@@ -45,12 +45,12 @@ readonly class RoomService implements RoomServiceInterface
         private GamerRepositoryInterface $gamerRepository,
         private GamerTokenRepositoryInterface $gamerTokenRepository,
         private QuestionRepositoryInterface $questionRepository,
-    ) {
-    }
+    ) {}
 
     public function createRoom(string $quizId): Model
     {
         $code = $this->quizHelper->generateCode(length: config(key: 'app.quizzes.room_code_length'));
+
         return $this->roomRepository->createRoom(quizId: $quizId, code: $code);
     }
 
@@ -88,12 +88,13 @@ readonly class RoomService implements RoomServiceInterface
             /* @var Gamer $gamer */
             $gamerTokenDTO = new CreateGamerTokenDTO(
                 gamerId: $gamer->id,
-                token: hash('sha256', ($gamer->id . $room->id . ($gamerInfo->getIp() ?? Str::uuid()))),
+                token: hash('sha256', ($gamer->id.$room->id.($gamerInfo->getIp() ?? Str::uuid()))),
                 roomId: $room->id,
                 expiredAt: $tokenExpired,
             );
             $gamerToken = $this->gamerTokenRepository->createGamerToken(gamerTokenDTO: $gamerTokenDTO);
             DB::commit();
+
             /* @var GamerToken $gamerToken */
             return new VerifyCodeResponseDTO(
                 gamerId: $gamer->id,
@@ -149,7 +150,7 @@ readonly class RoomService implements RoomServiceInterface
         }
 
         $questions = $quiz->questions;
-        if (!$questions->count()) {
+        if (! $questions->count()) {
             throw new NotFoundHttpException(message: 'Không tìm thấy câu hỏi nào!');
         }
 
@@ -157,7 +158,7 @@ readonly class RoomService implements RoomServiceInterface
             throw new UnAuthorizationStartRoomException(code: ExceptionCodeEnum::NOT_PERMISSION_START_ROOM->value);
         }
 
-        if (!$room->gamerTokens->count()) {
+        if (! $room->gamerTokens->count()) {
             throw new BadRequestHttpException(message: 'Chưa có user tham gia!');
         }
 
@@ -177,7 +178,7 @@ readonly class RoomService implements RoomServiceInterface
     private function getQuestionByRoom(Room $room): Collection
     {
         $questions = $this->questionRepository->listQuestion(filters: ['quizze_id' => $room->quizze_id]);
-        if (!$questions->count() || is_null($room->quizze)) {
+        if (! $questions->count() || is_null($room->quizze)) {
             throw new NotFoundHttpException(message: 'Không tìm thấy câu hỏi nào!', code: ExceptionCodeEnum::NON_QUESTION->value);
         }
 

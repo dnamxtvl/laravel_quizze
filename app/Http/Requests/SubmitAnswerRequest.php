@@ -21,4 +21,14 @@ class SubmitAnswerRequest extends FormRequest
             'token' => 'required|string',
         ];
     }
+
+    public function messages(): array
+    {
+        return [
+            'answer_id.required' => 'Answer id không được để trống',
+            'answer_id.int' => 'Answer id phải là số nguyên',
+            'token.required' => 'Token không được để trống',
+            'token.string' => 'Token phải là chuỗi',
+        ];
+    }
 }

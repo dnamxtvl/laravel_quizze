@@ -8,7 +8,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
 
 interface QuizzesServiceInterface
 {
-    public function listQuizzes(): Collection | LengthAwarePaginator;
+    public function listQuizzes(): Collection|LengthAwarePaginator;
 
-    public function createQuiz(CreateQuizzDTO $quizDTO, Array $questionDTO): void;
+    public function createQuiz(CreateQuizzDTO $quizDTO, array $questionDTO): void;
 }
