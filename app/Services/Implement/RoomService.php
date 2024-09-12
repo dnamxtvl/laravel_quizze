@@ -39,6 +39,7 @@ use Throwable;
 
 readonly class RoomService implements RoomServiceInterface
 {
+    CONST MIN_QUESTION = 1;
     public function __construct(
         private QuizHelper $quizHelper,
         private RoomRepositoryInterface $roomRepository,
@@ -150,7 +151,8 @@ readonly class RoomService implements RoomServiceInterface
         }
 
         $questions = $quiz->questions;
-        if (! $questions->count()) {
+        $countQuestion = $questions->count();
+        if (! $countQuestion) {
             throw new NotFoundHttpException(message: 'Không tìm thấy câu hỏi nào!');
         }
 
@@ -171,7 +173,8 @@ readonly class RoomService implements RoomServiceInterface
             startAt: $now,
         );
         $this->roomRepository->updateRoomAfterNextQuestion(room: $room, nextQuestionRoomDTO: $setNextQuestionRoomDTO);
-        $this->quizHelper->scheduleRoomStatusPending(roomId: $room->id, status: RoomStatusEnum::PENDING);
+        $roomStatus = $countQuestion == self::MIN_QUESTION ? RoomStatusEnum::PREPARE_FINISH : RoomStatusEnum::PENDING;
+        $this->quizHelper->scheduleRoomStatusPending(roomId: $room->id, status: $roomStatus);
         broadcast(new StartGameEvent(roomId: $room->id))->toOthers();
     }
 
