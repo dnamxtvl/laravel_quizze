@@ -57,4 +57,15 @@ class QuizzesController extends Controller
             return $this->respondWithJsonError(e: $th);
         }
     }
+
+    public function deleteQuiz(string $quizId): JsonResponse
+    {
+        try {
+            $this->quizzesService->deleteQuiz(quizId: $quizId);
+
+            return $this->respondWithJson(content: []);
+        } catch (Throwable $th) {
+            return $this->respondWithJsonError(e: $th);
+        }
+    }
 }

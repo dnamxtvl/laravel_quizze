@@ -11,4 +11,6 @@ interface QuizzesServiceInterface
     public function listQuizzes(): Collection|LengthAwarePaginator;
 
     public function createQuiz(CreateQuizzDTO $quizDTO, array $questionDTO): void;
+
+    public function deleteQuiz(string $quizId): void;
 }

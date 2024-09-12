@@ -62,6 +62,10 @@ class RoomController extends Controller
 
     public function listQuestionOfRoom(string $roomToken): JsonResponse
     {
+        if (request()->ajax()) {
+            return response()->json(data: ['error' => 'Unauthorized'], status: 401);
+        }
+
         try {
             $questions = $this->roomService->listQuestionOfRoom(token: $roomToken);
 

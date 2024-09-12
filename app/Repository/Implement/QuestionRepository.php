@@ -55,7 +55,7 @@ readonly class QuestionRepository implements QuestionRepositoryInterface
         $questionsInsert = [];
         $answersInsert = [];
         foreach ($questions as $question) {
-            $questionId = Str::uuid();
+            $questionId = Str::orderedUuid();
             /* @var CreateQuestionDTO $question */
             $questionsInsert[] = [
                 'id' => $questionId,
@@ -79,5 +79,12 @@ readonly class QuestionRepository implements QuestionRepositoryInterface
         $this->answer->query()->insert($answersInsert);
 
         return collect($questionsInsert)->pluck('id')->toArray();
+    }
+
+    public function deleteQuestion(string $quizId): void
+    {
+        $questionIds = $this->getQuery(filters: ['quizze_id' => $quizId])->pluck('id')->toArray();
+        $this->answer->query()->whereIn('question_id', $questionIds)->delete();
+        $this->question->query()->whereIn('id', $questionIds)->delete();
     }
 }

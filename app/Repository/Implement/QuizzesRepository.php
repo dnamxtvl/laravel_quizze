@@ -6,6 +6,7 @@ use App\DTOs\Quizz\CreateQuizzDTO;
 use App\Models\Quizze;
 use App\Pipeline\Global\UserIdFilter;
 use App\Pipeline\Quizzes\CategoryIdFilter;
+use App\Pipeline\Quizzes\QuestionIdFilter;
 use App\Repository\Interface\QuizzesRepositoryInterface;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -60,5 +61,10 @@ readonly class QuizzesRepository implements QuizzesRepositoryInterface
         $quiz->save();
 
         return $quiz;
+    }
+
+    public function findById(string $quizId): ?Quizze
+    {
+        return $this->quizzes->query()->find(id: $quizId);
     }
 }

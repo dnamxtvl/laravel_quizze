@@ -12,4 +12,6 @@ interface QuestionRepositoryInterface
     public function findNextQuestion(string $quzId, string $questionId): ?Question;
 
     public function insertQuestions(array $questions, string $quizId): array;
+
+    public function deleteQuestion(string $quizId): void;
 }

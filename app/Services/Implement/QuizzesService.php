@@ -11,6 +11,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Symfony\Component\CssSelector\Exception\InternalErrorException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Throwable;
 
 readonly class QuizzesService implements QuizzesServiceInterface
@@ -35,6 +36,27 @@ readonly class QuizzesService implements QuizzesServiceInterface
             $quiz = $this->quizzesRepository->createQuiz(quizDTO: $quizDTO);
             $this->questionRepository->insertQuestions(questions: $questionDTO, quizId: $quiz->id);
             DB::commit();
+        } catch (Throwable $th) {
+            DB::rollBack();
+            throw new InternalErrorException(message: $th->getMessage());
+        }
+    }
+
+    /**
+     * @throws InternalErrorException
+     */
+    public function deleteQuiz(string $quizId): void
+    {
+        DB::beginTransaction();
+        try {
+            $quiz = $this->quizzesRepository->findById(quizId: $quizId);
+            if (is_null($quiz)) {
+                throw new NotFoundHttpException(message: 'Quiz not found');
+            }
+
+            $quiz->delete();
+            $this->questionRepository->deleteQuestion(quizId: $quizId);
+            Db::commit();
         } catch (Throwable $th) {
             DB::rollBack();
             throw new InternalErrorException(message: $th->getMessage());
