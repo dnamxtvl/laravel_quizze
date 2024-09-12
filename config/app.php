@@ -126,7 +126,7 @@ return [
     ],
 
     'quizzes' => [
-        'limit_pagination' => 6,
+        'limit_pagination' => 8,
         'room_code_length' => 6,
         'min_answer' => 2,
         'time_reply' => 30,
