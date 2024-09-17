@@ -18,7 +18,7 @@ class GamerController extends Controller
     public function createGameSetting(CreateGameSettingRequest $request): JsonResponse
     {
         try {
-            $gamer = $this->gamerService->createGameSetting(
+            $gamerRoom = $this->gamerService->createGameSetting(
                 token: $request->input(key: 'token'),
                 gamerId: $request->input(key: 'gamer_id'),
                 createGameSettingDTO: new CreateGameSettingDTO(
@@ -27,7 +27,7 @@ class GamerController extends Controller
                 )
             );
 
-            return $this->respondWithJson(content: $gamer->toArray());
+            return $this->respondWithJson(content: $gamerRoom->toArray());
         } catch (Throwable $e) {
             return $this->respondWithJsonError(e: $e);
         }

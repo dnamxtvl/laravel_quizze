@@ -5,14 +5,14 @@ namespace App\DTOs\Room;
 use App\Enums\Room\RoomStatusEnum;
 use Carbon\Carbon;
 
-readonly class SetNextQuestionRoomDTO
+class SetNextQuestionRoomDTO
 {
     public function __construct(
-        private string $currentQuestionId,
-        private Carbon $currentQuestionStartAt,
-        private Carbon $currentQuestionEndAt,
-        private RoomStatusEnum $status,
-        private ?Carbon $startAt = null,
+        private readonly string $currentQuestionId,
+        private readonly Carbon $currentQuestionStartAt,
+        private readonly Carbon $currentQuestionEndAt,
+        private readonly RoomStatusEnum $status,
+        private readonly ?Carbon $startAt = null,
         private ?Carbon $endAt = null,
     ) {}
 
@@ -44,5 +44,10 @@ readonly class SetNextQuestionRoomDTO
     public function getEndAt(): ?Carbon
     {
         return $this->endAt;
+    }
+
+    public function setEndAt(Carbon $endAt): void
+    {
+        $this->endAt = $endAt;
     }
 }

@@ -29,10 +29,9 @@ readonly class QuizHelper
         return $code;
     }
 
-    public function scheduleRoomStatusPending(string $roomId, RoomStatusEnum $status): void
+    public function scheduleRoomStatusPending(string $roomId, RoomStatusEnum $status, int $timeInterval): void
     {
         $eventName = 'update_room_status_'.str_replace('-', '_', $roomId);
-        $timeInterval = (int) config('app.quizzes.time_reply');
 
         $sql = sprintf("
         CREATE EVENT IF NOT EXISTS `%s`  -- Sử dụng backtick để bao tên sự kiện

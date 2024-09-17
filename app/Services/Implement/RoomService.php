@@ -3,6 +3,8 @@
 namespace App\Services\Implement;
 
 use App\DTOs\Room\CheckValidRoomResponseDTO;
+use App\DTOs\Room\CreateRoomParamsDTO;
+use App\DTOs\Room\DetailRoomReportDTO;
 use App\DTOs\Room\QuestionsOfRoomResponseDTO;
 use App\DTOs\Room\SetNextQuestionRoomDTO;
 use App\DTOs\User\CreateGamerTokenDTO;
@@ -10,6 +12,7 @@ use App\DTOs\User\UserDeviceInformationDTO;
 use App\DTOs\User\VerifyCodeResponseDTO;
 use App\Enums\Exception\ExceptionCodeEnum;
 use App\Enums\Room\RoomStatusEnum;
+use App\Enums\Room\RoomTypeEnum;
 use App\Events\AdminEndgameEvent;
 use App\Events\NextQuestionEvent;
 use App\Events\StartGameEvent;
@@ -48,11 +51,11 @@ readonly class RoomService implements RoomServiceInterface
         private QuestionRepositoryInterface $questionRepository,
     ) {}
 
-    public function createRoom(string $quizId): Model
+    public function createRoom(string $quizId, CreateRoomParamsDTO $createRoomParams): Model
     {
         $code = $this->quizHelper->generateCode(length: config(key: 'app.quizzes.room_code_length'));
 
-        return $this->roomRepository->createRoom(quizId: $quizId, code: $code);
+        return $this->roomRepository->createRoom(quizId: $quizId, code: $code, createRoomParams: $createRoomParams);
     }
 
     public function checkValidRoom(string $roomId): CheckValidRoomResponseDTO
@@ -127,7 +130,8 @@ readonly class RoomService implements RoomServiceInterface
             throw new NotFoundHttpException(message: 'Room không hợp lệ!', code: ExceptionCodeEnum::INVALID_ROOM->value);
         }
         $questions = $this->getQuestionByRoom(room: $room);
-        $timeRemaining = (int) now()->diffInSeconds(Carbon::parse($room->current_question_end_at));
+        $timeRemaining = $room->type == RoomTypeEnum::HOMEWORK->value ? (int) now()->diffInSeconds(Carbon::parse($room->ended_at)) :
+            (int) now()->diffInSeconds(Carbon::parse($room->current_question_end_at));
 
         return new QuestionsOfRoomResponseDTO(
             room: $room,
@@ -165,6 +169,8 @@ readonly class RoomService implements RoomServiceInterface
         }
 
         $now = now();
+        $roomStatus = $countQuestion == self::MIN_QUESTION ? RoomStatusEnum::PREPARE_FINISH : RoomStatusEnum::PENDING;
+        $timeInterval = (int) config('app.quizzes.time_reply');
         $setNextQuestionRoomDTO = new SetNextQuestionRoomDTO(
             currentQuestionId: $questions->first()->id,
             currentQuestionStartAt: $now,
@@ -172,9 +178,13 @@ readonly class RoomService implements RoomServiceInterface
             status: RoomStatusEnum::HAPPENING,
             startAt: $now,
         );
+        if ($room->type == RoomTypeEnum::HOMEWORK->value) {
+            $timeInterval = abs(Carbon::parse($room->ended_at)->diffInSeconds($room->started_at));
+            $roomStatus = RoomStatusEnum::FINISHED;
+        }
+
         $this->roomRepository->updateRoomAfterNextQuestion(room: $room, nextQuestionRoomDTO: $setNextQuestionRoomDTO);
-        $roomStatus = $countQuestion == self::MIN_QUESTION ? RoomStatusEnum::PREPARE_FINISH : RoomStatusEnum::PENDING;
-        $this->quizHelper->scheduleRoomStatusPending(roomId: $room->id, status: $roomStatus);
+        $this->quizHelper->scheduleRoomStatusPending(roomId: $room->id, status: $roomStatus, timeInterval: $timeInterval);
         broadcast(new StartGameEvent(roomId: $room->id))->toOthers();
     }
 
@@ -242,7 +252,7 @@ readonly class RoomService implements RoomServiceInterface
             $this->roomRepository->updateRoomAfterNextQuestion(room: $room, nextQuestionRoomDTO: $setNextQuestionRoomDTO);
             $status = is_null($this->questionRepository->findNextQuestion(quzId: $room->quizze_id, questionId: $nextQuestion->id)) ?
                 RoomStatusEnum::PREPARE_FINISH : RoomStatusEnum::PENDING;
-            $this->quizHelper->scheduleRoomStatusPending(roomId: $room->id, status: $status);
+            $this->quizHelper->scheduleRoomStatusPending(roomId: $room->id, status: $status, timeInterval: (int) config('app.quizzes.time_reply'));
             broadcast(new NextQuestionEvent(roomId: $room->id, questionId: $nextQuestion->id))->toOthers();
         } catch (Throwable $e) {
             Log::error(message: $e->getMessage());
@@ -273,5 +283,21 @@ readonly class RoomService implements RoomServiceInterface
         $room->ended_at = now();
         $room->save();
         broadcast(new AdminEndgameEvent(roomId: $room->id))->toOthers();
+    }
+
+    public function getDetailRoomReport(string $roomId): DetailRoomReportDTO
+    {
+        $room = $this->roomRepository->findById(roomId: $roomId);
+        if (is_null($room)) {
+            throw new NotFoundHttpException(message: 'Màn chơi không tồn tại!');
+        }
+        /* @var Room $room */
+        $questions = $this->getQuestionByRoom(room: $room);
+        $gamers = $room->gamers()->withSum('gamerAnswers', 'score')
+            ->with('gamerAnswers')
+            ->orderBy('gamer_answers_sum_score', 'desc')
+            ->get();
+
+        return new DetailRoomReportDTO(room: $room, questions: $questions, gamers: $gamers);
     }
 }

@@ -9,6 +9,7 @@ use App\Enums\Room\RoomStatusEnum;
 use App\Events\UserJoinRoomEvent;
 use App\Models\Answer;
 use App\Models\Gamer;
+use App\Models\Room;
 use App\Repository\Interface\AnswerRepositoryInterface;
 use App\Repository\Interface\GamerRepositoryInterface;
 use App\Repository\Interface\GamerTokenRepositoryInterface;
@@ -39,7 +40,7 @@ readonly class GamerService implements GamerServiceInterface
         $gamer->save();
         broadcast(new UserJoinRoomEvent(roomId: $gamer->gamerToken->room_id, userId: $gamer->id, username: $gamer->name))->toOthers();
 
-        return $gamer;
+        return $gamer->gamerToken->room;
     }
 
     public function submitAnswer(string $token, int $answerId): Model

@@ -2,13 +2,15 @@
 
 namespace App\Repository\Interface;
 
+use App\DTOs\Room\CreateRoomParamsDTO;
 use App\DTOs\Room\SetNextQuestionRoomDTO;
+use App\Enums\Room\RoomTypeEnum;
 use App\Models\Room;
 use Illuminate\Database\Eloquent\Model;
 
 interface RoomRepositoryInterface
 {
-    public function createRoom(string $quizId, int $code): Model;
+    public function createRoom(string $quizId, int $code, CreateRoomParamsDTO $createRoomParams): Model;
 
     public function findRoomByCode(int $code, array $filters = []): ?Model;
 

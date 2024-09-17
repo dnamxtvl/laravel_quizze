@@ -25,7 +25,8 @@ use Illuminate\Support\Carbon;
  * @property \Carbon\Carbon|mixed|null $start_at
  * @property \Carbon\Carbon|mixed|null $end_at
  * @property mixed $gamers
- * @property \Illuminate\Support\Carbon|mixed $ended_at
+ * @property Carbon|mixed $ended_at
+ * @property int|mixed $type
  */
 class Room extends Model
 {

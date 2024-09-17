@@ -24,6 +24,7 @@ Route::group(['middleware' => ['auth:api', 'verified']], function () {
         Route::prefix('room')->group(function () {
             Route::post('/create/{quizId}', [RoomController::class, 'createRoom'])->name('rooms.create');
             Route::get('/check-valid/{quizId}', [RoomController::class, 'checkValidRoom'])->name('rooms.check-valid');
+            Route::get('/detail/{roomId}', [RoomController::class, 'getDetailRoomReport'])->name('rooms.detail');
             Route::post('/start', [RoomController::class, 'startRoom'])->name('rooms.start');
             Route::post('/next-question', [RoomController::class, 'nextQuestion'])->name('rooms.next-question');
             Route::post('/end-game/{roomId}', [RoomController::class, 'adminEndGame'])->name('rooms.end-game');
