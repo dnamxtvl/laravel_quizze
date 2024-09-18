@@ -100,7 +100,8 @@ readonly class RoomService implements RoomServiceInterface
     {
         $room = $this->roomRepository->findRoomByCode(code: $code);
         /* @var Room $room */
-        if (is_null($room) || $room->status != RoomStatusEnum::PREPARE->value) {
+        if (is_null($room) || ($room->status != RoomStatusEnum::PREPARE->value && $room->type == RoomTypeEnum::KAHOOT->value)
+            || ($room->status == RoomStatusEnum::FINISHED->value && $room->type == RoomTypeEnum::HOMEWORK->value)) {
             throw new NotFoundHttpException(message: 'Mã code không hợp lệ!');
         }
         DB::beginTransaction();
