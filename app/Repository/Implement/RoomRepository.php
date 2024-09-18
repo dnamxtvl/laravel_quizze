@@ -66,7 +66,7 @@ readonly class RoomRepository implements RoomRepositoryInterface
 
     public function updateRoomAfterNextQuestion(Room $room, SetNextQuestionRoomDTO $nextQuestionRoomDTO): Room
     {
-        if ($room->type != RoomTypeEnum::HOMEWORK) {
+        if ($room->type != RoomTypeEnum::HOMEWORK->value) {
             $room->current_question_id = $nextQuestionRoomDTO->getCurrentQuestionId();
             $room->current_question_start_at = $nextQuestionRoomDTO->getCurrentQuestionStartAt();
             $room->current_question_end_at = $nextQuestionRoomDTO->getCurrentQuestionEndAt();

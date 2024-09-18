@@ -41,5 +41,6 @@ Route::prefix('user')->group(function () {
         Route::post('/create-setting', [GamerController::class, 'createGameSetting'])->name('gamer.create-setting');
         Route::post('/submit-answer', [GamerController::class, 'submitAnswer'])->name('gamer.submit-answer');
         Route::post('/out-game/{token}', [GamerController::class, 'userOutGame'])->name('gamer.out-game');
+        Route::post('/submit-homework/{token}', [GamerController::class, 'submitHomework'])->name('gamer.submit-homework');
     });
 })->middleware(GamerMiddleware::class);

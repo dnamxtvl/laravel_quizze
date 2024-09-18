@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\DTOs\User\CreateGameSettingDTO;
 use App\Http\Requests\CreateGameSettingRequest;
 use App\Http\Requests\SubmitAnswerRequest;
+use App\Http\Requests\SubmitHomeworkRequest;
 use App\Services\Interface\GamerServiceInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Throwable;
@@ -51,6 +52,22 @@ class GamerController extends Controller
     {
         try {
             $this->gamerService->userOutGame(token: $token);
+
+            return $this->respondWithJson(content: []);
+        } catch (Throwable $e) {
+            return $this->respondWithJsonError(e: $e);
+        }
+    }
+
+    public function submitHomework(string $token, SubmitHomeworkRequest $request): JsonResponse
+    {
+        try {
+            $this->gamerService->submitHomework(
+                token: $token,
+                listQuestion: $request->input(key: 'list_question'),
+                listAnswer: $request->input(key: 'list_answer'),
+                autoSubmit: (boolean) $request->input(key: 'auto_submit'),
+            );
 
             return $this->respondWithJson(content: []);
         } catch (Throwable $e) {

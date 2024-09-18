@@ -67,7 +67,7 @@ class AdminCreateQuizzeRequest extends FormRequest
             $correctAnswers = collect($question['answers'])->where('is_correct', true);
             if (! $correctAnswers->count()) {
                 throw new HttpResponseException(
-                    response()->json(data: [
+                    response: response()->json(data: [
                         'message' => 'Câu hỏi thứ '.($index + 1).' phải có ít nhất một câu trả lời đúng.',
                     ], status: ResponseAlias::HTTP_UNPROCESSABLE_ENTITY)
                 );

@@ -20,4 +20,14 @@ class GamerAnswer extends Model
     protected $table = 'gamer_answers';
 
     protected $primaryKey = 'id';
+
+    protected $fillable = [
+        'gamer_id',
+        'answer_id',
+        'answer_in_time',
+        'score',
+        'room_id',
+        'question_id',
+        'type',
+    ];
 }

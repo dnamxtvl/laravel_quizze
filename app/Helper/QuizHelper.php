@@ -5,6 +5,7 @@ namespace App\Helper;
 use App\Enums\Room\RoomStatusEnum;
 use App\Repository\Interface\RoomRepositoryInterface;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 readonly class QuizHelper
 {
@@ -29,10 +30,12 @@ readonly class QuizHelper
         return $code;
     }
 
-    public function scheduleRoomStatusPending(string $roomId, RoomStatusEnum $status, int $timeInterval): void
+    public function scheduleRoomStatusPending(string $roomId, RoomStatusEnum $status, int $timeInterval, string $action = ''): void
     {
-        $eventName = 'update_room_status_'.str_replace('-', '_', $roomId);
-
+        $eventName = 'update_status_'.str_replace('-', '_', $roomId);
+        if (Str::length($action) > 0) {
+            $eventName = 'update_status_'.str_replace('-', '_', $roomId).'_'.$action;
+        }
         $sql = sprintf("
         CREATE EVENT IF NOT EXISTS `%s`  -- Sử dụng backtick để bao tên sự kiện
         ON SCHEDULE AT CURRENT_TIMESTAMP + INTERVAL %d SECOND

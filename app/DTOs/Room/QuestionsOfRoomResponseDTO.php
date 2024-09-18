@@ -3,6 +3,7 @@
 namespace App\DTOs\Room;
 
 use App\Models\Gamer;
+use App\Models\GamerToken;
 use App\Models\Room;
 use Illuminate\Database\Eloquent\Collection;
 
@@ -13,6 +14,7 @@ readonly class QuestionsOfRoomResponseDTO
         private Collection $questions,
         private Gamer $gamer,
         private int $timeRemaining,
+        private GamerToken $gamerToken,
     ) {}
 
     public function toArray(): array
@@ -22,6 +24,7 @@ readonly class QuestionsOfRoomResponseDTO
             'questions' => $this->questions,
             'gamer' => $this->gamer,
             'time_remaining' => $this->timeRemaining,
+            'gamer_token' => $this->gamerToken,
         ];
     }
 }
