@@ -20,10 +20,12 @@ class SubmitHomeworkRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'results' => 'required|array',
-            'results.*' => 'required|int',
-            'list_question' => 'required|array',
-            'list_question.*' => 'required|string|size:' . config('validation.max_length_uuid'),
+            'results' => 'nullable|array',
+            'results.*' => 'int',
+            'list_question' => 'nullable|array',
+            'list_question.*' => 'string|size:' . config('validation.max_length_uuid'),
+            'list_answer' => 'nullable|array',
+            'list_answer.*' => 'int',
             'auto_submit' => 'required|boolean',
         ];
     }

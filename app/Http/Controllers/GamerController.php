@@ -64,8 +64,8 @@ class GamerController extends Controller
         try {
             $this->gamerService->submitHomework(
                 token: $token,
-                listQuestion: $request->input(key: 'list_question'),
-                listAnswer: $request->input(key: 'list_answer'),
+                listQuestion: $request->input(key: 'list_question', default: []),
+                listAnswer: $request->input(key: 'list_answer', default: []),
                 autoSubmit: (boolean) $request->input(key: 'auto_submit'),
             );
 

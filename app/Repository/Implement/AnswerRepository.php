@@ -89,8 +89,10 @@ readonly class AnswerRepository implements AnswerRepositoryInterface
             ];
         }
 
-        $this->gamerAnswer->query()->insert(
-            values: $arrayResult,
-        );
+        if (count($arrayResult) > 0) {
+            $this->gamerAnswer->query()->insert(
+                values: $arrayResult,
+            );
+        }
     }
 }
