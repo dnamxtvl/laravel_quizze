@@ -7,8 +7,7 @@ readonly class CreateGameSettingDTO
     public function __construct(
         private string $name,
         private bool $isMeme
-    ) {
-    }
+    ) {}
 
     public function getName(): string
     {

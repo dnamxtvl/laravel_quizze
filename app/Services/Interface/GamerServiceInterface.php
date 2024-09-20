@@ -12,4 +12,6 @@ interface GamerServiceInterface
     public function submitAnswer(string $token, int $answerId): Model;
 
     public function userOutGame(string $token): void;
+
+    public function submitHomework(string $token, array $listQuestion, array $listAnswer, bool $autoSubmit = false): void;
 }

@@ -27,6 +27,8 @@ services:
             - ./docker/php.ini:/usr/local/etc/php/conf.d/php.ini
         environment:
             APP_ENV: local
+        ports:
+            - "8080:8080"
         networks:
             - backend
         depends_on:

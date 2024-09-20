@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * @property mixed $is_correct
@@ -11,8 +12,9 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Answer extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $table = 'answers';
+
     protected $primaryKey = 'id';
 }

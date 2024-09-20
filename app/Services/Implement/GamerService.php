@@ -6,6 +6,7 @@ use App\DTOs\Gamer\SaveAnswerDTO;
 use App\DTOs\User\CreateGameSettingDTO;
 use App\Enums\Exception\ExceptionCodeEnum;
 use App\Enums\Room\RoomStatusEnum;
+use App\Enums\Room\RoomTypeEnum;
 use App\Events\UserJoinRoomEvent;
 use App\Models\Answer;
 use App\Models\Gamer;
@@ -15,9 +16,12 @@ use App\Repository\Interface\GamerTokenRepositoryInterface;
 use App\Services\Interface\GamerServiceInterface;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Symfony\Component\CssSelector\Exception\InternalErrorException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Throwable;
 
 readonly class GamerService implements GamerServiceInterface
 {
@@ -25,8 +29,8 @@ readonly class GamerService implements GamerServiceInterface
         private GamerRepositoryInterface $gamerRepository,
         private GamerTokenRepositoryInterface $gamerTokenRepository,
         private AnswerRepositoryInterface $answerRepository,
-    ) {
-    }
+    ) {}
+
     public function createGameSetting(string $token, string $gamerId, CreateGameSettingDTO $createGameSettingDTO): Model
     {
         $gamer = $this->gamerRepository->findById(gamerId: $gamerId);
@@ -38,10 +42,9 @@ readonly class GamerService implements GamerServiceInterface
         $gamer->name = $createGameSettingDTO->getName();
         $gamer->display_meme = $createGameSettingDTO->getIsMeme();
         $gamer->save();
-        Log::info('Room ' . $gamer->gamerToken->room_id);
         broadcast(new UserJoinRoomEvent(roomId: $gamer->gamerToken->room_id, userId: $gamer->id, username: $gamer->name))->toOthers();
 
-        return $gamer;
+        return $gamer->gamerToken->room;
     }
 
     public function submitAnswer(string $token, int $answerId): Model
@@ -57,7 +60,8 @@ readonly class GamerService implements GamerServiceInterface
             throw new NotFoundHttpException(message: 'Đã xảy ra lỗi không mong muốn!', code: ExceptionCodeEnum::INVALID_ROOM->value);
         }
 
-        if ($room->status != RoomStatusEnum::HAPPENING->value || $now->gt(Carbon::parse($room->current_question_end_at))) {
+        if ($room->status != RoomStatusEnum::HAPPENING->value ||
+            ($room->current_question_end_at && $now->gt(Carbon::parse($room->current_question_end_at)))) {
             throw new BadRequestHttpException(
                 message: 'Đã hết thời gian trả lời câu hỏi này, vui lòng đợi admin bấm chuyển sang câu tiếp theo!',
                 code: ExceptionCodeEnum::EXPIRED_QUESTION->value
@@ -69,34 +73,34 @@ readonly class GamerService implements GamerServiceInterface
             throw new NotFoundHttpException(message: 'Câu trả lời không tồn tại!', code: ExceptionCodeEnum::NOT_FOUND_ANSWER->value);
         }
         /* @var Answer $answer */
-        if ($room->current_question_id != $answer->question_id) {
-            throw new BadRequestHttpException(message: 'Câu trả lời không hợp lệ!', code: ExceptionCodeEnum::INVALID_ANSWER->value);
+        $isExistGamerAnswer = $this->answerRepository->getQuery(filters: ['gamer_id' => $gamer->id, 'question_id' => $answer->question_id])->exists();
+        $diffInMilliseconds = 0;
+        $score = $answer->is_correct;
+
+        if ($room->type == RoomTypeEnum::KAHOOT->value) {
+            if ($isExistGamerAnswer) {
+                throw new BadRequestHttpException(message: 'Bạn đã trả lời câu hỏi này rồi!', code: ExceptionCodeEnum::EXIST_GAMER_ANSWER->value);
+            }
+            if ($room->current_question_id != $answer->question_id) {
+                throw new BadRequestHttpException(message: 'Câu trả lời không hợp lệ!', code: ExceptionCodeEnum::INVALID_ANSWER->value);
+            }
+            $maxTime = ((int) config(key: 'app.quizzes.time_reply')) * 1000;
+            $maxScore = (int) config(key: 'app.quizzes.max_score');
+            $diffInMilliseconds = (int) now()->diffInMilliseconds(Carbon::parse($room->current_question_start_at));
+            $score = $answer->is_correct ? abs((($diffInMilliseconds / $maxTime)) * $maxScore) : 0;
         }
 
-        $isExistGamerAnswer = $this->answerRepository->getQuery(filters: ['gamer_id' => $gamer->id, 'question_id' => $room->current_question_id])->exists();
-        if ($isExistGamerAnswer) {
-            throw new BadRequestHttpException(message: 'Bạn đã trả lời câu hỏi này rồi!', code: ExceptionCodeEnum::EXIST_GAMER_ANSWER->value);
-        }
-
-        $maxTime = ((int) config(key: 'app.quizzes.time_reply')) * 1000;
-        $maxScore = (int) config(key: 'app.quizzes.max_score');
-        $diffInMilliseconds = (int) now()->diffInMilliseconds(Carbon::parse($room->current_question_start_at));
-        /* @var Answer $answer */
-        $score = $answer->is_correct ? abs((($diffInMilliseconds / $maxTime)) * $maxScore) : 0;
-        Log::info('diffInMilliseconds: ' . $diffInMilliseconds);
-        Log::info('score: ' . $score);
-        Log::info('maxTime: ' . $maxTime);
-        Log::info('maxScore: ' . $maxScore);
         $saveAnswerDTO = new SaveAnswerDTO(
             gamerId: $gamer->id,
-            questionId: $room->current_question_id,
+            questionId: $answer->question_id,
             answerId: $answerId,
             roomId: $room->id,
             answerInTime: $diffInMilliseconds,
-            score: $score
+            score: $score,
+            roomType: RoomTypeEnum::tryFrom($room->type)
         );
 
-        return $this->answerRepository->saveAnswer(saveAnswer: $saveAnswerDTO);
+        return $this->answerRepository->saveAnswer(saveAnswer: $saveAnswerDTO, isUpdate: $isExistGamerAnswer);
     }
 
     public function userOutGame(string $token): void
@@ -107,5 +111,51 @@ readonly class GamerService implements GamerServiceInterface
         }
         $gamerToken->expired_at = now();
         $gamerToken->save();
+    }
+
+    /**
+     * @throws InternalErrorException
+     */
+    public function submitHomework(string $token, array $listQuestion, array $listAnswer, bool $autoSubmit = false): void
+    {
+        $gamerToken = $this->gamerTokenRepository->getQuery(filters: ['token' => $token])->first();
+        if (is_null($gamerToken) || $gamerToken->expired_at < now()) {
+            throw new NotFoundHttpException(message: 'Token không hợp lệ hoặc đã hết hạn!', code: ExceptionCodeEnum::INVALID_GAME_TOKEN->value);
+        }
+
+        if (!is_null($gamerToken->submit_at)) {
+            throw new BadRequestHttpException(message: 'Bạn đã nộp bài trước đó rồi!');
+        }
+
+        $room = $gamerToken->room;
+        if (!$autoSubmit && (now()->gt(Carbon::parse($room->ended_at)) || $room->status != RoomStatusEnum::HAPPENING->value)) {
+            throw new BadRequestHttpException(
+                message: 'Đã quá thời gian nộp bào!',
+                code: ExceptionCodeEnum::EXPIRED_QUESTION->value
+            );
+        }
+
+        $scoreAnswer = $this->answerRepository->getScoreByAnswerIds(answerIds: $listAnswer);
+        if (count($scoreAnswer) != count($listAnswer)) {
+            throw new InternalErrorException(message: 'Bộ câu hỏi không hợp lệ!');
+        }
+
+        DB::beginTransaction();
+        try {
+            $gamerToken->submit_at = now();
+            $gamerToken->save();
+            $this->answerRepository->updateResultExam(
+                listQuestion: $listQuestion,
+                listAnswer: $scoreAnswer,
+                gamerId: $gamerToken->gamer_id,
+                roomId: $room->id
+            );
+
+            DB::commit();
+        } catch (Throwable $e) {
+            DB::rollBack();
+            Log::error(message: $e->getMessage());
+            throw new InternalErrorException(message: 'Có lỗi xảy ra!');
+        }
     }
 }

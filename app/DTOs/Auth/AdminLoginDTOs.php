@@ -2,14 +2,12 @@
 
 namespace App\DTOs\Auth;
 
-class AdminLoginDTOs
+readonly class AdminLoginDTOs
 {
     public function __construct(
-        private readonly string $email,
-        private readonly string $password,
-        private readonly bool $rememberMe
-    ) {
-    }
+        private string $email,
+        private string $password,
+    ) {}
 
     public function getEmail(): string
     {
@@ -19,10 +17,5 @@ class AdminLoginDTOs
     public function getPassword(): string
     {
         return $this->password;
-    }
-
-    public function getRememberMe(): bool
-    {
-        return $this->rememberMe;
     }
 }

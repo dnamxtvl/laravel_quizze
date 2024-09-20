@@ -2,20 +2,64 @@
 
 namespace App\Services\Implement;
 
+use App\DTOs\Quizz\CreateQuizzDTO;
+use App\Repository\Interface\QuestionRepositoryInterface;
 use App\Repository\Interface\QuizzesRepositoryInterface;
 use App\Services\Interface\QuizzesServiceInterface;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Symfony\Component\CssSelector\Exception\InternalErrorException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Throwable;
 
 readonly class QuizzesService implements QuizzesServiceInterface
 {
     public function __construct(
-        private QuizzesRepositoryInterface $quizzesRepository
-    ) {
-    }
-    public function listQuizzes(): Collection | LengthAwarePaginator
+        private QuizzesRepositoryInterface $quizzesRepository,
+        private QuestionRepositoryInterface $questionRepository,
+    ) {}
+
+    public function listQuizzes(): Collection|LengthAwarePaginator
     {
         return $this->quizzesRepository->listQuizzes(isPaginate: true, filters: ['user_id' => Auth::id()]);
+    }
+
+    /**
+     * @throws InternalErrorException
+     */
+    public function createQuiz(CreateQuizzDTO $quizDTO, array $questionDTO): void
+    {
+        DB::beginTransaction();
+        try {
+            $quiz = $this->quizzesRepository->createQuiz(quizDTO: $quizDTO);
+            $this->questionRepository->insertQuestions(questions: $questionDTO, quizId: $quiz->id);
+            DB::commit();
+        } catch (Throwable $th) {
+            DB::rollBack();
+            throw new InternalErrorException(message: $th->getMessage());
+        }
+    }
+
+    /**
+     * @throws InternalErrorException
+     */
+    public function deleteQuiz(string $quizId): void
+    {
+        DB::beginTransaction();
+        try {
+            $quiz = $this->quizzesRepository->findById(quizId: $quizId);
+            if (is_null($quiz)) {
+                throw new NotFoundHttpException(message: 'Quiz not found');
+            }
+
+            $quiz->delete();
+            $this->questionRepository->deleteQuestion(quizId: $quizId);
+            Db::commit();
+        } catch (Throwable $th) {
+            DB::rollBack();
+            throw new InternalErrorException(message: $th->getMessage());
+        }
     }
 }

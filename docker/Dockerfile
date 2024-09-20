@@ -54,5 +54,7 @@ RUN usermod -u 1000 www-data
 WORKDIR /var/www/
 COPY . .
 EXPOSE 9000
-COPY ./docker/supervisor.conf /etc/supervisor/supervisor.conf
-CMD ["supervisord", "-c", "/etc/supervisor/supervisor.conf"]
+COPY ./docker/supervisord.conf /etc/supervisor/supervisord.conf
+CMD ["supervisord", "-c", "/etc/supervisor/supervisord.conf"]
+# Chạy PHP-FPM
+# CMD ["php-fpm"]

@@ -20,4 +20,12 @@ class StartRoomRequest extends FormRequest
             'room_id' => 'required|string',
         ];
     }
+
+    public function messages(): array
+    {
+        return [
+            'room_id.required' => 'Room id không được để trống',
+            'room_id.string' => 'Room id phải là chuỗi',
+        ];
+    }
 }

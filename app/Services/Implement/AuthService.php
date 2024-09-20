@@ -14,9 +14,7 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class AuthService implements AuthServiceInterface
 {
-    public function __construct()
-    {
-    }
+    public function __construct() {}
 
     public function login(AdminLoginDTOs $credentials): AdminLoginResponseDataDTO
     {
@@ -26,7 +24,7 @@ class AuthService implements AuthServiceInterface
             'role' => UserRoleEnum::ADMIN->value,
         ];
 
-        if (!Auth::attempt(credentials: $adminCredentials)) {
+        if (! Auth::attempt(credentials: $adminCredentials)) {
             throw new BadRequestHttpException(message: 'Sai email hoặc mật khẩu!', code: ExceptionCodeEnum::INVALID_CREDENTIALS->value);
         }
 
@@ -40,7 +38,7 @@ class AuthService implements AuthServiceInterface
         return new AdminLoginResponseDataDTO(
             user: $user,
             token: $tokenResult,
-            expiresAt: now()->addMinutes(config(key:'sanctum.expiration')),
+            expiresAt: now()->addMinutes(config(key: 'sanctum.expiration')),
         );
     }
 

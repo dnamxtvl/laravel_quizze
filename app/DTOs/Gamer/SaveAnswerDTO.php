@@ -2,6 +2,8 @@
 
 namespace App\DTOs\Gamer;
 
+use App\Enums\Room\RoomTypeEnum;
+
 readonly class SaveAnswerDTO
 {
     public function __construct(
@@ -11,8 +13,8 @@ readonly class SaveAnswerDTO
         private string $roomId,
         private int $answerInTime,
         private int $score,
-    ) {
-    }
+        private RoomTypeEnum $roomType,
+    ) {}
 
     public function getGamerId(): string
     {
@@ -42,5 +44,10 @@ readonly class SaveAnswerDTO
     public function getRoomId(): string
     {
         return $this->roomId;
+    }
+
+    public function getRoomType(): RoomTypeEnum
+    {
+        return $this->roomType;
     }
 }

@@ -22,14 +22,15 @@ use App\Services\Interface\AuthServiceInterface;
 use App\Services\Interface\GamerServiceInterface;
 use App\Services\Interface\QuizzesServiceInterface;
 use App\Services\Interface\RoomServiceInterface;
-use Illuminate\Support\ServiceProvider;
+use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
-use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {
     const PER_SECOND_DEFAULT = 10;
+
     /**
      * Register any application services.
      */

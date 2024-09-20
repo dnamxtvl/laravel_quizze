@@ -2,26 +2,35 @@
 
 namespace App\Http\Controllers;
 
+use App\DTOs\Room\CreateRoomParamsDTO;
 use App\DTOs\User\UserDeviceInformationDTO;
+use App\Enums\Room\RoomTypeEnum;
+use App\Http\Requests\AdminCreateRoomRequest;
 use App\Http\Requests\NextQuestionRequest;
 use App\Http\Requests\StartRoomRequest;
 use App\Services\Interface\RoomServiceInterface;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Stevebauman\Location\Facades\Location;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Throwable;
-use Stevebauman\Location\Facades\Location;
 
 class RoomController extends Controller
 {
     public function __construct(
         private readonly RoomServiceInterface $roomService
-    ) {
-    }
+    ) {}
 
-    public function createRoom(string $quizId): JsonResponse
+    public function createRoom(string $quizId, AdminCreateRoomRequest $request): JsonResponse
     {
         try {
-            $newRoom = $this->roomService->createRoom(quizId: $quizId);
+            $createRoomParams = new CreateRoomParamsDTO(
+                type: RoomTypeEnum::tryFrom($request->input(key: 'type')),
+                startAt: Carbon::parse($request->input(key: 'start_time')),
+                endAt: Carbon::parse($request->input(key: 'end_time')),
+            );
+            $newRoom = $this->roomService->createRoom(quizId: $quizId, createRoomParams: $createRoomParams);
+
             return $this->respondWithJson(content: $newRoom->toArray());
         } catch (Throwable $e) {
             return $this->respondWithJsonError(e: $e);
@@ -32,7 +41,18 @@ class RoomController extends Controller
     {
         try {
             $checkRoomValidResponse = $this->roomService->checkValidRoom(roomId: $roomId);
+
             return $this->respondWithJson(content: $checkRoomValidResponse->toArray());
+        } catch (Throwable $e) {
+            return $this->respondWithJsonError(e: $e);
+        }
+    }
+
+    public function getDetailRoomReport(string $roomId): JsonResponse
+    {
+        try {
+            $roomDetail = $this->roomService->getDetailRoomReport(roomId: $roomId);
+            return $this->respondWithJson(content: $roomDetail->toArray());
         } catch (Throwable $e) {
             return $this->respondWithJsonError(e: $e);
         }
@@ -63,6 +83,7 @@ class RoomController extends Controller
     {
         try {
             $questions = $this->roomService->listQuestionOfRoom(token: $roomToken);
+
             return $this->respondWithJson(content: $questions->toArray());
         } catch (Throwable $e) {
             return $this->respondWithJsonError(e: $e);
@@ -73,6 +94,7 @@ class RoomController extends Controller
     {
         try {
             $this->roomService->startRoom(roomId: $request->input(key: 'room_id'));
+
             return $this->respondWithJson(content: []);
         } catch (Throwable $e) {
             return $this->respondWithJsonError(e: $e);
@@ -97,6 +119,7 @@ class RoomController extends Controller
     {
         try {
             $this->roomService->adminEndGame(roomId: $roomId);
+
             return $this->respondWithJson(content: []);
         } catch (Throwable $e) {
             return $this->respondWithJsonError(e: $e);

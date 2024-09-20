@@ -10,4 +10,8 @@ interface QuestionRepositoryInterface
     public function listQuestion(array $columnSelects = [], array $filters = []): Collection;
 
     public function findNextQuestion(string $quzId, string $questionId): ?Question;
+
+    public function insertQuestions(array $questions, string $quizId): array;
+
+    public function deleteQuestion(string $quizId): void;
 }

@@ -12,8 +12,7 @@ readonly class CheckValidRoomResponseDTO
         private Collection $questions,
         private Collection $gamers,
         private int $timeRemaining,
-    ) {
-    }
+    ) {}
 
     public function toArray(): array
     {

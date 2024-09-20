@@ -10,8 +10,7 @@ readonly class VerifyCodeResponseDTO
         private string $gamerId,
         private string $token,
         private Carbon $expiredAt,
-    ) {
-    }
+    ) {}
 
     public function toArray(): array
     {

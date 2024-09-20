@@ -2,8 +2,10 @@
 
 namespace App\Repository\Implement;
 
+use App\DTOs\Room\CreateRoomParamsDTO;
 use App\DTOs\Room\SetNextQuestionRoomDTO;
 use App\Enums\Room\RoomStatusEnum;
+use App\Enums\Room\RoomTypeEnum;
 use App\Models\Room;
 use App\Pipeline\Global\QuizzIdFilter;
 use App\Pipeline\Global\StatusFilter;
@@ -16,8 +18,7 @@ readonly class RoomRepository implements RoomRepositoryInterface
 {
     public function __construct(
         private Room $room
-    ) {
-    }
+    ) {}
 
     public function getQuery(array $columnSelects = [], array $filters = []): Builder
     {
@@ -35,12 +36,17 @@ readonly class RoomRepository implements RoomRepositoryInterface
             ->thenReturn();
     }
 
-    public function createRoom(string $quizId, int $code): Model
+    public function createRoom(string $quizId, int $code, CreateRoomParamsDTO $createRoomParams): Model
     {
-        $room = new Room();
+        $room = new Room;
         $room->quizze_id = $quizId;
         $room->code = $code;
         $room->status = RoomStatusEnum::PREPARE->value;
+        $room->type = $createRoomParams->getType()->value;
+        if ($createRoomParams->getType() === RoomTypeEnum::HOMEWORK) {
+            $room->started_at = $createRoomParams->getStartAt();
+            $room->ended_at = $createRoomParams->getEndAt();
+        }
         $room->save();
 
         return $room;
@@ -60,9 +66,11 @@ readonly class RoomRepository implements RoomRepositoryInterface
 
     public function updateRoomAfterNextQuestion(Room $room, SetNextQuestionRoomDTO $nextQuestionRoomDTO): Room
     {
-        $room->current_question_id = $nextQuestionRoomDTO->getCurrentQuestionId();
-        $room->current_question_start_at = $nextQuestionRoomDTO->getCurrentQuestionStartAt();
-        $room->current_question_end_at = $nextQuestionRoomDTO->getCurrentQuestionEndAt();
+        if ($room->type != RoomTypeEnum::HOMEWORK->value) {
+            $room->current_question_id = $nextQuestionRoomDTO->getCurrentQuestionId();
+            $room->current_question_start_at = $nextQuestionRoomDTO->getCurrentQuestionStartAt();
+            $room->current_question_end_at = $nextQuestionRoomDTO->getCurrentQuestionEndAt();
+        }
         $room->status = $nextQuestionRoomDTO->getStatus()->value;
         if ($nextQuestionRoomDTO->getStartAt()) {
             $room->started_at = $nextQuestionRoomDTO->getStartAt();

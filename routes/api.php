@@ -18,10 +18,13 @@ Route::group(['middleware' => ['auth:api', 'verified']], function () {
         Route::post('/logout', [AuthController::class, 'logout'])->name('auth.admin.logout');
         Route::prefix('quizzes')->group(function () {
             Route::get('/list', [QuizzesController::class, 'listQuizzesPagination'])->name('quizzes.list');
+            Route::post('/create', [QuizzesController::class, 'createQuiz'])->name('quizzes.create');
+            Route::post('/delete/{quizId}', [QuizzesController::class, 'deleteQuiz'])->name('quizzes.delete');
         });
         Route::prefix('room')->group(function () {
             Route::post('/create/{quizId}', [RoomController::class, 'createRoom'])->name('rooms.create');
             Route::get('/check-valid/{quizId}', [RoomController::class, 'checkValidRoom'])->name('rooms.check-valid');
+            Route::get('/detail/{roomId}', [RoomController::class, 'getDetailRoomReport'])->name('rooms.detail');
             Route::post('/start', [RoomController::class, 'startRoom'])->name('rooms.start');
             Route::post('/next-question', [RoomController::class, 'nextQuestion'])->name('rooms.next-question');
             Route::post('/end-game/{roomId}', [RoomController::class, 'adminEndGame'])->name('rooms.end-game');
@@ -38,5 +41,6 @@ Route::prefix('user')->group(function () {
         Route::post('/create-setting', [GamerController::class, 'createGameSetting'])->name('gamer.create-setting');
         Route::post('/submit-answer', [GamerController::class, 'submitAnswer'])->name('gamer.submit-answer');
         Route::post('/out-game/{token}', [GamerController::class, 'userOutGame'])->name('gamer.out-game');
+        Route::post('/submit-homework/{token}', [GamerController::class, 'submitHomework'])->name('gamer.submit-homework');
     });
 })->middleware(GamerMiddleware::class);

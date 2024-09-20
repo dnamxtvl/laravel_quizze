@@ -3,17 +3,21 @@
 namespace App\Services\Interface;
 
 use App\DTOs\Room\CheckValidRoomResponseDTO;
+use App\DTOs\Room\CreateRoomParamsDTO;
+use App\DTOs\Room\DetailRoomReportDTO;
 use App\DTOs\Room\QuestionsOfRoomResponseDTO;
 use App\DTOs\User\UserDeviceInformationDTO;
 use App\DTOs\User\VerifyCodeResponseDTO;
-use Illuminate\Database\Eloquent\Collection;
+use App\Enums\Room\RoomTypeEnum;
 use Illuminate\Database\Eloquent\Model;
 
 interface RoomServiceInterface
 {
-    public function createRoom(string $quizId): Model;
+    public function createRoom(string $quizId, CreateRoomParamsDTO $createRoomParams): Model;
 
     public function checkValidRoom(string $roomId): CheckValidRoomResponseDTO;
+
+    public function getDetailRoomReport(string $roomId): DetailRoomReportDTO;
 
     public function validateRoomCode(int $code, UserDeviceInformationDTO $gamerInfo): VerifyCodeResponseDTO;
 
