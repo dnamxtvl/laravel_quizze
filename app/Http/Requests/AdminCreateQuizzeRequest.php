@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\InvalidQuestionRule;
 use Illuminate\Contracts\Validation\ValidationRule;
+use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Symfony\Component\HttpFoundation\Response as ResponseAlias;
@@ -29,7 +31,7 @@ class AdminCreateQuizzeRequest extends FormRequest
             'quizze.category_id' => 'required|integer|exists:category,id',
             'questions' => 'required|array|min:1',
             'questions.*.title' => 'required|string|max:255',
-            'questions.*.answers' => 'required|array|min:1',
+            'questions.*.answers' => ['required', 'array', 'min:1', new InvalidQuestionRule()],
             'questions.*.answers.*.answer' => 'required|string|max:255',
             'questions.*.answers.*.is_correct' => 'required|boolean',
         ];
@@ -38,7 +40,7 @@ class AdminCreateQuizzeRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'quizze.title.required' => 'Tiêu đề không được để trống',
+//            'quizze.title.required' => __('validation.required', ['attribute' => 'Tiêu đề']),
             'quizze.title.string' => 'Tiêu đề phải là chuỗi',
             'quizze.title.max' => 'Tiêu đề không được quá 255 ký tự',
             'quizze.category_id.required' => 'Danh mục không được để trống',
@@ -57,21 +59,22 @@ class AdminCreateQuizzeRequest extends FormRequest
             'questions.*.answers.*.answer.string' => 'Câu trả lời phải là chuỗi',
             'questions.*.answers.*.answer.max' => 'Câu trả lời không được quá 255 ký tự',
             'questions.*.answers.*.is_correct.required' => 'Câu trả lời đúng không được để trống',
-            'questions.*.answers.*.is_correct.boolean' => 'Câu trả lời đúng phải dạng là boolean',
+            'questions.*.answers.*.is_correct.boolean' => __('is_correct_boolean'),
         ];
     }
 
-    protected function prepareForValidation(): void
+    public function failedValidation(Validator $validator)
     {
-        foreach ($this->input(key: 'questions') as $index => $question) {
-            $correctAnswers = collect($question['answers'])->where('is_correct', true);
-            if (! $correctAnswers->count()) {
-                throw new HttpResponseException(
-                    response: response()->json(data: [
-                        'message' => 'Câu hỏi thứ '.($index + 1).' phải có ít nhất một câu trả lời đúng.',
-                    ], status: ResponseAlias::HTTP_UNPROCESSABLE_ENTITY)
-                );
-            }
+        $errorMessages = $validator->getMessageBag()->getMessages();
+        $errors = [];
+        foreach ($errorMessages as $value) {
+            $errors[] = $value[0];
         }
+
+        throw new HttpResponseException(
+            response: response()->json(data: [
+                'errors' => $errors
+            ], status: ResponseAlias::HTTP_UNPROCESSABLE_ENTITY)
+        );
     }
 }
