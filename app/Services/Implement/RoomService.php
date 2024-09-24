@@ -5,6 +5,7 @@ namespace App\Services\Implement;
 use App\DTOs\Room\CheckValidRoomResponseDTO;
 use App\DTOs\Room\CreateRoomParamsDTO;
 use App\DTOs\Room\DetailRoomReportDTO;
+use App\DTOs\Room\ListRoomReportParamDTO;
 use App\DTOs\Room\QuestionsOfRoomResponseDTO;
 use App\DTOs\Room\SetNextQuestionRoomDTO;
 use App\DTOs\User\CreateGamerTokenDTO;
@@ -20,8 +21,6 @@ use App\Exceptions\Admin\UnAuthorizationStartRoomException;
 use App\Helper\QuizHelper;
 use App\Models\Gamer;
 use App\Models\GamerToken;
-use App\Models\Question;
-use App\Models\Quizze;
 use App\Models\Room;
 use App\Repository\Interface\GamerRepositoryInterface;
 use App\Repository\Interface\GamerTokenRepositoryInterface;
@@ -32,6 +31,7 @@ use Carbon\Carbon;
 use Dflydev\DotAccessData\Exception\DataException;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -330,16 +330,12 @@ readonly class RoomService implements RoomServiceInterface
         return new DetailRoomReportDTO(room: $room, questions: $questions, gamers: $gamers);
     }
 
-    public function getListRoomReport(): void
+    public function getListRoomReport(ListRoomReportParamDTO $listRoomReportParam): LengthAwarePaginator
     {
-        // update user_id to rooms
-        $question = Quizze::query()->withTrashed()->pluck('user_id', 'id')->toArray();
-//        dd($question);
-        $rooms = Room::all();
-        foreach ($rooms as $room) {
-            $room->user_id = $question[$room->quizze_id];
-            $room->save();
-        }
-        dd(243);
+        return $this->roomRepository->getListRoomByAdminId(
+            userId: Auth::id(),
+            page: $listRoomReportParam->getPage(),
+            filters: $listRoomReportParam->toArray()
+        );
     }
 }

@@ -3,20 +3,25 @@
 namespace App\Http\Controllers;
 
 use App\DTOs\Room\CreateRoomParamsDTO;
+use App\DTOs\Room\ListRoomReportParamDTO;
 use App\DTOs\User\UserDeviceInformationDTO;
+use App\Enums\Room\RoomStatusEnum;
 use App\Enums\Room\RoomTypeEnum;
 use App\Http\Requests\AdminCreateRoomRequest;
+use App\Http\Requests\GetListRoomReportRequest;
 use App\Http\Requests\NextQuestionRequest;
 use App\Http\Requests\StartRoomRequest;
 use App\Services\Interface\RoomServiceInterface;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Stevebauman\Location\Facades\Location;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Throwable;
 
 class RoomController extends Controller
 {
+    CONST DEFAULT_PAGE = 1;
     public function __construct(
         private readonly RoomServiceInterface $roomService
     ) {}
@@ -58,11 +63,20 @@ class RoomController extends Controller
         }
     }
 
-    public function getListRoomReport(): JsonResponse
+    public function getListRoomReport(GetListRoomReportRequest $request): JsonResponse
     {
         try {
-            $this->roomService->getListRoomReport();
-            return $this->respondWithJson(content: []);
+            $paramFilter = new ListRoomReportParamDTO(
+                type: !is_null($request->input(key: 'type')) ? RoomTypeEnum::tryFrom($request->input(key: 'type')) : null,
+                status: !is_null($request->input(key: 'status')) ? RoomStatusEnum::tryFrom($request->input(key: 'status')) : null,
+                code: $request->input(key: 'code') ?? null,
+                startTime: $request->input(key: 'start_time') ? Carbon::parse($request->input(key: 'start_time')) : null,
+                endTime: $request->input(key: 'end_time') ? Carbon::parse($request->input(key: 'end_time')) : now(),
+                page: $request->input(key: 'page', default: self::DEFAULT_PAGE),
+            );
+            $listRoom = $this->roomService->getListRoomReport(listRoomReportParam: $paramFilter);
+
+            return $this->respondWithJson(content: $listRoom->toArray());
         } catch (Throwable $e) {
             return $this->respondWithJsonError(e: $e);
         }

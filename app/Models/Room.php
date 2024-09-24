@@ -27,6 +27,7 @@ use Illuminate\Support\Carbon;
  * @property mixed $gamers
  * @property Carbon|mixed $ended_at
  * @property int|mixed $type
+ * @property int|mixed|string|null $user_id
  */
 class Room extends Model
 {
@@ -58,6 +59,11 @@ class Room extends Model
     public function gamerTokens(): HasMany
     {
         return $this->hasMany(related: GamerToken::class);
+    }
+
+    public function gamerAnswers()
+    {
+        return $this->hasMany(related: GamerAnswer::class);
     }
 
     public function gamers(): HasManyThrough
