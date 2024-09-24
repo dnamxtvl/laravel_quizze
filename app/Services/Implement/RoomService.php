@@ -20,6 +20,8 @@ use App\Exceptions\Admin\UnAuthorizationStartRoomException;
 use App\Helper\QuizHelper;
 use App\Models\Gamer;
 use App\Models\GamerToken;
+use App\Models\Question;
+use App\Models\Quizze;
 use App\Models\Room;
 use App\Repository\Interface\GamerRepositoryInterface;
 use App\Repository\Interface\GamerTokenRepositoryInterface;
@@ -321,10 +323,23 @@ readonly class RoomService implements RoomServiceInterface
         /* @var Room $room */
         $questions = $this->getQuestionByRoom(room: $room);
         $gamers = $room->gamers()->withSum('gamerAnswers', 'score')
-            ->with('gamerAnswers')
+            ->with(['gamerAnswers', 'gamerToken'])
             ->orderBy('gamer_answers_sum_score', 'desc')
             ->get();
 
         return new DetailRoomReportDTO(room: $room, questions: $questions, gamers: $gamers);
+    }
+
+    public function getListRoomReport(): void
+    {
+        // update user_id to rooms
+        $question = Quizze::query()->withTrashed()->pluck('user_id', 'id')->toArray();
+//        dd($question);
+        $rooms = Room::all();
+        foreach ($rooms as $room) {
+            $room->user_id = $question[$room->quizze_id];
+            $room->save();
+        }
+        dd(243);
     }
 }

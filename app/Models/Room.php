@@ -36,6 +36,20 @@ class Room extends Model
 
     protected $primaryKey = 'id';
 
+    protected $fillable = [
+        'quizze_id',
+        'user_id',
+        'code',
+        'status',
+        'started_at',
+        'ended_at',
+        'type',
+        'current_question_id',
+        'current_question_start_at',
+        'current_question_end_at',
+        'type',
+    ];
+
     public function quizze(): BelongsTo
     {
         return $this->belongsTo(related: Quizze::class);

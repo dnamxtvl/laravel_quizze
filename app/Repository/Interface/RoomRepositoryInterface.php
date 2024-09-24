@@ -6,6 +6,7 @@ use App\DTOs\Room\CreateRoomParamsDTO;
 use App\DTOs\Room\SetNextQuestionRoomDTO;
 use App\Enums\Room\RoomTypeEnum;
 use App\Models\Room;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
 interface RoomRepositoryInterface
@@ -17,4 +18,6 @@ interface RoomRepositoryInterface
     public function findById(string $roomId): ?Model;
 
     public function updateRoomAfterNextQuestion(Room $room, SetNextQuestionRoomDTO $nextQuestionRoomDTO): Room;
+
+    public function getListRoomByAdminId(string $userId): Collection;
 }
