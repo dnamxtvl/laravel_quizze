@@ -132,4 +132,8 @@ return [
         'time_reply' => 30,
         'max_score' => 1000,
     ],
+
+    'room_report' => [
+        'limit_pagination' => 12,
+    ]
 ];

@@ -7,13 +7,19 @@ use App\DTOs\Room\SetNextQuestionRoomDTO;
 use App\Enums\Room\RoomStatusEnum;
 use App\Enums\Room\RoomTypeEnum;
 use App\Models\Room;
+use App\Pipeline\Global\CodeFilter;
+use App\Pipeline\Global\EndTimeFilter;
 use App\Pipeline\Global\QuizzIdFilter;
+use App\Pipeline\Global\StartTimeFilter;
 use App\Pipeline\Global\StatusFilter;
+use App\Pipeline\Global\TypeFilter;
+use App\Pipeline\Global\UserIdFilter;
 use App\Repository\Interface\RoomRepositoryInterface;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Pipeline\Pipeline;
+use Illuminate\Support\Facades\Auth;
 
 readonly class RoomRepository implements RoomRepositoryInterface
 {
@@ -33,6 +39,11 @@ readonly class RoomRepository implements RoomRepositoryInterface
             ->through([
                 new QuizzIdFilter(filters: $filters),
                 new StatusFilter(filters: $filters),
+                new UserIdFilter(filters: $filters),
+                new CodeFilter(filters: $filters),
+                new TypeFilter(filters: $filters),
+                new StartTimeFilter(filters: $filters),
+                new EndTimeFilter(filters: $filters),
             ])
             ->thenReturn();
     }
@@ -41,6 +52,7 @@ readonly class RoomRepository implements RoomRepositoryInterface
     {
         $room = new Room;
         $room->quizze_id = $quizId;
+        $room->user_id = Auth::id();
         $room->code = $code;
         $room->status = RoomStatusEnum::PREPARE->value;
         $room->type = $createRoomParams->getType()->value;
@@ -84,8 +96,16 @@ readonly class RoomRepository implements RoomRepositoryInterface
         return $room;
     }
 
-    public function getListRoomByAdminId(string $userId): Collection
+    public function getListRoomByAdminId(string $userId, int $page, array $filters = []): LengthAwarePaginator
     {
-        // TODO: Implement getListRoomByAdminId() method.
+        $filtersRoom = array_merge($filters, ['user_id' => $userId]);
+        return $this->getQuery(filters: $filtersRoom)
+            ->withCount(['gamers', 'gamerAnswers', 'gamerAnswers as total_correct' => function ($query) {
+                $query->where('score', '>', 0);
+            }])
+            ->with('quizze:id,title')
+            ->whereHas('quizze')
+            ->orderBy(column: 'created_at', direction: 'desc')
+            ->paginate(perPage: config('app.room_report.limit_pagination'), page: $page);
     }
 }
