@@ -4,10 +4,9 @@ namespace App\Repository\Interface;
 
 use App\DTOs\Room\CreateRoomParamsDTO;
 use App\DTOs\Room\SetNextQuestionRoomDTO;
-use App\Enums\Room\RoomTypeEnum;
 use App\Models\Room;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 interface RoomRepositoryInterface
 {
@@ -19,5 +18,5 @@ interface RoomRepositoryInterface
 
     public function updateRoomAfterNextQuestion(Room $room, SetNextQuestionRoomDTO $nextQuestionRoomDTO): Room;
 
-    public function getListRoomByAdminId(string $userId): Collection;
+    public function getListRoomByAdminId(string $userId, int $page, array $filters = []): LengthAwarePaginator;
 }
