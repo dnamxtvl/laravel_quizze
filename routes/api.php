@@ -28,6 +28,7 @@ Route::group(['middleware' => ['auth:api', 'verified']], function () {
             Route::post('/start', [RoomController::class, 'startRoom'])->name('rooms.start');
             Route::post('/next-question', [RoomController::class, 'nextQuestion'])->name('rooms.next-question');
             Route::post('/end-game/{roomId}', [RoomController::class, 'adminEndGame'])->name('rooms.end-game');
+            Route::get('/list-report', [RoomController::class, 'getListRoomReport'])->name('rooms.list-report');
         });
     });
 });

@@ -11,6 +11,7 @@ use App\Pipeline\Global\QuizzIdFilter;
 use App\Pipeline\Global\StatusFilter;
 use App\Repository\Interface\RoomRepositoryInterface;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Pipeline\Pipeline;
 
@@ -81,5 +82,10 @@ readonly class RoomRepository implements RoomRepositoryInterface
         $room->save();
 
         return $room;
+    }
+
+    public function getListRoomByAdminId(string $userId): Collection
+    {
+        // TODO: Implement getListRoomByAdminId() method.
     }
 }
