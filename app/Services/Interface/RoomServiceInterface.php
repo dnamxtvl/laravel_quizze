@@ -8,7 +8,7 @@ use App\DTOs\Room\DetailRoomReportDTO;
 use App\DTOs\Room\QuestionsOfRoomResponseDTO;
 use App\DTOs\User\UserDeviceInformationDTO;
 use App\DTOs\User\VerifyCodeResponseDTO;
-use App\Enums\Room\RoomTypeEnum;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
 interface RoomServiceInterface
@@ -18,6 +18,8 @@ interface RoomServiceInterface
     public function checkValidRoom(string $roomId): CheckValidRoomResponseDTO;
 
     public function getDetailRoomReport(string $roomId): DetailRoomReportDTO;
+
+    public function getListRoomReport(): void;
 
     public function validateRoomCode(int $code, UserDeviceInformationDTO $gamerInfo): VerifyCodeResponseDTO;
 

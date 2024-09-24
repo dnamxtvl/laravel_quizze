@@ -71,7 +71,11 @@ readonly class AnswerRepository implements AnswerRepositoryInterface
 
     public function updateResultExam(array $listQuestion, array $listAnswer, string $gamerId, string $roomId): void
     {
-        $this->gamerAnswer->query()->where('room_id', $roomId)->delete();
+        $this->gamerAnswer->query()
+            ->where('room_id', $roomId)
+            ->where('gamer_id', $gamerId)
+            ->delete();
+
         $answers = array_keys($listAnswer);
         $scores = array_values($listAnswer);
         $arrayResult = [];

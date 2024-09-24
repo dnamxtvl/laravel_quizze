@@ -58,6 +58,16 @@ class RoomController extends Controller
         }
     }
 
+    public function getListRoomReport(): JsonResponse
+    {
+        try {
+            $this->roomService->getListRoomReport();
+            return $this->respondWithJson(content: []);
+        } catch (Throwable $e) {
+            return $this->respondWithJsonError(e: $e);
+        }
+    }
+
     public function validateRoomCode(Request $request): JsonResponse
     {
         try {

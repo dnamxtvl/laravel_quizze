@@ -40,7 +40,7 @@ class AdminCreateQuizzeRequest extends FormRequest
     public function messages(): array
     {
         return [
-//            'quizze.title.required' => __('validation.required', ['attribute' => 'Tiêu đề']),
+            'quizze.title.required' => 'Tiêu đề đang để trống',
             'quizze.title.string' => 'Tiêu đề phải là chuỗi',
             'quizze.title.max' => 'Tiêu đề không được quá 255 ký tự',
             'quizze.category_id.required' => 'Danh mục không được để trống',
@@ -61,20 +61,5 @@ class AdminCreateQuizzeRequest extends FormRequest
             'questions.*.answers.*.is_correct.required' => 'Câu trả lời đúng không được để trống',
             'questions.*.answers.*.is_correct.boolean' => __('is_correct_boolean'),
         ];
-    }
-
-    public function failedValidation(Validator $validator)
-    {
-        $errorMessages = $validator->getMessageBag()->getMessages();
-        $errors = [];
-        foreach ($errorMessages as $value) {
-            $errors[] = $value[0];
-        }
-
-        throw new HttpResponseException(
-            response: response()->json(data: [
-                'errors' => $errors
-            ], status: ResponseAlias::HTTP_UNPROCESSABLE_ENTITY)
-        );
     }
 }
