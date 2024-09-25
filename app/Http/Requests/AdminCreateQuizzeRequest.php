@@ -4,10 +4,7 @@ namespace App\Http\Requests;
 
 use App\Rules\InvalidQuestionRule;
 use Illuminate\Contracts\Validation\ValidationRule;
-use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Http\Exceptions\HttpResponseException;
-use Symfony\Component\HttpFoundation\Response as ResponseAlias;
 
 class AdminCreateQuizzeRequest extends FormRequest
 {

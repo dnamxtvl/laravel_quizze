@@ -108,4 +108,12 @@ readonly class RoomRepository implements RoomRepositoryInterface
             ->orderBy(column: 'created_at', direction: 'desc')
             ->paginate(perPage: config('app.room_report.limit_pagination'), page: $page);
     }
+
+    public function deleteRoom(Room $room): void
+    {
+        $room->delete();
+        $room->gamerTokens()->delete();
+        $room->gamerAnswers()->delete();
+        $room->gamers()->delete();
+    }
 }
