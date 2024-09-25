@@ -31,4 +31,6 @@ interface RoomServiceInterface
     public function nextQuestion(string $roomId, string $questionId): void;
 
     public function adminEndGame(string $roomId): void;
+
+    public function deleteReport(string $roomId): void;
 }

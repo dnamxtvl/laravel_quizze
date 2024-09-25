@@ -338,4 +338,29 @@ readonly class RoomService implements RoomServiceInterface
             filters: $listRoomReportParam->toArray()
         );
     }
+
+    /**
+     * @throws InternalErrorException
+     */
+    public function deleteReport(string $roomId): void
+    {
+        $room = $this->roomRepository->findById(roomId: $roomId);
+        if (is_null($room)) {
+            throw new NotFoundHttpException(message: 'Màn chơi không tồn tại!');
+        }
+        /* @var Room $room */
+        if ($room->status != RoomStatusEnum::FINISHED->value && $room->status != RoomStatusEnum::CANCELLED->value) {
+            throw new BadRequestHttpException(message: 'Môn chơi chưa kết thúc, không thể xóa!');
+        }
+
+        DB::beginTransaction();
+        try {
+            $this->roomRepository->deleteRoom(room: $room);
+            DB::commit();
+        } catch (Throwable $e) {
+            DB::rollBack();
+            Log::error(message: $e->getMessage());
+            throw new InternalErrorException(message: 'Có lỗi xảy ra!');
+        }
+    }
 }

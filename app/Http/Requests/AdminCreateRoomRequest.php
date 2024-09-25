@@ -6,7 +6,6 @@ use App\Enums\Room\RoomTypeEnum;
 use Carbon\Carbon;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Symfony\Component\HttpFoundation\Response as ResponseAlias;

@@ -14,7 +14,6 @@ use App\Http\Requests\StartRoomRequest;
 use App\Services\Interface\RoomServiceInterface;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 use Stevebauman\Location\Facades\Location;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Throwable;
@@ -144,6 +143,16 @@ class RoomController extends Controller
         try {
             $this->roomService->adminEndGame(roomId: $roomId);
 
+            return $this->respondWithJson(content: []);
+        } catch (Throwable $e) {
+            return $this->respondWithJsonError(e: $e);
+        }
+    }
+
+    public function deleteReport(string $roomId): JsonResponse
+    {
+        try {
+            $this->roomService->deleteReport(roomId: $roomId);
             return $this->respondWithJson(content: []);
         } catch (Throwable $e) {
             return $this->respondWithJsonError(e: $e);
