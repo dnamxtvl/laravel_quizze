@@ -5,6 +5,7 @@ namespace App\Repository\Interface;
 use App\DTOs\Room\CreateRoomParamsDTO;
 use App\DTOs\Room\SetNextQuestionRoomDTO;
 use App\Models\Room;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Pagination\LengthAwarePaginator;
 
@@ -21,4 +22,6 @@ interface RoomRepositoryInterface
     public function getListRoomByAdminId(string $userId, int $page, array $filters = []): LengthAwarePaginator;
 
     public function deleteRoom(Room $room): void;
+
+    public function getListRoomRunning(string $quizId): Collection;
 }

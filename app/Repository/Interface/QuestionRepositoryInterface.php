@@ -14,4 +14,6 @@ interface QuestionRepositoryInterface
     public function insertQuestions(array $questions, string $quizId): array;
 
     public function deleteQuestion(string $quizId): void;
+
+    public function listQuestionOfQuiz(string $quizId): Collection;
 }

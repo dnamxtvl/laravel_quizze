@@ -3,8 +3,11 @@
 namespace App\Services\Implement;
 
 use App\DTOs\Quizz\CreateQuizzDTO;
+use App\Enums\Exception\ExceptionCodeEnum;
+use App\Exceptions\Quiz\RoomIsRunningException;
 use App\Repository\Interface\QuestionRepositoryInterface;
 use App\Repository\Interface\QuizzesRepositoryInterface;
+use App\Repository\Interface\RoomRepositoryInterface;
 use App\Services\Interface\QuizzesServiceInterface;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -19,6 +22,7 @@ readonly class QuizzesService implements QuizzesServiceInterface
     public function __construct(
         private QuizzesRepositoryInterface $quizzesRepository,
         private QuestionRepositoryInterface $questionRepository,
+        private RoomRepositoryInterface $roomRepository,
     ) {}
 
     public function listQuizzes(): Collection|LengthAwarePaginator
@@ -48,12 +52,22 @@ readonly class QuizzesService implements QuizzesServiceInterface
     public function deleteQuiz(string $quizId): void
     {
         DB::beginTransaction();
-        try {
-            $quiz = $this->quizzesRepository->findById(quizId: $quizId);
-            if (is_null($quiz)) {
-                throw new NotFoundHttpException(message: 'Quiz not found');
-            }
+        $quiz = $this->quizzesRepository->findById(quizId: $quizId);
+        if (is_null($quiz)) {
+            throw new NotFoundHttpException(message: 'Không tìm thấy bộ câu hỏi!');
+        }
 
+        $listRoomRunning = $this->roomRepository->getListRoomRunning(quizId: $quizId);
+        if ($listRoomRunning->count() > 0) {
+            $listRoomCode = $listRoomRunning->pluck('code', 'id')->toArray();
+            $listCodeValue = implode(',', array_unique($listRoomCode));
+            throw new RoomIsRunningException(
+                message: 'Các room ' . $listCodeValue . ' chưa kết thúc, bạn không thể xóa quizz!',
+                code: ExceptionCodeEnum::ROOM_IS_NOT_FINISHED->value
+            );
+        }
+
+        try {
             $quiz->delete();
             $this->questionRepository->deleteQuestion(quizId: $quizId);
             Db::commit();
@@ -61,5 +75,10 @@ readonly class QuizzesService implements QuizzesServiceInterface
             DB::rollBack();
             throw new InternalErrorException(message: $th->getMessage());
         }
+    }
+
+    public function listQuestionOfQuiz(string $quizId): Collection
+    {
+        return $this->questionRepository->listQuestionOfQuiz(quizId: $quizId);
     }
 }
