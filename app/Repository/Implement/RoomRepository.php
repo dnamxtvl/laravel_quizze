@@ -16,6 +16,7 @@ use App\Pipeline\Global\TypeFilter;
 use App\Pipeline\Global\UserIdFilter;
 use App\Repository\Interface\RoomRepositoryInterface;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Pipeline\Pipeline;
@@ -115,5 +116,13 @@ readonly class RoomRepository implements RoomRepositoryInterface
         $room->gamerTokens()->delete();
         $room->gamerAnswers()->delete();
         $room->gamers()->delete();
+    }
+
+    public function getListRoomRunning(string $quizId): Collection
+    {
+        return $this->room->query()
+            ->where('quizze_id', $quizId)
+            ->whereNotIn('status', [RoomStatusEnum::FINISHED->value, RoomStatusEnum::CANCELLED->value])
+            ->get();
     }
 }

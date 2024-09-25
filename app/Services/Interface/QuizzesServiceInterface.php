@@ -13,4 +13,6 @@ interface QuizzesServiceInterface
     public function createQuiz(CreateQuizzDTO $quizDTO, array $questionDTO): void;
 
     public function deleteQuiz(string $quizId): void;
+
+    public function listQuestionOfQuiz(string $quizId): Collection;
 }

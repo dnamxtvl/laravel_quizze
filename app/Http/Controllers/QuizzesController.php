@@ -68,4 +68,14 @@ class QuizzesController extends Controller
             return $this->respondWithJsonError(e: $th);
         }
     }
+
+    public function listQuestionOfQuiz(string $quizId): JsonResponse
+    {
+        try {
+            $listQuestion = $this->quizzesService->listQuestionOfQuiz(quizId: $quizId);
+            return $this->respondWithJson(content: $listQuestion->toArray());
+        } catch (Throwable $th) {
+            return $this->respondWithJsonError(e: $th);
+        }
+    }
 }
