@@ -87,4 +87,12 @@ readonly class QuestionRepository implements QuestionRepositoryInterface
         $this->answer->query()->whereIn('question_id', $questionIds)->delete();
         $this->question->query()->whereIn('id', $questionIds)->delete();
     }
+
+    public function listQuestionOfQuiz(string $quizId): Collection
+    {
+        return $this->question->query()
+            ->where('quizze_id', $quizId)
+            ->with(['answers', 'quizze'])
+            ->get();
+    }
 }

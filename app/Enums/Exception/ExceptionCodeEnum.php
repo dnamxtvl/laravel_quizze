@@ -19,4 +19,6 @@ enum ExceptionCodeEnum: int
     case INVALID_ANSWER = 1001884;
     case NOT_PERMISSION_END_ROOM = 1001885;
     case ROOM_FINISHED = 1001886;
+
+    case ROOM_IS_NOT_FINISHED = 1001887;
 }

@@ -20,6 +20,7 @@ Route::group(['middleware' => ['auth:api', 'verified']], function () {
             Route::get('/list', [QuizzesController::class, 'listQuizzesPagination'])->name('quizzes.list');
             Route::post('/create', [QuizzesController::class, 'createQuiz'])->name('quizzes.create');
             Route::post('/delete/{quizId}', [QuizzesController::class, 'deleteQuiz'])->name('quizzes.delete');
+            Route::get('/list-question/{quizId}', [QuizzesController::class, 'listQuestionOfQuiz'])->name('quizzes.list-question-of-quiz');
         });
         Route::prefix('room')->group(function () {
             Route::post('/create/{quizId}', [RoomController::class, 'createRoom'])->name('rooms.create');
@@ -29,6 +30,7 @@ Route::group(['middleware' => ['auth:api', 'verified']], function () {
             Route::post('/next-question', [RoomController::class, 'nextQuestion'])->name('rooms.next-question');
             Route::post('/end-game/{roomId}', [RoomController::class, 'adminEndGame'])->name('rooms.end-game');
             Route::get('/list-report', [RoomController::class, 'getListRoomReport'])->name('rooms.list-report');
+            Route::post('/delete-report/{roomId}', [RoomController::class, 'deleteReport'])->name('rooms.delete-report');
         });
     });
 });
