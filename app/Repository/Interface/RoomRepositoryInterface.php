@@ -19,4 +19,6 @@ interface RoomRepositoryInterface
     public function updateRoomAfterNextQuestion(Room $room, SetNextQuestionRoomDTO $nextQuestionRoomDTO): Room;
 
     public function getListRoomByAdminId(string $userId, int $page, array $filters = []): LengthAwarePaginator;
+
+    public function deleteRoom(Room $room): void;
 }
