@@ -25,6 +25,7 @@ use App\Models\Room;
 use App\Repository\Interface\GamerRepositoryInterface;
 use App\Repository\Interface\GamerTokenRepositoryInterface;
 use App\Repository\Interface\QuestionRepositoryInterface;
+use App\Repository\Interface\QuizzesRepositoryInterface;
 use App\Repository\Interface\RoomRepositoryInterface;
 use App\Services\Interface\RoomServiceInterface;
 use Carbon\Carbon;
@@ -51,12 +52,21 @@ readonly class RoomService implements RoomServiceInterface
         private GamerRepositoryInterface $gamerRepository,
         private GamerTokenRepositoryInterface $gamerTokenRepository,
         private QuestionRepositoryInterface $questionRepository,
+        private QuizzesRepositoryInterface $quizzesRepository,
     ) {}
 
     public function createRoom(string $quizId, CreateRoomParamsDTO $createRoomParams): Model
     {
+        $quiz = $this->quizzesRepository->findById(quizId: $quizId);
+        if (is_null($quiz)) {
+            throw new NotFoundHttpException(message: 'Không tìm thấy bộ câu hỏi!');
+        }
+
+        $listQuestion = $this->questionRepository->listQuestionOfQuiz(quizId: $quizId)->pluck('id')->toArray();
+        $createRoomParams->setQuestionIds(questionIds: $listQuestion);
         $code = $this->quizHelper->generateCode(length: config(key: 'app.quizzes.room_code_length'));
         $newRoom = $this->roomRepository->createRoom(quizId: $quizId, code: $code, createRoomParams: $createRoomParams);
+
         if ($createRoomParams->getType() == RoomTypeEnum::HOMEWORK) {
             $timeIntervalEnd = abs($createRoomParams->getEndAt()->diffInSeconds(now()));
             $timeIntervalStart = abs($createRoomParams->getStartAt()->diffInSeconds(now()));
@@ -219,7 +229,7 @@ readonly class RoomService implements RoomServiceInterface
 
     private function getQuestionByRoom(Room $room): Collection
     {
-        $questions = $this->questionRepository->listQuestion(filters: ['quizze_id' => $room->quizze_id]);
+        $questions = $this->questionRepository->listQuestionByIds(questionIds: json_decode($room->list_question));
         if (! $questions->count() || is_null($room->quizze)) {
             throw new NotFoundHttpException(message: 'Không tìm thấy câu hỏi nào!', code: ExceptionCodeEnum::NON_QUESTION->value);
         }
@@ -332,6 +342,13 @@ readonly class RoomService implements RoomServiceInterface
 
     public function getListRoomReport(ListRoomReportParamDTO $listRoomReportParam): LengthAwarePaginator
     {
+//        $rooms = Room::query()->with('quizze')->get();
+//        foreach ($rooms as $room) {
+//            $quizz = $room->quizze;
+//            $questionIds = $quizz->questions->pluck('id')->toArray();
+//            $room->list_question = json_encode($questionIds);
+//            $room->save();
+//        }
         return $this->roomRepository->getListRoomByAdminId(
             userId: Auth::id(),
             page: $listRoomReportParam->getPage(),

@@ -6,7 +6,6 @@ use App\DTOs\Quizz\CreateQuizzDTO;
 use App\Models\Quizze;
 use App\Pipeline\Global\UserIdFilter;
 use App\Pipeline\Quizzes\CategoryIdFilter;
-use App\Pipeline\Quizzes\QuestionIdFilter;
 use App\Repository\Interface\QuizzesRepositoryInterface;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;

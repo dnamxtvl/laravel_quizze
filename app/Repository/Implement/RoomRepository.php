@@ -57,6 +57,7 @@ readonly class RoomRepository implements RoomRepositoryInterface
         $room->code = $code;
         $room->status = RoomStatusEnum::PREPARE->value;
         $room->type = $createRoomParams->getType()->value;
+        $room->list_question = json_encode($createRoomParams->getQuestionIds());
         if ($createRoomParams->getType() === RoomTypeEnum::HOMEWORK) {
             $room->started_at = $createRoomParams->getStartAt();
             $room->ended_at = $createRoomParams->getEndAt();

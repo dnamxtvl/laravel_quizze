@@ -5,12 +5,13 @@ namespace App\DTOs\Room;
 use App\Enums\Room\RoomTypeEnum;
 use Carbon\Carbon;
 
-readonly class CreateRoomParamsDTO
+class CreateRoomParamsDTO
 {
     public function __construct(
-        private RoomTypeEnum $type,
-        private Carbon $startAt,
-        private Carbon $endAt,
+        private readonly RoomTypeEnum $type,
+        private readonly Carbon $startAt,
+        private readonly Carbon $endAt,
+        private ?array $questionIds = [],
     ) {}
 
     public function getType(): RoomTypeEnum
@@ -35,5 +36,15 @@ readonly class CreateRoomParamsDTO
             'start_at' => $this->startAt,
             'end_at' => $this->endAt,
         ];
+    }
+
+    public function getQuestionIds(): ?array
+    {
+        return $this->questionIds;
+    }
+
+    public function setQuestionIds(array $questionIds): void
+    {
+        $this->questionIds = $questionIds;
     }
 }
