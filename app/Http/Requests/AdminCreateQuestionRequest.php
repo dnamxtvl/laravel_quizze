@@ -24,9 +24,9 @@ class AdminCreateQuestionRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'title' => 'required|string|min:' . config(key: 'app.question.title.min_length') . '|max:' . config(key: 'app.question.title.max_length'),
-            'answers' => ['required', 'array', 'min:' . config(key: 'app.question.min_answers'), 'max:' . config(key: 'app.question.max_answers'), new InvalidQuestionRule()],
-            'answers.*.answer' => 'required|string|max:' . config(key: 'app.question.answer.max_length'),
+            'title' => 'required|string|min:'.config(key: 'app.question.title.min_length').'|max:'.config(key: 'app.question.title.max_length'),
+            'answers' => ['required', 'array', 'min:'.config(key: 'app.question.min_answers'), 'max:'.config(key: 'app.question.max_answers'), new InvalidQuestionRule],
+            'answers.*.answer' => 'required|string|max:'.config(key: 'app.question.answer.max_length'),
             'answers.*.is_correct' => 'required|boolean',
         ];
     }

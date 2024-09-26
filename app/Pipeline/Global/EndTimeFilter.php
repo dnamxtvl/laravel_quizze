@@ -13,7 +13,7 @@ readonly class EndTimeFilter
     public function handle(Builder $query, $next)
     {
         if (isset($this->filters['end_time'])) {
-            $query->where('created_at', '<=' ,$this->filters['end_time']);
+            $query->where('created_at', '<=', $this->filters['end_time']);
         }
 
         return $next($query);

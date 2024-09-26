@@ -62,7 +62,7 @@ readonly class QuizzesService implements QuizzesServiceInterface
             $listRoomCode = $listRoomRunning->pluck('code', 'id')->toArray();
             $listCodeValue = implode(',', array_unique($listRoomCode));
             throw new RoomIsRunningException(
-                message: 'Các room ' . $listCodeValue . ' chưa kết thúc, bạn không thể xóa quizz!',
+                message: 'Các room '.$listCodeValue.' chưa kết thúc, bạn không thể xóa quizz!',
                 code: ExceptionCodeEnum::ROOM_IS_NOT_FINISHED->value
             );
         }

@@ -16,7 +16,7 @@ class InvalidQuestionRule implements ValidationRule
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
         if (collect($value)->where('is_correct', true)->count() == 0) {
-            $fail('Câu hỏi ' .  ((int ) explode('.', $attribute)[1] + 1) . ' phải có ít nhất 1 đáp án đúng');
+            $fail('Câu hỏi '.((int) explode('.', $attribute)[1] + 1).' phải có ít nhất 1 đáp án đúng');
         }
     }
 }

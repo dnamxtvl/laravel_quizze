@@ -13,7 +13,7 @@ readonly class StartTimeFilter
     public function handle(Builder $query, $next)
     {
         if (isset($this->filters['start_time'])) {
-            $query->where('created_at', '>=' ,$this->filters['start_time']);
+            $query->where('created_at', '>=', $this->filters['start_time']);
         }
 
         return $next($query);

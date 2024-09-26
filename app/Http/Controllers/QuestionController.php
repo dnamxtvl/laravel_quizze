@@ -33,6 +33,7 @@ class QuestionController extends Controller
 
         try {
             $this->questionService->updateQuestion(questionId: $questionId, questionDTO: $question);
+
             return $this->respondWithJson(content: []);
         } catch (Throwable $th) {
             return $this->respondWithJsonError(e: $th);
@@ -67,6 +68,7 @@ class QuestionController extends Controller
     {
         try {
             $this->questionService->deleteQuestion(questionId: $questionId);
+
             return $this->respondWithJson(content: []);
         } catch (Throwable $th) {
             return $this->respondWithJsonError(e: $th);

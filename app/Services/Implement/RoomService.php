@@ -45,7 +45,8 @@ use Throwable;
 
 readonly class RoomService implements RoomServiceInterface
 {
-    CONST MIN_QUESTION = 1;
+    const MIN_QUESTION = 1;
+
     public function __construct(
         private QuizHelper $quizHelper,
         private RoomRepositoryInterface $roomRepository,
@@ -215,10 +216,10 @@ readonly class RoomService implements RoomServiceInterface
             status: RoomStatusEnum::HAPPENING,
             startAt: $now,
         );
-//        if ($room->type == RoomTypeEnum::HOMEWORK->value) {
-//            $timeInterval = abs(Carbon::parse($room->ended_at)->diffInSeconds($room->started_at));
-//            $roomStatus = RoomStatusEnum::FINISHED;
-//        }
+        //        if ($room->type == RoomTypeEnum::HOMEWORK->value) {
+        //            $timeInterval = abs(Carbon::parse($room->ended_at)->diffInSeconds($room->started_at));
+        //            $roomStatus = RoomStatusEnum::FINISHED;
+        //        }
 
         $this->roomRepository->updateRoomAfterNextQuestion(room: $room, nextQuestionRoomDTO: $setNextQuestionRoomDTO);
         if ($room->type == RoomTypeEnum::KAHOOT->value) {

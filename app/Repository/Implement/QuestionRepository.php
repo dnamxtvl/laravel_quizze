@@ -8,7 +8,6 @@ use App\Models\Answer;
 use App\Models\Question;
 use App\Pipeline\Global\QuizzIdFilter;
 use App\Repository\Interface\QuestionRepositoryInterface;
-use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pipeline\Pipeline;
@@ -111,10 +110,12 @@ readonly class QuestionRepository implements QuestionRepositoryInterface
     public function createQuestion(CreateQuestionDTO $questionDTO, ?int $indexQuestionOverride = null): Question
     {
         $now = now();
-        $question = new Question();
+        $question = new Question;
         $question->quizze_id = $questionDTO->getQuizId();
         $question->title = $questionDTO->getTitle();
-        if ($indexQuestionOverride) $question->index_question = $indexQuestionOverride;
+        if ($indexQuestionOverride) {
+            $question->index_question = $indexQuestionOverride;
+        }
         $question->save();
 
         $answersInsert = [];

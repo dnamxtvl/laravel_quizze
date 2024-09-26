@@ -62,6 +62,7 @@ readonly class QuestionService implements QuestionServiceInterface
             $questionDTO->setQuizId(quizId: $quizId);
             $newQuestion = $this->questionRepository->createQuestion(questionDTO: $questionDTO, indexQuestionOverride: $questionIndex);
             DB::commit();
+
             return $newQuestion;
         } catch (Throwable $th) {
             Log::error(message: $th->getMessage());

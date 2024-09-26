@@ -45,7 +45,7 @@ readonly class AnswerRepository implements AnswerRepositoryInterface
 
     public function saveAnswer(SaveAnswerDTO $saveAnswer, bool $isUpdate = false): Model
     {
-        $gamerAnswer = !$isUpdate ? new GamerAnswer() : $this->getQuery(filters: [
+        $gamerAnswer = ! $isUpdate ? new GamerAnswer : $this->getQuery(filters: [
             'gamer_id' => $saveAnswer->getGamerId(),
             'question_id' => $saveAnswer->getQuestionId(),
         ])->first();

@@ -23,7 +23,7 @@ class SubmitHomeworkRequest extends FormRequest
             'results' => 'nullable|array',
             'results.*' => 'int',
             'list_question' => 'nullable|array',
-            'list_question.*' => 'string|size:' . config('validation.max_length_uuid'),
+            'list_question.*' => 'string|size:'.config('validation.max_length_uuid'),
             'list_answer' => 'nullable|array',
             'list_answer.*' => 'int',
             'auto_submit' => 'required|boolean',
@@ -37,9 +37,10 @@ class SubmitHomeworkRequest extends FormRequest
         ];
     }
 
-    #[NoReturn] protected function prepareForValidation(): void
+    #[NoReturn]
+    protected function prepareForValidation(): void
     {
-        if (is_null($this->input(key: 'results')) || !is_array($this->input(key: 'results'))) {
+        if (is_null($this->input(key: 'results')) || ! is_array($this->input(key: 'results'))) {
             throw new HttpResponseException(
                 response: response()->json(
                     data: [

@@ -6,8 +6,8 @@ use App\Enums\Room\RoomTypeEnum;
 use Carbon\Carbon;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
+use Illuminate\Support\Facades\Validator;
 use Symfony\Component\HttpFoundation\Response as ResponseAlias;
 
 class AdminCreateRoomRequest extends FormRequest
@@ -28,7 +28,7 @@ class AdminCreateRoomRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'type' => 'required|in:' . RoomTypeEnum::KAHOOT->value . ',' . RoomTypeEnum::HOMEWORK->value,
+            'type' => 'required|in:'.RoomTypeEnum::KAHOOT->value.','.RoomTypeEnum::HOMEWORK->value,
         ];
     }
 
@@ -75,8 +75,8 @@ class AdminCreateRoomRequest extends FormRequest
                 abs(Carbon::parse($endTime)->diffInMinutes(Carbon::parse($startTime))) > config('room.max_time_duration')) {
                 throw new HttpResponseException(
                     response()->json(data: [
-                        'message' => 'Thời gian chơi phải nằm trong khoảng ' . config('room.min_time_duration') .
-                            ' đến ' . config('room.max_time_duration') . ' phút',
+                        'message' => 'Thời gian chơi phải nằm trong khoảng '.config('room.min_time_duration').
+                            ' đến '.config('room.max_time_duration').' phút',
                     ], status: ResponseAlias::HTTP_BAD_REQUEST)
                 );
             }
