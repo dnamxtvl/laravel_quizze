@@ -45,7 +45,8 @@ use Throwable;
 
 readonly class RoomService implements RoomServiceInterface
 {
-    CONST MIN_QUESTION = 1;
+    const MIN_QUESTION = 1;
+
     public function __construct(
         private QuizHelper $quizHelper,
         private RoomRepositoryInterface $roomRepository,
@@ -191,7 +192,7 @@ readonly class RoomService implements RoomServiceInterface
             throw new NotFoundHttpException(message: 'Quizz đã bị xóa!');
         }
 
-        $questions = $quiz->questions;
+        $questions = $this->questionRepository->listQuestionOfQuiz(quizId: $quiz->id);
         $countQuestion = $questions->count();
         if (! $countQuestion) {
             throw new NotFoundHttpException(message: 'Không tìm thấy câu hỏi nào!');
@@ -215,10 +216,10 @@ readonly class RoomService implements RoomServiceInterface
             status: RoomStatusEnum::HAPPENING,
             startAt: $now,
         );
-//        if ($room->type == RoomTypeEnum::HOMEWORK->value) {
-//            $timeInterval = abs(Carbon::parse($room->ended_at)->diffInSeconds($room->started_at));
-//            $roomStatus = RoomStatusEnum::FINISHED;
-//        }
+        //        if ($room->type == RoomTypeEnum::HOMEWORK->value) {
+        //            $timeInterval = abs(Carbon::parse($room->ended_at)->diffInSeconds($room->started_at));
+        //            $roomStatus = RoomStatusEnum::FINISHED;
+        //        }
 
         $this->roomRepository->updateRoomAfterNextQuestion(room: $room, nextQuestionRoomDTO: $setNextQuestionRoomDTO);
         if ($room->type == RoomTypeEnum::KAHOOT->value) {
@@ -342,13 +343,6 @@ readonly class RoomService implements RoomServiceInterface
 
     public function getListRoomReport(ListRoomReportParamDTO $listRoomReportParam): LengthAwarePaginator
     {
-//        $rooms = Room::query()->with('quizze')->get();
-//        foreach ($rooms as $room) {
-//            $quizz = $room->quizze;
-//            $questionIds = $quizz->questions->pluck('id')->toArray();
-//            $room->list_question = json_encode($questionIds);
-//            $room->save();
-//        }
         return $this->roomRepository->getListRoomByAdminId(
             userId: Auth::id(),
             page: $listRoomReportParam->getPage(),

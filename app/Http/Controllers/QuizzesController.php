@@ -73,6 +73,7 @@ class QuizzesController extends Controller
     {
         try {
             $listQuestion = $this->quizzesService->listQuestionOfQuiz(quizId: $quizId);
+
             return $this->respondWithJson(content: $listQuestion->toArray());
         } catch (Throwable $th) {
             return $this->respondWithJsonError(e: $th);

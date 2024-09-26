@@ -66,7 +66,7 @@ class GamerController extends Controller
                 token: $token,
                 listQuestion: $request->input(key: 'list_question', default: []),
                 listAnswer: $request->input(key: 'list_answer', default: []),
-                autoSubmit: (boolean) $request->input(key: 'auto_submit'),
+                autoSubmit: (bool) $request->input(key: 'auto_submit'),
             );
 
             return $this->respondWithJson(content: []);

@@ -123,12 +123,12 @@ readonly class GamerService implements GamerServiceInterface
             throw new NotFoundHttpException(message: 'Token không hợp lệ hoặc đã hết hạn!', code: ExceptionCodeEnum::INVALID_GAME_TOKEN->value);
         }
 
-        if (!is_null($gamerToken->submit_at)) {
+        if (! is_null($gamerToken->submit_at)) {
             throw new BadRequestHttpException(message: 'Bạn đã nộp bài trước đó rồi!');
         }
 
         $room = $gamerToken->room;
-        if (!$autoSubmit && (now()->gt(Carbon::parse($room->ended_at)) || $room->status != RoomStatusEnum::HAPPENING->value)) {
+        if (! $autoSubmit && (now()->gt(Carbon::parse($room->ended_at)) || $room->status != RoomStatusEnum::HAPPENING->value)) {
             throw new BadRequestHttpException(
                 message: 'Đã quá thời gian nộp bào!',
                 code: ExceptionCodeEnum::EXPIRED_QUESTION->value

@@ -28,7 +28,7 @@ class AdminCreateQuizzeRequest extends FormRequest
             'quizze.category_id' => 'required|integer|exists:category,id',
             'questions' => 'required|array|min:1',
             'questions.*.title' => 'required|string|max:255',
-            'questions.*.answers' => ['required', 'array', 'min:1', new InvalidQuestionRule()],
+            'questions.*.answers' => ['required', 'array', 'min:1', new InvalidQuestionRule],
             'questions.*.answers.*.answer' => 'required|string|max:255',
             'questions.*.answers.*.is_correct' => 'required|boolean',
         ];

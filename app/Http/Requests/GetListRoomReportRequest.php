@@ -19,8 +19,8 @@ class GetListRoomReportRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'type' => 'nullable|integer|in:' . implode(',', array_map(fn($enum) => $enum->value, RoomTypeEnum::cases())),
-            'status' => 'nullable|integer|in:' . implode(',', array_map(fn($enum) => $enum->value, RoomStatusEnum::cases())),
+            'type' => 'nullable|integer|in:'.implode(',', array_map(fn ($enum) => $enum->value, RoomTypeEnum::cases())),
+            'status' => 'nullable|integer|in:'.implode(',', array_map(fn ($enum) => $enum->value, RoomStatusEnum::cases())),
             'code' => 'nullable|integer',
             'start_time' => 'nullable|date_format:Y-m-d H:i:s',
             'end_time' => 'nullable|date_format:Y-m-d H:i:s',

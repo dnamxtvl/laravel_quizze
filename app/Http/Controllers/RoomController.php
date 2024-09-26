@@ -20,7 +20,8 @@ use Throwable;
 
 class RoomController extends Controller
 {
-    CONST DEFAULT_PAGE = 1;
+    const DEFAULT_PAGE = 1;
+
     public function __construct(
         private readonly RoomServiceInterface $roomService
     ) {}
@@ -56,6 +57,7 @@ class RoomController extends Controller
     {
         try {
             $roomDetail = $this->roomService->getDetailRoomReport(roomId: $roomId);
+
             return $this->respondWithJson(content: $roomDetail->toArray());
         } catch (Throwable $e) {
             return $this->respondWithJsonError(e: $e);
@@ -66,8 +68,8 @@ class RoomController extends Controller
     {
         try {
             $paramFilter = new ListRoomReportParamDTO(
-                type: !is_null($request->input(key: 'type')) ? RoomTypeEnum::tryFrom($request->input(key: 'type')) : null,
-                status: !is_null($request->input(key: 'status')) ? RoomStatusEnum::tryFrom($request->input(key: 'status')) : null,
+                type: ! is_null($request->input(key: 'type')) ? RoomTypeEnum::tryFrom($request->input(key: 'type')) : null,
+                status: ! is_null($request->input(key: 'status')) ? RoomStatusEnum::tryFrom($request->input(key: 'status')) : null,
                 code: $request->input(key: 'code') ?? null,
                 startTime: $request->input(key: 'start_time') ? Carbon::parse($request->input(key: 'start_time')) : null,
                 endTime: $request->input(key: 'end_time') ? Carbon::parse($request->input(key: 'end_time')) : now(),
@@ -153,6 +155,7 @@ class RoomController extends Controller
     {
         try {
             $this->roomService->deleteReport(roomId: $roomId);
+
             return $this->respondWithJson(content: []);
         } catch (Throwable $e) {
             return $this->respondWithJsonError(e: $e);

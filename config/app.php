@@ -131,9 +131,23 @@ return [
         'min_answer' => 2,
         'time_reply' => 30,
         'max_score' => 1000,
+        'min_question' => 1,
     ],
 
     'room_report' => [
         'limit_pagination' => 12,
+    ],
+
+    'question' => [
+        'title' => [
+            'min_length' => 6,
+            'max_length' => 255
+        ],
+        'answer' => [
+            'min_length' => 1,
+            'max_length' => 255,
+        ],
+        'min_answers' => 2,
+        'max_answers' => 4,
     ]
 ];

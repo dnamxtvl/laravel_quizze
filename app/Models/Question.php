@@ -11,6 +11,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * @property mixed $id
+ * @property false|mixed $is_old_question
+ * @property int|mixed $index_question
  */
 class Question extends Model
 {

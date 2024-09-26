@@ -101,6 +101,7 @@ readonly class RoomRepository implements RoomRepositoryInterface
     public function getListRoomByAdminId(string $userId, int $page, array $filters = []): LengthAwarePaginator
     {
         $filtersRoom = array_merge($filters, ['user_id' => $userId]);
+
         return $this->getQuery(filters: $filtersRoom)
             ->withCount(['gamers', 'gamerAnswers', 'gamerAnswers as total_correct' => function ($query) {
                 $query->where('score', '>', 0);
