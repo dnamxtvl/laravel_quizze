@@ -8,6 +8,7 @@ use App\Models\Answer;
 use App\Models\Question;
 use App\Pipeline\Global\QuizzIdFilter;
 use App\Repository\Interface\QuestionRepositoryInterface;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pipeline\Pipeline;
@@ -75,13 +76,13 @@ readonly class QuestionRepository implements QuestionRepositoryInterface
                 ];
             }
         }
-        $this->question->query()->insert($questionsInsert);
-        $this->answer->query()->insert($answersInsert);
+        $this->question->query()->insert(values: $questionsInsert);
+        $this->answer->query()->insert(values: $answersInsert);
 
         return collect($questionsInsert)->pluck('id')->toArray();
     }
 
-    public function deleteQuestion(string $quizId): void
+    public function deleteQuestionByQuiz(string $quizId): void
     {
         $questionIds = $this->getQuery(filters: ['quizze_id' => $quizId])->pluck('id')->toArray();
         $this->question->query()->whereIn('id', $questionIds)->delete();
@@ -91,7 +92,9 @@ readonly class QuestionRepository implements QuestionRepositoryInterface
     {
         return $this->question->query()
             ->where('quizze_id', $quizId)
+            ->where('is_old_question', false)
             ->with(['answers', 'quizze'])
+            ->orderBy('index_question')
             ->get();
     }
 
@@ -101,5 +104,47 @@ readonly class QuestionRepository implements QuestionRepositoryInterface
             ->withTrashed()
             ->whereIn('id', $questionIds)
             ->get();
+    }
+
+    public function createQuestion(CreateQuestionDTO $questionDTO, ?int $indexQuestionOverride = null): Question
+    {
+        $now = now();
+        $question = new Question();
+        $question->quizze_id = $questionDTO->getQuizId();
+        $question->title = $questionDTO->getTitle();
+        if ($indexQuestionOverride) $question->index_question = $indexQuestionOverride;
+        $question->save();
+
+        $answersInsert = [];
+        foreach ($questionDTO->getAnswers() as $answer) {
+            /* @var CreateAnswerDTO $answer */
+            $answersInsert[] = [
+                'question_id' => $question->id,
+                'answer' => $answer->getAnswer(),
+                'is_correct' => $answer->getIsCorrect(),
+                'created_at' => $now,
+                'updated_at' => $now,
+            ];
+        }
+        $this->answer->query()->insert(values: $answersInsert);
+
+        return $question;
+    }
+
+    public function deleteQuestion(Question $question): void
+    {
+        $question->answers()->delete();
+        $question->delete();
+    }
+
+    public function findById(string $questionId): ?Question
+    {
+        return $this->question->query()->find(id: $questionId);
+    }
+
+    public function setIsOldQuestion(Question $question, bool $isOldQuestion): void
+    {
+        $question->is_old_question = $isOldQuestion;
+        $question->save();
     }
 }

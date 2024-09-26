@@ -38,14 +38,14 @@ readonly class QuizzesRepository implements QuizzesRepositoryInterface
     {
         if (! $isPaginate) {
             return $this->getQuery(filters: $filters)
-                ->withCount(['questions', 'rooms'])
+                ->withCount(['questions' => fn (Builder $query) => $query->where('is_old_question', false), 'rooms'])
                 ->with(relations: 'category:id,name')
                 ->orderBy('created_at', 'desc')
                 ->get();
         }
 
         return $this->getQuery(filters: $filters)
-            ->withCount(['questions', 'rooms'])
+            ->withCount(['questions' => fn (Builder $query) => $query->where('is_old_question', false), 'rooms'])
             ->with(relations: 'category:id,name')
             ->orderBy('created_at', 'desc')
             ->paginate(perPage: config(key: 'app.quizzes.limit_pagination'));

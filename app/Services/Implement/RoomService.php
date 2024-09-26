@@ -342,13 +342,6 @@ readonly class RoomService implements RoomServiceInterface
 
     public function getListRoomReport(ListRoomReportParamDTO $listRoomReportParam): LengthAwarePaginator
     {
-//        $rooms = Room::query()->with('quizze')->get();
-//        foreach ($rooms as $room) {
-//            $quizz = $room->quizze;
-//            $questionIds = $quizz->questions->pluck('id')->toArray();
-//            $room->list_question = json_encode($questionIds);
-//            $room->save();
-//        }
         return $this->roomRepository->getListRoomByAdminId(
             userId: Auth::id(),
             page: $listRoomReportParam->getPage(),

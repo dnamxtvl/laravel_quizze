@@ -16,10 +16,12 @@ use App\Repository\Interface\QuizzesRepositoryInterface;
 use App\Repository\Interface\RoomRepositoryInterface;
 use App\Services\Implement\AuthService;
 use App\Services\Implement\GamerService;
+use App\Services\Implement\QuestionService;
 use App\Services\Implement\QuizzesService;
 use App\Services\Implement\RoomService;
 use App\Services\Interface\AuthServiceInterface;
 use App\Services\Interface\GamerServiceInterface;
+use App\Services\Interface\QuestionServiceInterface;
 use App\Services\Interface\QuizzesServiceInterface;
 use App\Services\Interface\RoomServiceInterface;
 use Illuminate\Cache\RateLimiting\Limit;
@@ -46,6 +48,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(abstract: GamerServiceInterface::class, concrete: GamerService::class);
         $this->app->singleton(abstract: QuestionRepositoryInterface::class, concrete: QuestionRepository::class);
         $this->app->singleton(abstract: AnswerRepositoryInterface::class, concrete: AnswerRepository::class);
+        $this->app->singleton(abstract: QuestionServiceInterface::class, concrete: QuestionService::class);
     }
 
     /**
