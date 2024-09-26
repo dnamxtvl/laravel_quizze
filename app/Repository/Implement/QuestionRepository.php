@@ -84,7 +84,6 @@ readonly class QuestionRepository implements QuestionRepositoryInterface
     public function deleteQuestion(string $quizId): void
     {
         $questionIds = $this->getQuery(filters: ['quizze_id' => $quizId])->pluck('id')->toArray();
-        $this->answer->query()->whereIn('question_id', $questionIds)->delete();
         $this->question->query()->whereIn('id', $questionIds)->delete();
     }
 
@@ -93,6 +92,14 @@ readonly class QuestionRepository implements QuestionRepositoryInterface
         return $this->question->query()
             ->where('quizze_id', $quizId)
             ->with(['answers', 'quizze'])
+            ->get();
+    }
+
+    public function listQuestionByIds(array $questionIds): Collection
+    {
+        return $this->question->query()
+            ->withTrashed()
+            ->whereIn('id', $questionIds)
             ->get();
     }
 }

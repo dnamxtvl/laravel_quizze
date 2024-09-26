@@ -29,6 +29,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property Carbon|mixed $ended_at
  * @property int|mixed $type
  * @property int|mixed|string|null $user_id
+ * @property false|mixed|string $list_question
  */
 class Room extends Model
 {
