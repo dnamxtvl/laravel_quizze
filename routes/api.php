@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\GamerController;
+use App\Http\Controllers\QuestionController;
 use App\Http\Controllers\QuizzesController;
 use App\Http\Controllers\RoomController;
 use App\Http\Middleware\GamerMiddleware;
@@ -21,6 +22,9 @@ Route::group(['middleware' => ['auth:api', 'verified']], function () {
             Route::post('/create', [QuizzesController::class, 'createQuiz'])->name('quizzes.create');
             Route::post('/delete/{quizId}', [QuizzesController::class, 'deleteQuiz'])->name('quizzes.delete');
             Route::get('/list-question/{quizId}', [QuizzesController::class, 'listQuestionOfQuiz'])->name('quizzes.list-question-of-quiz');
+            Route::put('/update-question/{questionId}', [QuestionController::class, 'updateQuestion'])->name('questions.update');
+            Route::post('/create-question/{quizId}', [QuestionController::class, 'createQuestion'])->name('questions.add');
+            Route::post('/delete-question/{questionId}', [QuestionController::class, 'deleteQuestion'])->name('questions.delete');
         });
         Route::prefix('room')->group(function () {
             Route::post('/create/{quizId}', [RoomController::class, 'createRoom'])->name('rooms.create');

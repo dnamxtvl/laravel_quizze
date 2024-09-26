@@ -4,7 +4,6 @@ namespace App\Repository\Interface;
 
 use App\DTOs\Question\CreateQuestionDTO;
 use App\Models\Question;
-use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 
 interface QuestionRepositoryInterface

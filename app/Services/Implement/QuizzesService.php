@@ -5,7 +5,6 @@ namespace App\Services\Implement;
 use App\DTOs\Quizz\CreateQuizzDTO;
 use App\Enums\Exception\ExceptionCodeEnum;
 use App\Exceptions\Quiz\RoomIsRunningException;
-use App\Models\Quizze;
 use App\Repository\Interface\QuestionRepositoryInterface;
 use App\Repository\Interface\QuizzesRepositoryInterface;
 use App\Repository\Interface\RoomRepositoryInterface;
@@ -28,13 +27,6 @@ readonly class QuizzesService implements QuizzesServiceInterface
 
     public function listQuizzes(): Collection|LengthAwarePaginator
     {
-        $quizzes = Quizze::query()->with('questions')->withTrashed()->get();
-//        foreach ($quizzes as $quiz) {
-//            foreach ($quiz->questions as $index => $question) {
-//                $question->index_question = $index + 1;
-//                $question->save();
-//            }
-//        }
         return $this->quizzesRepository->listQuizzes(isPaginate: true, filters: ['user_id' => Auth::id()]);
     }
 

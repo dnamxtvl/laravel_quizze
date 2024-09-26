@@ -55,10 +55,12 @@ readonly class QuestionService implements QuestionServiceInterface
             throw new NotFoundHttpException(message: 'Không tìm thấy bộ câu hỏi!');
         }
 
+        $questions = $this->questionRepository->listQuestionOfQuiz(quizId: $quizId);
+        $questionIndex = $questions[$questions->count() - 1]->index_question + 1;
         DB::beginTransaction();
         try {
             $questionDTO->setQuizId(quizId: $quizId);
-            $newQuestion = $this->questionRepository->createQuestion(questionDTO: $questionDTO);
+            $newQuestion = $this->questionRepository->createQuestion(questionDTO: $questionDTO, indexQuestionOverride: $questionIndex);
             DB::commit();
             return $newQuestion;
         } catch (Throwable $th) {

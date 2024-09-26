@@ -46,6 +46,7 @@ readonly class QuestionRepository implements QuestionRepositoryInterface
         return $this->question->query()
             ->where('quizze_id', $quzId)
             ->where('id', '>', $questionId)
+            ->where('is_old_question', false)
             ->orderBy('id')
             ->first();
     }
@@ -55,13 +56,14 @@ readonly class QuestionRepository implements QuestionRepositoryInterface
         $now = now();
         $questionsInsert = [];
         $answersInsert = [];
-        foreach ($questions as $question) {
+        foreach ($questions as $index => $question) {
             $questionId = Str::orderedUuid();
             /* @var CreateQuestionDTO $question */
             $questionsInsert[] = [
                 'id' => $questionId,
                 'quizze_id' => $quizId,
                 'title' => $question->getTitle(),
+                'index_question' => $index + 1,
                 'created_at' => $now,
                 'updated_at' => $now,
             ];

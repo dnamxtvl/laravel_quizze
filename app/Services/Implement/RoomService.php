@@ -191,7 +191,7 @@ readonly class RoomService implements RoomServiceInterface
             throw new NotFoundHttpException(message: 'Quizz đã bị xóa!');
         }
 
-        $questions = $quiz->questions;
+        $questions = $this->questionRepository->listQuestionOfQuiz(quizId: $quiz->id);
         $countQuestion = $questions->count();
         if (! $countQuestion) {
             throw new NotFoundHttpException(message: 'Không tìm thấy câu hỏi nào!');
