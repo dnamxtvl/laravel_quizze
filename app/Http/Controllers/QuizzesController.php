@@ -6,6 +6,7 @@ use App\DTOs\Answer\CreateAnswerDTO;
 use App\DTOs\Question\CreateQuestionDTO;
 use App\DTOs\Quizz\CreateQuizzDTO;
 use App\Http\Requests\AdminCreateQuizzeRequest;
+use App\Http\Requests\ShareQuestionRequest;
 use App\Services\Interface\QuizzesServiceInterface;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -75,6 +76,17 @@ class QuizzesController extends Controller
             $listQuestion = $this->quizzesService->listQuestionOfQuiz(quizId: $quizId);
 
             return $this->respondWithJson(content: $listQuestion->toArray());
+        } catch (Throwable $th) {
+            return $this->respondWithJsonError(e: $th);
+        }
+    }
+
+    public function shareQuiz(string $quizId, ShareQuestionRequest $request): JsonResponse
+    {
+        try {
+            $this->quizzesService->shareQuiz(quizId: $quizId, email: $request->input(key: 'email'));
+
+            return $this->respondWithJson(content: []);
         } catch (Throwable $th) {
             return $this->respondWithJsonError(e: $th);
         }

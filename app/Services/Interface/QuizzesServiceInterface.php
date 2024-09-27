@@ -15,4 +15,6 @@ interface QuizzesServiceInterface
     public function deleteQuiz(string $quizId): void;
 
     public function listQuestionOfQuiz(string $quizId): Collection;
+
+    public function shareQuiz(string $quizId, string $email): void;
 }

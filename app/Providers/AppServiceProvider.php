@@ -5,15 +5,21 @@ namespace App\Providers;
 use App\Repository\Implement\AnswerRepository;
 use App\Repository\Implement\GamerRepository;
 use App\Repository\Implement\GamerTokenRepository;
+use App\Repository\Implement\NotificationRepository;
 use App\Repository\Implement\QuestionRepository;
 use App\Repository\Implement\QuizzesRepository;
 use App\Repository\Implement\RoomRepository;
+use App\Repository\Implement\UserRepository;
+use App\Repository\Implement\UserShareQuizRepository;
 use App\Repository\Interface\AnswerRepositoryInterface;
 use App\Repository\Interface\GamerRepositoryInterface;
 use App\Repository\Interface\GamerTokenRepositoryInterface;
+use App\Repository\Interface\NotificationRepositoryInterface;
 use App\Repository\Interface\QuestionRepositoryInterface;
 use App\Repository\Interface\QuizzesRepositoryInterface;
 use App\Repository\Interface\RoomRepositoryInterface;
+use App\Repository\Interface\UserRepositoryInterface;
+use App\Repository\Interface\UserShareQuizRepositoryInterface;
 use App\Services\Implement\AuthService;
 use App\Services\Implement\GamerService;
 use App\Services\Implement\QuestionService;
@@ -49,6 +55,9 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(abstract: QuestionRepositoryInterface::class, concrete: QuestionRepository::class);
         $this->app->singleton(abstract: AnswerRepositoryInterface::class, concrete: AnswerRepository::class);
         $this->app->singleton(abstract: QuestionServiceInterface::class, concrete: QuestionService::class);
+        $this->app->singleton(abstract: NotificationRepositoryInterface::class, concrete: NotificationRepository::class);
+        $this->app->singleton(abstract: UserRepositoryInterface::class, concrete: UserRepository::class);
+        $this->app->singleton(abstract: UserShareQuizRepositoryInterface::class, concrete: UserShareQuizRepository::class);
     }
 
     /**

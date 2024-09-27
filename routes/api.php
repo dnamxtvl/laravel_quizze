@@ -25,6 +25,7 @@ Route::group(['middleware' => ['auth:api', 'verified']], function () {
             Route::put('/update-question/{questionId}', [QuestionController::class, 'updateQuestion'])->name('questions.update');
             Route::post('/create-question/{quizId}', [QuestionController::class, 'createQuestion'])->name('questions.add');
             Route::post('/delete-question/{questionId}', [QuestionController::class, 'deleteQuestion'])->name('questions.delete');
+            Route::post('/share/{quizId}', [QuizzesController::class, 'shareQuiz'])->name('quizzes.share');
         });
         Route::prefix('room')->group(function () {
             Route::post('/create/{quizId}', [RoomController::class, 'createRoom'])->name('rooms.create');
