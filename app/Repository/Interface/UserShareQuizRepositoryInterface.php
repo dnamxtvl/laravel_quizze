@@ -13,4 +13,10 @@ interface UserShareQuizRepositoryInterface
     public function findAuthReceiver(array $filters = []): ?UserShareQuiz;
 
     public function createUserShareQuiz(CreateUserShareQuizDTO $userShareQuizDTO): UserShareQuiz;
+
+    public function findByToken(string $token): ?UserShareQuiz;
+
+    public function acceptShareQuiz(UserShareQuiz $userShareQuiz): void;
+
+    public function rejectShareQuiz(UserShareQuiz $userShareQuiz): void;
 }

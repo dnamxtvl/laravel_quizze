@@ -9,6 +9,7 @@ use App\Pipeline\UserShareQuestion\ReceiverFilter;
 use App\Repository\Interface\UserShareQuizRepositoryInterface;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Pipeline\Pipeline;
+use Illuminate\Support\Facades\Log;
 
 readonly class UserShareQuizRepository implements UserShareQuizRepositoryInterface
 {
@@ -43,11 +44,31 @@ readonly class UserShareQuizRepository implements UserShareQuizRepositoryInterfa
     {
         $userShareQuiz = new UserShareQuiz();
         $userShareQuiz->user_share_id = $userShareQuizDTO->getUserShareId();
-        $userShareQuiz->quiz_id = $userShareQuizDTO->getQuizId();
+        $userShareQuiz->quizze_id = $userShareQuizDTO->getQuizId();
         $userShareQuiz->receiver_id = $userShareQuizDTO->getReceiverId();
         $userShareQuiz->token = $userShareQuizDTO->getToken();
         $userShareQuiz->save();
 
         return $userShareQuiz;
+    }
+
+    public function findByToken(string $token): ?UserShareQuiz
+    {
+        return $this->userShareQuestion->query()
+            ->with('quiz')
+            ->where('token', $token)
+            ->first();
+    }
+
+    public function acceptShareQuiz(UserShareQuiz $userShareQuiz): void
+    {
+        $userShareQuiz->is_accept = true;
+        $userShareQuiz->accepted_at = now();
+        $userShareQuiz->save();
+    }
+
+    public function rejectShareQuiz(UserShareQuiz $userShareQuiz): void
+    {
+        $userShareQuiz->delete();
     }
 }

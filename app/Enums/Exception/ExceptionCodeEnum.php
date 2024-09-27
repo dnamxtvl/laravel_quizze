@@ -21,4 +21,6 @@ enum ExceptionCodeEnum: int
     case ROOM_FINISHED = 1001886;
     case ROOM_IS_NOT_FINISHED = 1001887;
     case UNAUTHORIZED_TO_SHARE_QUIZ = 1001888;
+    case SHARED_QUIZ = 1001889;
+    case RECEIVED_QUIZ = 1001890;
 }

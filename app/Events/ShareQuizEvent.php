@@ -2,6 +2,9 @@
 
 namespace App\Events;
 
+use App\Repository\Interface\GamerRepositoryInterface;
+use App\Repository\Interface\RoomRepositoryInterface;
+use Carbon\Carbon;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
@@ -17,6 +20,11 @@ class ShareQuizEvent implements ShouldBroadcast
      */
     public function __construct(
         public readonly string $userId,
+        public readonly string $link,
+        public readonly string $title,
+        public readonly string $content,
+        public readonly Carbon $createdAt,
+        public readonly string $notifyId,
     ) {}
 
     public function broadcastOn(): array

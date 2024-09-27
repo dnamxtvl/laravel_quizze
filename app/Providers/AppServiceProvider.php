@@ -22,11 +22,13 @@ use App\Repository\Interface\UserRepositoryInterface;
 use App\Repository\Interface\UserShareQuizRepositoryInterface;
 use App\Services\Implement\AuthService;
 use App\Services\Implement\GamerService;
+use App\Services\Implement\NotificationService;
 use App\Services\Implement\QuestionService;
 use App\Services\Implement\QuizzesService;
 use App\Services\Implement\RoomService;
 use App\Services\Interface\AuthServiceInterface;
 use App\Services\Interface\GamerServiceInterface;
+use App\Services\Interface\NotificationServiceInterface;
 use App\Services\Interface\QuestionServiceInterface;
 use App\Services\Interface\QuizzesServiceInterface;
 use App\Services\Interface\RoomServiceInterface;
@@ -58,6 +60,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(abstract: NotificationRepositoryInterface::class, concrete: NotificationRepository::class);
         $this->app->singleton(abstract: UserRepositoryInterface::class, concrete: UserRepository::class);
         $this->app->singleton(abstract: UserShareQuizRepositoryInterface::class, concrete: UserShareQuizRepository::class);
+        $this->app->singleton(abstract: NotificationServiceInterface::class, concrete: NotificationService::class);
     }
 
     /**

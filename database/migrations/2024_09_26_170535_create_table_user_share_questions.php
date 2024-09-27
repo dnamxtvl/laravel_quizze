@@ -20,6 +20,7 @@ return new class extends Migration
             $table->index(['quizze_id', 'receiver_id']);
             $table->string('token')->unique();
             $table->boolean('is_accept')->default(false);
+            $table->timestamp('accepted_at')->nullable();
             $table->timestamps();
         });
     }

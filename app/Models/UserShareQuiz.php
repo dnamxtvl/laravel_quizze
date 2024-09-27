@@ -2,20 +2,20 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * @property mixed|string $user_share_id
- * @property mixed|string $quiz_id
  * @property mixed|string $receiver_id
  * @property mixed|string $token
+ * @property mixed|true $is_accept
+ * @property mixed|string $quizze_id
  */
 class UserShareQuiz extends Model
 {
-    use HasFactory, HasUuids;
+    use HasFactory;
 
     protected $table = 'user_share_quizzes';
 
@@ -23,7 +23,7 @@ class UserShareQuiz extends Model
 
     public function quiz(): BelongsTo
     {
-        return $this->belongsTo(related: Quizze::class);
+        return $this->belongsTo(related: Quizze::class, foreignKey: 'quizze_id', ownerKey: 'id');
     }
 
     public function userShare(): BelongsTo

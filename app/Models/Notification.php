@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Carbon\Carbon;
 
 /**
  * @property mixed|string $user_id
@@ -13,6 +14,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property mixed|string $title
  * @property mixed|string $content
  * @property mixed|string|null $link
+ * @property mixed $created_at
+ * @property mixed $id
+ * @property mixed|true $is_read
+ * @property Carbon|mixed $read_at
  */
 class Notification extends Model
 {

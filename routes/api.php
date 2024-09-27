@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\GamerController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\QuestionController;
 use App\Http\Controllers\QuizzesController;
 use App\Http\Controllers\RoomController;
@@ -26,6 +27,9 @@ Route::group(['middleware' => ['auth:api', 'verified']], function () {
             Route::post('/create-question/{quizId}', [QuestionController::class, 'createQuestion'])->name('questions.add');
             Route::post('/delete-question/{questionId}', [QuestionController::class, 'deleteQuestion'])->name('questions.delete');
             Route::post('/share/{quizId}', [QuizzesController::class, 'shareQuiz'])->name('quizzes.share');
+            Route::post('/accept-share/{token}', [QuizzesController::class, 'acceptShareQuiz'])->name('quizzes.accept-share');
+            Route::get('/detail-share/{token}', [QuizzesController::class, 'detailShareQuiz'])->name('quizzes.detail-share');
+            Route::post('/reject-share/{token}', [QuizzesController::class, 'rejectShareQuiz'])->name('quizzes.reject-share');
         });
         Route::prefix('room')->group(function () {
             Route::post('/create/{quizId}', [RoomController::class, 'createRoom'])->name('rooms.create');
@@ -36,6 +40,9 @@ Route::group(['middleware' => ['auth:api', 'verified']], function () {
             Route::post('/end-game/{roomId}', [RoomController::class, 'adminEndGame'])->name('rooms.end-game');
             Route::get('/list-report', [RoomController::class, 'getListRoomReport'])->name('rooms.list-report');
             Route::post('/delete-report/{roomId}', [RoomController::class, 'deleteReport'])->name('rooms.delete-report');
+        });
+        Route::prefix('notification')->group(function () {
+            Route::get('/list', [NotificationController::class, 'listNotify'])->name('notifications.list');
         });
     });
 });

@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('link')->nullable();
             $table->string('avatar_notify')->nullable();
             $table->boolean('is_read')->default(false);
+            $table->timestamp('read_at')->nullable();
             $table->timestamps();
         });
     }
