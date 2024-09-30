@@ -80,8 +80,22 @@ readonly class QuizzesService implements QuizzesServiceInterface
             throw new NotFoundHttpException(message: 'Không tìm thấy bộ câu hỏi!');
         }
 
+        $authReceiver = null;
+        if ($quiz->user_id != Auth::id()) {
+            $authReceiver = $this->userShareQuestionRepository->findAuthReceiver(filters: [
+                'receiver_id' => Auth::id(),
+                'quizze_id' => $quizId,
+            ]);
+            if (!$authReceiver) {
+                throw new UnAuthorizeShareQuizException(
+                    message: 'Bạn không có quyền xóa bộ câu hỏi này',
+                    code: ExceptionCodeEnum::UNAUTHORIZED_TO_SHARE_QUIZ->value
+                );
+            }
+        }
+
         $listRoomRunning = $this->roomRepository->getListRoomRunning(quizId: $quizId);
-        if ($listRoomRunning->count() > 0) {
+        if ($listRoomRunning->count() > 0 && !$authReceiver) {
             $listRoomCode = $listRoomRunning->pluck('code', 'id')->toArray();
             $listCodeValue = implode(',', array_unique($listRoomCode));
             throw new RoomIsRunningException(
@@ -90,9 +104,15 @@ readonly class QuizzesService implements QuizzesServiceInterface
             );
         }
 
+        if ($authReceiver) {
+            $this->userShareQuestionRepository->deleteShareQuiz(userShareQuiz: $authReceiver);
+        }
+
         try {
-            $quiz->delete();
-            $this->questionRepository->deleteQuestionByQuiz(quizId: $quizId);
+            if ($quiz->user_id == Auth::id()) {
+                $quiz->delete();
+                $this->questionRepository->deleteQuestionByQuiz(quizId: $quizId);
+            }
             Db::commit();
         } catch (Throwable $th) {
             DB::rollBack();
@@ -165,9 +185,10 @@ readonly class QuizzesService implements QuizzesServiceInterface
             filters: ['receiver_id' => $user->id, 'quizze_id' => $quizId]
         )->first();
 
-        if (!is_null($userShared) && $userShared->is_accept) {
+        if ((!is_null($userShared) && $userShared->is_accept) || $user->id == $quiz->user_id) {
             throw new UnAuthorizeShareQuizException(message: $email . ' đã được chia sẽ bộ cảu hỏi từ truớc đó!');
         }
+
 
         $linkPath = config('app.front_end_url') . config('app.quiz.path_link_verify_share') . '/';
         $notify = new CreateNotifyDTO(
