@@ -33,6 +33,7 @@ class AuthService implements AuthServiceInterface
         if (is_null($user->email_verified_at)) {
             throw new EmailNotVerifiedException(code: ExceptionCodeEnum::UNVERIFIED_ACCOUNT->value);
         }
+        $user->tokens()->delete();
         $tokenResult = $user->createToken('authToken')->plainTextToken;
 
         return new AdminLoginResponseDataDTO(
