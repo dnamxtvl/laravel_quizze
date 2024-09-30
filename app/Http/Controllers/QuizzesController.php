@@ -5,7 +5,11 @@ namespace App\Http\Controllers;
 use App\DTOs\Answer\CreateAnswerDTO;
 use App\DTOs\Question\CreateQuestionDTO;
 use App\DTOs\Quizz\CreateQuizzDTO;
+use App\Enums\Quiz\TypeQuizEnum;
+use App\Http\Requests\ListQuizzesRequest;
+use App\Http\Requests\ShareQuizRequest;
 use App\Http\Requests\AdminCreateQuizzeRequest;
+use App\Http\Requests\ShareQuestionRequest;
 use App\Services\Interface\QuizzesServiceInterface;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -17,10 +21,13 @@ class QuizzesController extends Controller
         private readonly QuizzesServiceInterface $quizzesService,
     ) {}
 
-    public function listQuizzesPagination(): JsonResponse
+    public function listQuizzesPagination(ListQuizzesRequest $request): JsonResponse
     {
         try {
-            $listQuizzes = $this->quizzesService->listQuizzes();
+            $listQuizzes = $this->quizzesService->listQuizzes(
+                type: $request->input(key: 'type') ?
+                    TypeQuizEnum::from($request->input(key: 'type')) : TypeQuizEnum::ALL
+            );
 
             return $this->respondWithJson(content: $listQuizzes->toArray());
         } catch (Throwable $th) {
@@ -75,6 +82,49 @@ class QuizzesController extends Controller
             $listQuestion = $this->quizzesService->listQuestionOfQuiz(quizId: $quizId);
 
             return $this->respondWithJson(content: $listQuestion->toArray());
+        } catch (Throwable $th) {
+            return $this->respondWithJsonError(e: $th);
+        }
+    }
+
+    public function shareQuiz(string $quizId, ShareQuestionRequest $request): JsonResponse
+    {
+        try {
+            $this->quizzesService->shareQuiz(quizId: $quizId, email: $request->input(key: 'email'));
+
+            return $this->respondWithJson(content: []);
+        } catch (Throwable $th) {
+            return $this->respondWithJsonError(e: $th);
+        }
+    }
+
+    public function acceptShareQuiz(string $token, ShareQuizRequest $request): JsonResponse
+    {
+        try {
+            $this->quizzesService->acceptShareQuiz(token: $token, notifyId: $request->input(key: 'notification_id'));
+
+            return $this->respondWithJson(content: []);
+        } catch (Throwable $th) {
+            return $this->respondWithJsonError(e: $th);
+        }
+    }
+
+    public function detailShareQuiz(string $token, ShareQuizRequest $request): JsonResponse
+    {
+        try {
+            $userShare = $this->quizzesService->detailShareQuiz(token: $token, notifyId: $request->input(key: 'notification_id'));
+
+            return $this->respondWithJson(content: $userShare->toArray());
+        } catch (Throwable $th) {
+            return $this->respondWithJsonError(e: $th);
+        }
+    }
+
+    public function rejectShareQuiz(string $token, ShareQuizRequest $request): JsonResponse
+    {
+        try {
+            $this->quizzesService->rejectShareQuiz(token: $token, notifyId: $request->input(key: 'notification_id'));
+            return $this->respondWithJson(content: []);
         } catch (Throwable $th) {
             return $this->respondWithJsonError(e: $th);
         }

@@ -12,12 +12,16 @@ Broadcast::channel('user.join-room.{id}', function ($user, $id) {
         return false;
     }
 
-    return $user->id == $room->quizze->user_id;
+    return $user->id == $room->user_id;
 });
 
- Broadcast::channel(channel: 'channel_for_everyone', callback: function ($user) {
-     return $user->id != 9;
- });
+Broadcast::channel('admin.share-quiz.{id}', function ($user, $id) {
+    return $user->id == $id;
+});
+
+Broadcast::channel(channel: 'channel_for_everyone', callback: function ($user) {
+    return $user->id != 9;
+});
 
 Broadcast::channel('chat', function () {
     Log::info(message: 'ahihi test');

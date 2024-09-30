@@ -101,8 +101,8 @@ readonly class QuestionRepository implements QuestionRepositoryInterface
 
     public function listQuestionByIds(array $questionIds): Collection
     {
-        return $this->question->query()
-            ->withTrashed()
+        return $this->question->withTrashed()
+            ->with(['answers' => fn ($q) => $q->withTrashed()])
             ->whereIn('id', $questionIds)
             ->get();
     }

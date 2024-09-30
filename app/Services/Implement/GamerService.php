@@ -73,16 +73,24 @@ readonly class GamerService implements GamerServiceInterface
             throw new NotFoundHttpException(message: 'Câu trả lời không tồn tại!', code: ExceptionCodeEnum::NOT_FOUND_ANSWER->value);
         }
         /* @var Answer $answer */
-        $isExistGamerAnswer = $this->answerRepository->getQuery(filters: ['gamer_id' => $gamer->id, 'question_id' => $answer->question_id])->exists();
+        $isExistGamerAnswer = $this->answerRepository->getQuery(
+            filters: ['gamer_id' => $gamer->id, 'question_id' => $answer->question_id]
+        )->exists();
         $diffInMilliseconds = 0;
         $score = $answer->is_correct;
 
         if ($room->type == RoomTypeEnum::KAHOOT->value) {
             if ($isExistGamerAnswer) {
-                throw new BadRequestHttpException(message: 'Bạn đã trả lời câu hỏi này rồi!', code: ExceptionCodeEnum::EXIST_GAMER_ANSWER->value);
+                throw new BadRequestHttpException(
+                    message: 'Bạn đã trả lời câu hỏi này rồi!',
+                    code: ExceptionCodeEnum::EXIST_GAMER_ANSWER->value
+                );
             }
             if ($room->current_question_id != $answer->question_id) {
-                throw new BadRequestHttpException(message: 'Câu trả lời không hợp lệ!', code: ExceptionCodeEnum::INVALID_ANSWER->value);
+                throw new BadRequestHttpException(
+                    message: 'Câu trả lời không hợp lệ!',
+                    code: ExceptionCodeEnum::INVALID_ANSWER->value
+                );
             }
             $maxTime = ((int) config(key: 'app.quizzes.time_reply')) * 1000;
             $maxScore = (int) config(key: 'app.quizzes.max_score');

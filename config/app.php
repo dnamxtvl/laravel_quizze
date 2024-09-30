@@ -149,5 +149,16 @@ return [
         ],
         'min_answers' => 2,
         'max_answers' => 4,
-    ]
+    ],
+
+    'quiz' => [
+        'path_link_verify_share' => '/admin/dashboard/verify-receive-quiz',
+    ],
+
+    'front_end_url' => env('FRONT_END_URL', 'http://localhost:3002'),
+
+    'notify' => [
+        'limit_pagination' => 5,
+        'notify_id_length' => 36,
+    ],
 ];

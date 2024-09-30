@@ -27,6 +27,7 @@ use App\Repository\Interface\GamerTokenRepositoryInterface;
 use App\Repository\Interface\QuestionRepositoryInterface;
 use App\Repository\Interface\QuizzesRepositoryInterface;
 use App\Repository\Interface\RoomRepositoryInterface;
+use App\Repository\Interface\UserShareQuizRepositoryInterface;
 use App\Services\Interface\RoomServiceInterface;
 use Carbon\Carbon;
 use Dflydev\DotAccessData\Exception\DataException;
@@ -54,6 +55,7 @@ readonly class RoomService implements RoomServiceInterface
         private GamerTokenRepositoryInterface $gamerTokenRepository,
         private QuestionRepositoryInterface $questionRepository,
         private QuizzesRepositoryInterface $quizzesRepository,
+        private UserShareQuizRepositoryInterface $userShareQuizRepository,
     ) {}
 
     public function createRoom(string $quizId, CreateRoomParamsDTO $createRoomParams): Model
@@ -61,6 +63,10 @@ readonly class RoomService implements RoomServiceInterface
         $quiz = $this->quizzesRepository->findById(quizId: $quizId);
         if (is_null($quiz)) {
             throw new NotFoundHttpException(message: 'Không tìm thấy bộ câu hỏi!');
+        }
+
+        if ($quiz->user_id != Auth::id()) {
+            $this->checkIsUserSharedQuiz(quizId: $quizId);
         }
 
         $listQuestion = $this->questionRepository->listQuestionOfQuiz(quizId: $quizId)->pluck('id')->toArray();
@@ -199,7 +205,7 @@ readonly class RoomService implements RoomServiceInterface
         }
 
         if ($quiz->user_id != Auth::id()) {
-            throw new UnAuthorizationStartRoomException(code: ExceptionCodeEnum::NOT_PERMISSION_START_ROOM->value);
+            $this->checkIsUserSharedQuiz(quizId: $quiz->id);
         }
 
         if (! $room->gamerTokens->count()) {
@@ -232,7 +238,7 @@ readonly class RoomService implements RoomServiceInterface
     {
         $questions = $this->questionRepository->listQuestionByIds(questionIds: json_decode($room->list_question));
         if (! $questions->count() || is_null($room->quizze)) {
-            throw new NotFoundHttpException(message: 'Không tìm thấy câu hỏi nào!', code: ExceptionCodeEnum::NON_QUESTION->value);
+            throw new NotFoundHttpException(message: 'Bộ câu hỏi đã bị xóa!', code: ExceptionCodeEnum::NON_QUESTION->value);
         }
 
         foreach ($questions as $question) {
@@ -273,10 +279,7 @@ readonly class RoomService implements RoomServiceInterface
             }
 
             if ($quiz->user_id != Auth::id()) {
-                throw new UnAuthorizationStartRoomException(
-                    message: 'Bạn không có quyền thực hiện hành động này!',
-                    code: ExceptionCodeEnum::NOT_PERMISSION_START_ROOM->value
-                );
+                $this->checkIsUserSharedQuiz(quizId: $quiz->id);
             }
 
             $nextQuestion = $this->questionRepository->findNextQuestion(quzId: $room->quizze_id, questionId: $questionId);
@@ -313,10 +316,7 @@ readonly class RoomService implements RoomServiceInterface
         }
 
         if (Auth::id() != $room->quizze->user_id) {
-            throw new UnAuthorizationStartRoomException(
-                message: 'Bạn không có quyền thực hiện hành động này!',
-                code: ExceptionCodeEnum::NOT_PERMISSION_END_ROOM->value
-            );
+            $this->checkIsUserSharedQuiz(quizId: $room->quizze_id);
         }
 
         $room->status = RoomStatusEnum::FINISHED->value;
@@ -372,6 +372,19 @@ readonly class RoomService implements RoomServiceInterface
             DB::rollBack();
             Log::error(message: $e->getMessage());
             throw new InternalErrorException(message: 'Có lỗi xảy ra!');
+        }
+    }
+
+    public function checkIsUserSharedQuiz(string $quizId): void
+    {
+        $isShared =  $this->userShareQuizRepository->getQuery(filters: ['quizze_id' => $quizId, 'receiver_id' => Auth::id()])
+            ->where('is_accept', true)->exists();
+
+        if (!$isShared) {
+            throw new UnAuthorizationStartRoomException(
+                message: 'Bạn không có quyền thực hiện hành động này!',
+                code: ExceptionCodeEnum::NOT_PERMISSION_END_ROOM->value
+            );
         }
     }
 }

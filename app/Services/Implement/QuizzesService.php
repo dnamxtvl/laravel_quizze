@@ -2,32 +2,62 @@
 
 namespace App\Services\Implement;
 
+use App\DTOs\Notification\CreateNotifyDTO;
 use App\DTOs\Quizz\CreateQuizzDTO;
+use App\DTOs\UserShareQuiz\CreateUserShareQuizDTO;
 use App\Enums\Exception\ExceptionCodeEnum;
+use App\Enums\Notification\TypeNotifyEnum;
+use App\Enums\Quiz\TypeQuizEnum;
+use App\Enums\User\UserRoleEnum;
+use App\Events\ShareQuizEvent;
 use App\Exceptions\Quiz\RoomIsRunningException;
+use App\Exceptions\Quiz\UnAuthorizeRejectQuizException;
+use App\Exceptions\Quiz\UnAuthorizeShareQuizException;
+use App\Models\Category;
+use App\Models\User;
+use App\Models\UserShareQuiz;
+use App\Repository\Interface\NotificationRepositoryInterface;
 use App\Repository\Interface\QuestionRepositoryInterface;
 use App\Repository\Interface\QuizzesRepositoryInterface;
 use App\Repository\Interface\RoomRepositoryInterface;
+use App\Repository\Interface\UserRepositoryInterface;
+use App\Repository\Interface\UserShareQuizRepositoryInterface;
 use App\Services\Interface\QuizzesServiceInterface;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 use Symfony\Component\CssSelector\Exception\InternalErrorException;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Throwable;
 
 readonly class QuizzesService implements QuizzesServiceInterface
 {
     public function __construct(
-        private QuizzesRepositoryInterface $quizzesRepository,
-        private QuestionRepositoryInterface $questionRepository,
-        private RoomRepositoryInterface $roomRepository,
+        private QuizzesRepositoryInterface       $quizzesRepository,
+        private QuestionRepositoryInterface      $questionRepository,
+        private RoomRepositoryInterface          $roomRepository,
+        private UserRepositoryInterface          $userRepository,
+        private UserShareQuizRepositoryInterface $userShareQuestionRepository,
+        private NotificationRepositoryInterface $notificationRepository,
     ) {}
 
-    public function listQuizzes(): Collection|LengthAwarePaginator
+    public function listQuizzes(TypeQuizEnum $type): Collection|LengthAwarePaginator
     {
-        return $this->quizzesRepository->listQuizzes(isPaginate: true, filters: ['user_id' => Auth::id()]);
+//        $cates = ["Kiến thức tổng hợp", "Công nghệ", "Khoa học máy tính", "Lập trình", "Trí tuệ nhân tạo", "Kỹ thuật", "Kỹ năng mềm", "Kinh tế", "Công nghệ sinh học", "Kế toán", "Tài chính", "Ngân hàng", "Quản trị kinh doanh", "Marketing", "Thương mại điện tử", "Quản lý nhân sự", "Pháp luật", "Luật dân sự", "Luật hình sự", "Luật thương mại", "Chính trị", "Giáo dục", "Toán học", "Vật lý", "Hóa học", "Sinh học", "Khoa học môi trường", "Khoa học sức khỏe", "Y học", "Lịch sử", "Địa lý", "Văn học", "Ngữ văn", "Tiếng Anh", "Tiếng Pháp", "Tiếng Đức", "Tiếng Nhật", "Tiếng Trung", "Tin học", "Âm nhạc", "Hội họa", "Thể thao", "Tâm lý học", "Triết học", "Xã hội học", "Quản lý dự án", "Khởi nghiệp", "Phát triển cá nhân", "Giao tiếp", "Đàm phán", "Lãnh đạo", "Khoa học vũ trụ", "Vật liệu học", "Khoa học trái đất", "Khí tượng học", "Hải dương học", "Vi sinh học", "Sinh thái học", "Kiến trúc", "Kỹ thuật xây dựng", "Kỹ thuật điện", "Kỹ thuật cơ khí", "Kỹ thuật hóa học", "Nhiếp ảnh", "Văn hóa học", "Xã hội dân sự", "Khoa học", "Thiết kế", "Nghệ thuật", "Sáng tạo"];
+//        foreach ($cates as $key => $cate) {
+//            $cateModel = Category::query()->find(id: $key + 1);
+//            $cateModel->name = $cate;
+//            $cateModel->save();
+//        }
+        return $this->quizzesRepository->listQuizzes(
+            type: $type,
+            isPaginate: true,
+            filters: ['user_id' => Auth::id()]
+        );
     }
 
     /**
@@ -79,6 +109,184 @@ readonly class QuizzesService implements QuizzesServiceInterface
 
     public function listQuestionOfQuiz(string $quizId): Collection
     {
+        $quiz = $this->quizzesRepository->findById(quizId: $quizId);
+        if (is_null($quiz)) {
+            throw new NotFoundHttpException(message: 'Không tìm thấy bộ cảu hỏi!');
+        }
+
+        if ($quiz->user_id != Auth::id()) {
+            $isUserShared =  $this->userShareQuestionRepository->getQuery(filters: ['quizze_id' => $quizId, 'receiver_id' => Auth::id()])
+                ->where('is_accept', true)->exists();
+            if (!$isUserShared) {
+                throw new UnAuthorizeShareQuizException(
+                    message: 'Bạn không có quyền xem bộ câu hỏi này!',
+                    code: ExceptionCodeEnum::NOT_PERMISSION_VIEW_QUIZ->value
+                );
+            }
+        }
+
         return $this->questionRepository->listQuestionOfQuiz(quizId: $quizId);
+    }
+
+    /**
+     * @throws InternalErrorException
+     */
+    public function shareQuiz(string $quizId, string $email): void
+    {
+        $user = $this->userRepository->findByEmail(email: $email);
+        if (is_null($user) || $user->role != UserRoleEnum::ADMIN->value) {
+            throw new NotFoundHttpException(message: 'Không tìm thấy người dùng!');
+        }
+
+        $quiz = $this->quizzesRepository->findById(quizId: $quizId);
+        if (is_null($quiz)) {
+            throw new NotFoundHttpException(message: 'Không tìm thấy bộ cảu hỏi!');
+        }
+
+        $authUser = Auth::user();
+        /* @var User $authUser */
+        if ($authUser->email == $email) {
+            throw new BadRequestHttpException(message: 'Không thể chia sẻ cho chính mình!');
+        }
+
+        $authId = $authUser->id;
+
+        if ($quiz->user_id != $authId) {
+            $authReceiver = $this->userShareQuestionRepository->findAuthReceiver(filters: [
+                'receiver_id' => $authId,
+                'quizze_id' => $quizId,
+            ]);
+            if (is_null($authReceiver)) {
+                throw new UnAuthorizeShareQuizException(code: ExceptionCodeEnum::UNAUTHORIZED_TO_SHARE_QUIZ->value);
+            }
+        }
+
+        $userShareQuiz = new CreateUserShareQuizDTO(
+            userShareId: $authId,
+            quizId: $quizId,
+            receiverId: $user->id,
+            token: hash('sha512', ($authId . $user->id . $quizId . Str::uuid())),
+        );
+
+        $userShared = $this->userShareQuestionRepository->getQuery(
+            filters: ['receiver_id' => $user->id, 'quizze_id' => $quizId]
+        )->first();
+
+        if (!is_null($userShared) && $userShared->is_accept) {
+            throw new UnAuthorizeShareQuizException(message: $email . ' đã được chia sẽ bộ cảu hỏi từ truớc đó!');
+        }
+
+        $linkPath = config('app.front_end_url') . config('app.quiz.path_link_verify_share') . '/';
+        $notify = new CreateNotifyDTO(
+            userId: $user->id,
+            title: "Bộ câu hỏi mới!",
+            content: $authUser->name . ' đã chia sẽ bộ cảu hỏi ' . $quiz->title . ' với bạn!',
+            type: TypeNotifyEnum::SHARE_QUIZ,
+            link: !is_null($userShared) ? $linkPath . $userShared->token
+                : $linkPath . $userShareQuiz->getToken(),
+        );
+
+        DB::beginTransaction();
+        try {
+            if (is_null($userShared)) {
+                $this->userShareQuestionRepository->createUserShareQuiz(userShareQuizDTO: $userShareQuiz);
+            }
+            $newNotify = $this->notificationRepository->createNotify(notifyDTO: $notify);
+            broadcast(new ShareQuizEvent(
+                userId: $user->id,
+                link: $notify->getLink(),
+                title: $newNotify->title,
+                content: $newNotify->content,
+                createdAt: $newNotify->created_at,
+                notifyId: $newNotify->id,
+            ))->toOthers();
+            DB::commit();
+        } catch (Throwable $th) {
+            DB::rollBack();
+            Log::error(message: $th->getMessage());
+            throw new InternalErrorException(message: 'Đã xảy ra lỗi!');
+        }
+    }
+
+    /**
+     * @throws InternalErrorException
+     */
+    public function acceptShareQuiz(string $token, ?string $notifyId = null): void
+    {
+        $userShareQuiz = $this->userShareQuestionRepository->findByToken(token: $token);
+        if (is_null($userShareQuiz)) {
+            throw new NotFoundHttpException(message: 'Token không hợp lệ hoặc đã hết hạn!');
+        }
+
+        if ($userShareQuiz->is_accept) {
+            throw new BadRequestHttpException(
+                message: 'Bạn đã nhận chia sẻ bộ câu hỏi này trước đó rồi!',
+                code: ExceptionCodeEnum::SHARED_QUIZ->value,
+            );
+        }
+
+        $notify = null;
+        if (!is_null($notifyId)) {
+            $notify = $this->notificationRepository->findById(notifyId: $notifyId);
+        }
+
+        DB::beginTransaction();
+        try {
+            $this->userShareQuestionRepository->acceptShareQuiz(userShareQuiz: $userShareQuiz);
+            if ($notify) $this->notificationRepository->deleteNotify(notification: $notify);
+            DB::commit();
+        } catch (Throwable $th) {
+            DB::rollBack();
+            Log::error(message: $th->getMessage());
+            throw new InternalErrorException(message: 'Đã xảy ra lỗi!');
+        }
+    }
+
+    public function detailShareQuiz(string $token, ?string $notifyId = null): UserShareQuiz
+    {
+        if (!is_null($notifyId)) {
+            $notify = $this->notificationRepository->findById(notifyId: $notifyId);
+            if ($notify && !$notify->is_read) $this->notificationRepository->readNotify(notification: $notify);
+        }
+
+        $userShare = $this->userShareQuestionRepository->findByToken(token: $token);
+        if (is_null($userShare) || $userShare->receiver_id != Auth::id()) {
+            throw new NotFoundHttpException(
+                message: 'Token không hợp lệ hoặc yêu cầu chia sẻ trước đó đã bị từ chối!',
+                code: ExceptionCodeEnum::REJECTED_QUIZ->value,
+            );
+        }
+
+        return $userShare;
+    }
+
+    /**
+     * @throws InternalErrorException
+     */
+    public function rejectShareQuiz(string $token, ?string $notifyId = null): void
+    {
+        $userShared = $this->userShareQuestionRepository->findByToken(token: $token);
+        if (is_null($userShared) || $userShared->receiver_id != Auth::id()) {
+            throw new NotFoundHttpException(message: 'Token không hợp lệ hoặc đã hết hạn!');
+        }
+
+        $notify = null;
+        if (!is_null($notifyId)) {
+            $notify = $this->notificationRepository->findById(notifyId: $notifyId);
+        }
+        DB::beginTransaction();
+        try {
+            if ($userShared->is_accept) {
+                throw new UnAuthorizeRejectQuizException(code: ExceptionCodeEnum::RECEIVED_QUIZ->value);
+            }
+            $this->userShareQuestionRepository->rejectShareQuiz(userShareQuiz: $userShared);
+            if ($notify) $this->notificationRepository->deleteNotify(notification: $notify);
+
+            DB::commit();
+        } catch (Throwable $th) {
+            DB::rollBack();
+            Log::error(message: $th->getMessage());
+            throw new InternalErrorException(message: 'Đã xảy ra lỗi!');
+        }
     }
 }
