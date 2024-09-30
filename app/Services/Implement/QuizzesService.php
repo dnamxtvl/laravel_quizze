@@ -86,7 +86,7 @@ readonly class QuizzesService implements QuizzesServiceInterface
                 'receiver_id' => Auth::id(),
                 'quizze_id' => $quizId,
             ]);
-            if (is_null($authReceiver)) {
+            if (!$authReceiver) {
                 throw new UnAuthorizeShareQuizException(
                     message: 'Bạn không có quyền xóa bộ câu hỏi này',
                     code: ExceptionCodeEnum::UNAUTHORIZED_TO_SHARE_QUIZ->value
@@ -95,7 +95,7 @@ readonly class QuizzesService implements QuizzesServiceInterface
         }
 
         $listRoomRunning = $this->roomRepository->getListRoomRunning(quizId: $quizId);
-        if ($listRoomRunning->count() > 0) {
+        if ($listRoomRunning->count() > 0 && !$authReceiver) {
             $listRoomCode = $listRoomRunning->pluck('code', 'id')->toArray();
             $listCodeValue = implode(',', array_unique($listRoomCode));
             throw new RoomIsRunningException(
