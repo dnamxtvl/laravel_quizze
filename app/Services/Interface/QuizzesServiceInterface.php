@@ -3,13 +3,14 @@
 namespace App\Services\Interface;
 
 use App\DTOs\Quizz\CreateQuizzDTO;
+use App\Enums\Quiz\TypeQuizEnum;
 use App\Models\UserShareQuiz;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
 
 interface QuizzesServiceInterface
 {
-    public function listQuizzes(): Collection|LengthAwarePaginator;
+    public function listQuizzes(TypeQuizEnum $type): Collection|LengthAwarePaginator;
 
     public function createQuiz(CreateQuizzDTO $quizDTO, array $questionDTO): void;
 

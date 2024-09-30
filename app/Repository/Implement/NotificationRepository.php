@@ -4,13 +4,12 @@ namespace App\Repository\Implement;
 
 use App\DTOs\Notification\CreateNotifyDTO;
 use App\Models\Notification;
+use App\Pipeline\Global\UserIdFilter;
 use App\Pipeline\Notification\IsReadFilter;
-use App\Pipeline\UserShareQuestion\UserShareIdFilter;
 use App\Repository\Interface\NotificationRepositoryInterface;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pipeline\Pipeline;
-use Illuminate\Support\Facades\Log;
 
 readonly class NotificationRepository implements NotificationRepositoryInterface
 {
@@ -28,7 +27,7 @@ readonly class NotificationRepository implements NotificationRepositoryInterface
         return app(abstract: Pipeline::class)
             ->send($query)
             ->through([
-                new UserShareIdFilter(filters: $filters),
+                new UserIdFilter(filters: $filters),
                 new IsReadFilter(filters: $filters),
             ])
             ->thenReturn();
@@ -88,7 +87,6 @@ readonly class NotificationRepository implements NotificationRepositoryInterface
 
     public function deleteNotify(Notification $notification): void
     {
-        Log::info("Delete notify: {$notification->id}");
         $notification->delete();
     }
 }

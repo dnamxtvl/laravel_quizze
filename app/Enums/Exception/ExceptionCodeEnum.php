@@ -23,4 +23,6 @@ enum ExceptionCodeEnum: int
     case UNAUTHORIZED_TO_SHARE_QUIZ = 1001888;
     case SHARED_QUIZ = 1001889;
     case RECEIVED_QUIZ = 1001890;
+    case REJECTED_QUIZ = 1001891;
+    case NOT_PERMISSION_VIEW_QUIZ = 1001892;
 }

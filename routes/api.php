@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\GamerController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\QuestionController;
@@ -43,6 +44,10 @@ Route::group(['middleware' => ['auth:api', 'verified']], function () {
         });
         Route::prefix('notification')->group(function () {
             Route::get('/list', [NotificationController::class, 'listNotify'])->name('notifications.list');
+            Route::post('/delete/{notifyId}', [NotificationController::class, 'deleteNotify'])->name('notifications.delete');
+        });
+        Route::prefix('category')->group(function () {
+            Route::get('/list', [CategoryController::class, 'listCategory'])->name('categories.list');
         });
     });
 });

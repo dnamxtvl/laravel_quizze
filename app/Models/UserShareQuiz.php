@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Carbon\Carbon;
 
 /**
  * @property mixed|string $user_share_id
@@ -12,6 +13,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property mixed|string $token
  * @property mixed|true $is_accept
  * @property mixed|string $quizze_id
+ * @property Carbon|mixed $accepted_at
  */
 class UserShareQuiz extends Model
 {

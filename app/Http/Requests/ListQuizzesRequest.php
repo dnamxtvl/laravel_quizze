@@ -2,10 +2,11 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\Quiz\TypeQuizEnum;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
-class ShareQuizRequest extends FormRequest
+class ListQuizzesRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -23,15 +24,14 @@ class ShareQuizRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'notification_id' => 'nullable|string|size:' . config(key: 'app.notify.notify_id_length'),
+            'type' => 'nullable|in:'.implode(',', array_map(fn ($enum) => $enum->value, TypeQuizEnum::cases())),
         ];
     }
 
     public function messages(): array
     {
         return [
-            'notification_id.size' => 'Thông báo không hợp lệ',
-            'notification_id.string' => 'Thông báo không hợp lệ',
+            'type.in' => 'Type quiz không hợp lệ!',
         ];
     }
 }

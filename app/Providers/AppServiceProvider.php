@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Repository\Implement\AnswerRepository;
+use App\Repository\Implement\CategoryRepository;
 use App\Repository\Implement\GamerRepository;
 use App\Repository\Implement\GamerTokenRepository;
 use App\Repository\Implement\NotificationRepository;
@@ -12,6 +13,7 @@ use App\Repository\Implement\RoomRepository;
 use App\Repository\Implement\UserRepository;
 use App\Repository\Implement\UserShareQuizRepository;
 use App\Repository\Interface\AnswerRepositoryInterface;
+use App\Repository\Interface\CategoryRepositoryInterface;
 use App\Repository\Interface\GamerRepositoryInterface;
 use App\Repository\Interface\GamerTokenRepositoryInterface;
 use App\Repository\Interface\NotificationRepositoryInterface;
@@ -61,6 +63,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(abstract: UserRepositoryInterface::class, concrete: UserRepository::class);
         $this->app->singleton(abstract: UserShareQuizRepositoryInterface::class, concrete: UserShareQuizRepository::class);
         $this->app->singleton(abstract: NotificationServiceInterface::class, concrete: NotificationService::class);
+        $this->app->singleton(abstract: CategoryRepositoryInterface::class, concrete: CategoryRepository::class);
     }
 
     /**

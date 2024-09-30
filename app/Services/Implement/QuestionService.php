@@ -8,7 +8,7 @@ use App\Repository\Interface\QuestionRepositoryInterface;
 use App\Repository\Interface\QuizzesRepositoryInterface;
 use App\Services\Interface\QuestionServiceInterface;
 use Illuminate\Support\Facades\DB;
-use Log;
+use Illuminate\Support\Facades\Log;
 use Symfony\Component\CssSelector\Exception\InternalErrorException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;

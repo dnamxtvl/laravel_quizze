@@ -9,7 +9,6 @@ use Throwable;
 
 class NotificationController extends Controller
 {
-    CONST DEFAULT_SKIP = 5;
     public function __construct(
         private readonly NotificationServiceInterface $notificationService
     ) {}
@@ -20,6 +19,17 @@ class NotificationController extends Controller
             $listNotify = $this->notificationService->listNotify(latestNotifyId: $request->input(key: 'latest_notify_id') ?? null);
 
             return $this->respondWithJson(content: $listNotify->toArray());
+        } catch (Throwable $th) {
+            return $this->respondWithJsonError(e: $th);
+        }
+    }
+
+    public function deleteNotify(string $notifyId): JsonResponse
+    {
+        try {
+            $this->notificationService->deleteNotify(notifyId: $notifyId);
+
+            return $this->respondWithJson(content: []);
         } catch (Throwable $th) {
             return $this->respondWithJsonError(e: $th);
         }

@@ -159,6 +159,6 @@ return [
 
     'notify' => [
         'limit_pagination' => 5,
-        'notify_id_length' => 32,
+        'notify_id_length' => 36,
     ],
 ];

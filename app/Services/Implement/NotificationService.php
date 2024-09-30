@@ -24,4 +24,12 @@ readonly class NotificationService implements NotificationServiceInterface
             listNotify: $listNotify
         );
     }
+
+    public function deleteNotify(string $notifyId): void
+    {
+        $notify = $this->notificationRepository->findById(notifyId: $notifyId);
+        if ($notify) {
+            $this->notificationRepository->deleteNotify(notification: $notify);
+        }
+    }
 }

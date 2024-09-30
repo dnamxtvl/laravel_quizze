@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\DTOs\Answer\CreateAnswerDTO;
 use App\DTOs\Question\CreateQuestionDTO;
 use App\DTOs\Quizz\CreateQuizzDTO;
+use App\Enums\Quiz\TypeQuizEnum;
+use App\Http\Requests\ListQuizzesRequest;
 use App\Http\Requests\ShareQuizRequest;
 use App\Http\Requests\AdminCreateQuizzeRequest;
 use App\Http\Requests\ShareQuestionRequest;
@@ -19,10 +21,13 @@ class QuizzesController extends Controller
         private readonly QuizzesServiceInterface $quizzesService,
     ) {}
 
-    public function listQuizzesPagination(): JsonResponse
+    public function listQuizzesPagination(ListQuizzesRequest $request): JsonResponse
     {
         try {
-            $listQuizzes = $this->quizzesService->listQuizzes();
+            $listQuizzes = $this->quizzesService->listQuizzes(
+                type: $request->input(key: 'type') ?
+                    TypeQuizEnum::from($request->input(key: 'type')) : TypeQuizEnum::ALL
+            );
 
             return $this->respondWithJson(content: $listQuizzes->toArray());
         } catch (Throwable $th) {
@@ -96,7 +101,7 @@ class QuizzesController extends Controller
     public function acceptShareQuiz(string $token, ShareQuizRequest $request): JsonResponse
     {
         try {
-            $this->quizzesService->acceptShareQuiz(token: $token, notifyId: $request->input(key: 'notify_id'));
+            $this->quizzesService->acceptShareQuiz(token: $token, notifyId: $request->input(key: 'notification_id'));
 
             return $this->respondWithJson(content: []);
         } catch (Throwable $th) {
