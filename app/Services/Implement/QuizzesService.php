@@ -13,7 +13,6 @@ use App\Events\ShareQuizEvent;
 use App\Exceptions\Quiz\RoomIsRunningException;
 use App\Exceptions\Quiz\UnAuthorizeRejectQuizException;
 use App\Exceptions\Quiz\UnAuthorizeShareQuizException;
-use App\Models\Category;
 use App\Models\User;
 use App\Models\UserShareQuiz;
 use App\Repository\Interface\NotificationRepositoryInterface;
@@ -47,12 +46,6 @@ readonly class QuizzesService implements QuizzesServiceInterface
 
     public function listQuizzes(TypeQuizEnum $type): Collection|LengthAwarePaginator
     {
-//        $cates = ["Kiến thức tổng hợp", "Công nghệ", "Khoa học máy tính", "Lập trình", "Trí tuệ nhân tạo", "Kỹ thuật", "Kỹ năng mềm", "Kinh tế", "Công nghệ sinh học", "Kế toán", "Tài chính", "Ngân hàng", "Quản trị kinh doanh", "Marketing", "Thương mại điện tử", "Quản lý nhân sự", "Pháp luật", "Luật dân sự", "Luật hình sự", "Luật thương mại", "Chính trị", "Giáo dục", "Toán học", "Vật lý", "Hóa học", "Sinh học", "Khoa học môi trường", "Khoa học sức khỏe", "Y học", "Lịch sử", "Địa lý", "Văn học", "Ngữ văn", "Tiếng Anh", "Tiếng Pháp", "Tiếng Đức", "Tiếng Nhật", "Tiếng Trung", "Tin học", "Âm nhạc", "Hội họa", "Thể thao", "Tâm lý học", "Triết học", "Xã hội học", "Quản lý dự án", "Khởi nghiệp", "Phát triển cá nhân", "Giao tiếp", "Đàm phán", "Lãnh đạo", "Khoa học vũ trụ", "Vật liệu học", "Khoa học trái đất", "Khí tượng học", "Hải dương học", "Vi sinh học", "Sinh thái học", "Kiến trúc", "Kỹ thuật xây dựng", "Kỹ thuật điện", "Kỹ thuật cơ khí", "Kỹ thuật hóa học", "Nhiếp ảnh", "Văn hóa học", "Xã hội dân sự", "Khoa học", "Thiết kế", "Nghệ thuật", "Sáng tạo"];
-//        foreach ($cates as $key => $cate) {
-//            $cateModel = Category::query()->find(id: $key + 1);
-//            $cateModel->name = $cate;
-//            $cateModel->save();
-//        }
         return $this->quizzesRepository->listQuizzes(
             type: $type,
             isPaginate: true,
