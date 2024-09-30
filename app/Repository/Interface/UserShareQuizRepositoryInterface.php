@@ -19,4 +19,6 @@ interface UserShareQuizRepositoryInterface
     public function acceptShareQuiz(UserShareQuiz $userShareQuiz): void;
 
     public function rejectShareQuiz(UserShareQuiz $userShareQuiz): void;
+
+    public function deleteShareQuiz(UserShareQuiz $userShareQuiz): void;
 }

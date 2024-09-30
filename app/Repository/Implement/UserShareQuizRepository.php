@@ -9,7 +9,6 @@ use App\Pipeline\UserShareQuestion\ReceiverFilter;
 use App\Repository\Interface\UserShareQuizRepositoryInterface;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Pipeline\Pipeline;
-use Illuminate\Support\Facades\Log;
 
 readonly class UserShareQuizRepository implements UserShareQuizRepositoryInterface
 {
@@ -36,7 +35,7 @@ readonly class UserShareQuizRepository implements UserShareQuizRepositoryInterfa
     public function findAuthReceiver(array $filters = []): ?UserShareQuiz
     {
         return $this->getQuery(filters: $filters)
-            ->where('is_accepted', true)
+            ->where('is_accept', true)
             ->first();
     }
 
@@ -68,6 +67,11 @@ readonly class UserShareQuizRepository implements UserShareQuizRepositoryInterfa
     }
 
     public function rejectShareQuiz(UserShareQuiz $userShareQuiz): void
+    {
+        $userShareQuiz->delete();
+    }
+
+    public function deleteShareQuiz(UserShareQuiz $userShareQuiz): void
     {
         $userShareQuiz->delete();
     }
