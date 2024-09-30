@@ -42,10 +42,12 @@ readonly class QuestionRepository implements QuestionRepositoryInterface
 
     public function findNextQuestion(string $quzId, string $questionId): ?Question
     {
+        $question = $this->question->query()->find(id: $questionId);
         return $this->question->query()
             ->where('quizze_id', $quzId)
-            ->where('id', '>', $questionId)
+            ->where('index_question', '>', $question->index_question)
             ->where('is_old_question', false)
+            ->orderBy('index_question')
             ->orderBy('id')
             ->first();
     }
@@ -96,6 +98,7 @@ readonly class QuestionRepository implements QuestionRepositoryInterface
             ->where('is_old_question', false)
             ->with(['answers', 'quizze'])
             ->orderBy('index_question')
+            ->orderBy('id')
             ->get();
     }
 
@@ -104,6 +107,8 @@ readonly class QuestionRepository implements QuestionRepositoryInterface
         return $this->question->withTrashed()
             ->with(['answers' => fn ($q) => $q->withTrashed()])
             ->whereIn('id', $questionIds)
+            ->orderBy('index_question')
+            ->orderBy('id')
             ->get();
     }
 
