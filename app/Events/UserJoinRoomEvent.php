@@ -10,6 +10,7 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
+use App\Models\Gamer;
 
 class UserJoinRoomEvent implements ShouldBroadcast
 {
@@ -20,8 +21,7 @@ class UserJoinRoomEvent implements ShouldBroadcast
      */
     public function __construct(
         public readonly string $roomId,
-        public readonly string $userId,
-        public readonly string $username,
+        public readonly Gamer $gamer,
     ) {}
 
     /**
@@ -29,13 +29,9 @@ class UserJoinRoomEvent implements ShouldBroadcast
      */
     public function broadcastWith(): array
     {
-        $room = app()->make(abstract: RoomRepositoryInterface::class)->findById(roomId: $this->roomId);
-        $gamerRepository = app()->make(abstract: GamerRepositoryInterface::class);
-        $userIds = $room->gamerTokens->pluck('gamer_id')->toArray();
-
         return [
             'roomId' => $this->roomId,
-            'gamers' => $gamerRepository->findByIds(ids: $userIds)->toArray(),
+            'gamer' => $this->gamer,
         ];
     }
 
