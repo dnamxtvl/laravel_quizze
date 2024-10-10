@@ -42,7 +42,7 @@ readonly class GamerService implements GamerServiceInterface
         $gamer->name = $createGameSettingDTO->getName();
         $gamer->display_meme = $createGameSettingDTO->getIsMeme();
         $gamer->save();
-        broadcast(new UserJoinRoomEvent(roomId: $gamer->gamerToken->room_id, userId: $gamer->id, username: $gamer->name))->toOthers();
+        broadcast(new UserJoinRoomEvent(roomId: $gamer->gamerToken->room_id, gamer: $gamer))->toOthers();
 
         return $gamer->gamerToken->room;
     }
