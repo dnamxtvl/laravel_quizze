@@ -129,8 +129,9 @@ return [
         'limit_pagination' => 7,
         'room_code_length' => 6,
         'min_answer' => 2,
-        'time_reply' => 30,
+        'time_reply' => 15,
         'max_score' => 1000,
+        'min_score' => 1,
         'min_question' => 1,
     ],
 

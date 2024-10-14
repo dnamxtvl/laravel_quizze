@@ -95,7 +95,12 @@ readonly class GamerService implements GamerServiceInterface
             $maxTime = ((int) config(key: 'app.quizzes.time_reply')) * 1000;
             $maxScore = (int) config(key: 'app.quizzes.max_score');
             $diffInMilliseconds = (int) now()->diffInMilliseconds(Carbon::parse($room->current_question_start_at));
-            $score = $answer->is_correct ? abs((($diffInMilliseconds / $maxTime)) * $maxScore) : 0;
+            $minScore = (int) config('app.quizzes.min_score');
+            $calculatedScore = abs(($diffInMilliseconds / $maxTime) * $maxScore);
+            $score = 0;
+            if ($answer->is_correct) {
+                $score = $calculatedScore > $minScore ? $calculatedScore : $minScore;
+            }
         }
 
         $saveAnswerDTO = new SaveAnswerDTO(
