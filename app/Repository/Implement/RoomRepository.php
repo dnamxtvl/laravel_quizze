@@ -84,7 +84,7 @@ readonly class RoomRepository implements RoomRepositoryInterface
         if ($room->type != RoomTypeEnum::HOMEWORK->value) {
             $room->current_question_id = $nextQuestionRoomDTO->getCurrentQuestionId();
             $room->current_question_start_at = $nextQuestionRoomDTO->getCurrentQuestionStartAt();
-            $room->current_question_end_at = $nextQuestionRoomDTO->getCurrentQuestionEndAt();
+            $room->current_question_end_at = $nextQuestionRoomDTO->getCurrentQuestionEndAt()->format('Y-m-d H:i:s.u');
         }
         $room->status = $nextQuestionRoomDTO->getStatus()->value;
         if ($nextQuestionRoomDTO->getStartAt()) {

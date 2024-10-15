@@ -63,7 +63,7 @@ readonly class GamerService implements GamerServiceInterface
         if ($room->status != RoomStatusEnum::HAPPENING->value ||
             ($room->current_question_end_at && $now->gt(Carbon::parse($room->current_question_end_at)))) {
             throw new BadRequestHttpException(
-                message: 'Đã hết thời gian trả lời câu hỏi này, vui lòng đợi admin bấm chuyển sang câu tiếp theo!',
+                message: 'Đã hết thời gian trả lời!',
                 code: ExceptionCodeEnum::EXPIRED_QUESTION->value
             );
         }
