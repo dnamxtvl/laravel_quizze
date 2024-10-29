@@ -15,6 +15,7 @@ use App\Enums\Exception\ExceptionCodeEnum;
 use App\Enums\Room\RoomStatusEnum;
 use App\Enums\Room\RoomTypeEnum;
 use App\Events\AdminEndgameEvent;
+use App\Events\GetGamerNumberEvent;
 use App\Events\NextQuestionEvent;
 use App\Events\StartGameEvent;
 use App\Exceptions\Admin\UnAuthorizationStartRoomException;
@@ -98,6 +99,7 @@ readonly class RoomService implements RoomServiceInterface
     public function checkValidRoom(string $roomId): CheckValidRoomResponseDTO
     {
         $room = $this->roomRepository->findById(roomId: $roomId);
+        $orderNumberGamers = [];
         if (is_null($room)) {
             throw new NotFoundHttpException(message: 'Màn chơi không tồn tại!');
         }
@@ -111,6 +113,21 @@ readonly class RoomService implements RoomServiceInterface
             ->orderBy('gamer_answers_sum_score', 'desc')
             ->get();
         $timeRemaining = (int) now()->diffInSeconds(Carbon::parse($room->current_question_end_at));
+        foreach($gamers as $key => $gamer) {
+            // $orderNumberGamers[$key + 1] = $gamer->id;
+            $orderNumberGamers[] = [
+                'id' => $key + 1,
+                'gamer_id' => $gamer->id
+            ];
+        }
+
+        if (
+            $room->status != RoomStatusEnum::HAPPENING->value &&
+            ($room->current_question_end_at && now()->gt(Carbon::parse($room->current_question_end_at)))
+        ) {
+            Log::info('order_number_gamers_json: ', $orderNumberGamers);
+            broadcast(new GetGamerNumberEvent($roomId, $orderNumberGamers))->toOthers();
+        }
 
         return new CheckValidRoomResponseDTO(room: $room, questions: $questions, gamers: $gamers, timeRemaining: $timeRemaining);
     }

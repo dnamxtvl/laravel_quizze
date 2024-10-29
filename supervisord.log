@@ -735,3 +735,19 @@
 2024-08-28 12:00:22,784 INFO success: laravel-worker_00 entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
 2024-08-28 12:00:22,785 INFO success: php-fpm entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
 2024-08-28 12:17:18,927 INFO reaped unknown pid 65 (exit status 0)
+2024-10-28 06:47:42,581 CRIT Supervisor is running as root.  Privileges were not dropped because no user is specified in the config file.  If you intend to run as root, you can set user=root in the config file to avoid this message.
+2024-10-28 06:47:42,598 INFO supervisord started with pid 1
+2024-10-28 06:47:43,602 INFO spawned: 'laravel-reverb' with pid 7
+2024-10-28 06:47:43,605 INFO spawned: 'laravel-worker_00' with pid 8
+2024-10-28 06:47:43,607 INFO spawned: 'php-fpm' with pid 9
+2024-10-28 06:47:44,735 INFO success: laravel-reverb entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2024-10-28 06:47:44,736 INFO success: laravel-worker_00 entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2024-10-28 06:47:44,736 INFO success: php-fpm entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2024-10-29 02:23:21,999 CRIT Supervisor is running as root.  Privileges were not dropped because no user is specified in the config file.  If you intend to run as root, you can set user=root in the config file to avoid this message.
+2024-10-29 02:23:22,011 INFO supervisord started with pid 1
+2024-10-29 02:23:23,016 INFO spawned: 'laravel-reverb' with pid 7
+2024-10-29 02:23:23,021 INFO spawned: 'laravel-worker_00' with pid 8
+2024-10-29 02:23:23,023 INFO spawned: 'php-fpm' with pid 9
+2024-10-29 02:23:24,170 INFO success: laravel-reverb entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2024-10-29 02:23:24,170 INFO success: laravel-worker_00 entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2024-10-29 02:23:24,171 INFO success: php-fpm entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
