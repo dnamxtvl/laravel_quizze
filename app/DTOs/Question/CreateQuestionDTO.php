@@ -7,6 +7,7 @@ class CreateQuestionDTO
     public function __construct(
         private readonly string $title,
         private array $answers,
+        private int $timeLimit = 20,
         private ?string $quizId = null,
     ) {}
 
@@ -33,5 +34,15 @@ class CreateQuestionDTO
     public function setAnswers(array $answers): void
     {
         $this->answers = $answers;
+    }
+
+    public function getTimeLimit(): int
+    {
+        return $this->timeLimit;
+    }
+
+    public function setTimeLimit(int $timeLimit): void
+    {
+        $this->timeLimit = $timeLimit;
     }
 }
