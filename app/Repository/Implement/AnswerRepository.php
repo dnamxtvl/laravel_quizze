@@ -99,4 +99,14 @@ readonly class AnswerRepository implements AnswerRepositoryInterface
             );
         }
     }
+
+    public function getByQuestionId(string $questionId, string $roomId): \Illuminate\Database\Eloquent\Collection
+    {
+        return $this->answer->query()
+            ->where('question_id', $questionId)
+            ->withCount(['gamerAnswers' => function ($query) use ($roomId) {
+                $query->where('room_id', $roomId);
+            }])
+            ->get();
+    }
 }

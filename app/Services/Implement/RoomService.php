@@ -23,6 +23,7 @@ use App\Helper\QuizHelper;
 use App\Models\Gamer;
 use App\Models\GamerToken;
 use App\Models\Room;
+use App\Repository\Implement\AnswerRepository;
 use App\Repository\Interface\GamerRepositoryInterface;
 use App\Repository\Interface\GamerTokenRepositoryInterface;
 use App\Repository\Interface\QuestionRepositoryInterface;
@@ -57,6 +58,7 @@ readonly class RoomService implements RoomServiceInterface
         private QuestionRepositoryInterface $questionRepository,
         private QuizzesRepositoryInterface $quizzesRepository,
         private UserShareQuizRepositoryInterface $userShareQuizRepository,
+        private AnswerRepository $answerRepository,
     ) {}
 
     public function createRoom(string $quizId, CreateRoomParamsDTO $createRoomParams): Model
@@ -100,6 +102,7 @@ readonly class RoomService implements RoomServiceInterface
     {
         $room = $this->roomRepository->findById(roomId: $roomId);
         $orderNumberGamers = [];
+        $listCurrentAnswers = new Collection();
         if (is_null($room)) {
             throw new NotFoundHttpException(message: 'Màn chơi không tồn tại!');
         }
@@ -120,6 +123,10 @@ readonly class RoomService implements RoomServiceInterface
                 'gamer_id' => $gamer->id
             ];
         }
+        if($room->current_question_id !== null) {
+            $listCurrentAnswers = $this->answerRepository->getByQuestionId($room->current_question_id, $room->id);
+        } 
+        
 
         if (
             $room->status != RoomStatusEnum::HAPPENING->value &&
@@ -129,7 +136,13 @@ readonly class RoomService implements RoomServiceInterface
             broadcast(new GetGamerNumberEvent($roomId, $orderNumberGamers))->toOthers();
         }
 
-        return new CheckValidRoomResponseDTO(room: $room, questions: $questions, gamers: $gamers, timeRemaining: $timeRemaining);
+        return new CheckValidRoomResponseDTO(
+            room: $room,
+            questions: $questions,
+            gamers: $gamers,
+            timeRemaining: $timeRemaining,
+            listCurrentAnswers: $listCurrentAnswers
+        );
     }
 
     public function validateRoomCode(int $code, UserDeviceInformationDTO $gamerInfo): VerifyCodeResponseDTO

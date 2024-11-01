@@ -4,6 +4,7 @@ namespace App\Repository\Interface;
 
 use App\DTOs\Gamer\SaveAnswerDTO;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
 interface AnswerRepositoryInterface
@@ -17,4 +18,6 @@ interface AnswerRepositoryInterface
     public function getScoreByAnswerIds(array $answerIds): array;
 
     public function updateResultExam(array $listQuestion, array $listAnswer, string $gamerId, string $roomId): void;
+
+    public function getByQuestionId(string $questionId, string $roomId): Collection;
 }

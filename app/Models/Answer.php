@@ -17,4 +17,9 @@ class Answer extends Model
     protected $table = 'answers';
 
     protected $primaryKey = 'id';
+
+    public function gamerAnswers()
+    {
+        return $this->hasMany(GamerAnswer::class);
+    }
 }
