@@ -199,6 +199,7 @@ readonly class RoomService implements RoomServiceInterface
         }
 
         $questions = $this->questionRepository->listQuestionOfQuiz(quizId: $quiz->id);
+        $firstQuestion = $questions->first();
         $countQuestion = $questions->count();
         if (! $countQuestion) {
             throw new NotFoundHttpException(message: 'Không tìm thấy câu hỏi nào!');
@@ -214,11 +215,11 @@ readonly class RoomService implements RoomServiceInterface
 
         $now = now();
         $roomStatus = $countQuestion == self::MIN_QUESTION ? RoomStatusEnum::PREPARE_FINISH : RoomStatusEnum::PENDING;
-        $timeInterval = (int) config('app.quizzes.time_reply');
+        $timeInterval = (int) $firstQuestion->time_limit;
         $setNextQuestionRoomDTO = new SetNextQuestionRoomDTO(
-            currentQuestionId: $questions->first()->id,
+            currentQuestionId: $firstQuestion->id,
             currentQuestionStartAt: $now,
-            currentQuestionEndAt: $now->addSeconds(value: config(key: 'app.quizzes.time_reply')),
+            currentQuestionEndAt: $now->addSeconds(value: $firstQuestion->time_limit),
             status: RoomStatusEnum::HAPPENING,
             startAt: $now,
         );
@@ -285,13 +286,13 @@ readonly class RoomService implements RoomServiceInterface
             $setNextQuestionRoomDTO = new SetNextQuestionRoomDTO(
                 currentQuestionId: $nextQuestion->id,
                 currentQuestionStartAt: $now,
-                currentQuestionEndAt: $now->addSeconds(value: config(key: 'app.quizzes.time_reply')),
+                currentQuestionEndAt: $now->addSeconds(value: $nextQuestion->time_limit),
                 status: RoomStatusEnum::HAPPENING,
             );
             $this->roomRepository->updateRoomAfterNextQuestion(room: $room, nextQuestionRoomDTO: $setNextQuestionRoomDTO);
             $status = is_null($this->questionRepository->findNextQuestion(quzId: $room->quizze_id, questionId: $nextQuestion->id)) ?
                 RoomStatusEnum::PREPARE_FINISH : RoomStatusEnum::PENDING;
-            $this->quizHelper->scheduleRoomStatusPending(roomId: $room->id, status: $status, timeInterval: (int) config('app.quizzes.time_reply'));
+            $this->quizHelper->scheduleRoomStatusPending(roomId: $room->id, status: $status, timeInterval: (int) $nextQuestion->time_limit);
             broadcast(new NextQuestionEvent(roomId: $room->id, questionId: $nextQuestion->id))->toOthers();
         } catch (Throwable $e) {
             Log::error(message: $e->getMessage());

@@ -65,6 +65,7 @@ readonly class QuestionRepository implements QuestionRepositoryInterface
                 'quizze_id' => $quizId,
                 'title' => $question->getTitle(),
                 'index_question' => $index + 1,
+                'time_limit' => $question->getTimeLimit(),
                 'created_at' => $now,
                 'updated_at' => $now,
             ];
@@ -118,6 +119,7 @@ readonly class QuestionRepository implements QuestionRepositoryInterface
         $question = new Question;
         $question->quizze_id = $questionDTO->getQuizId();
         $question->title = $questionDTO->getTitle();
+        $question->time_limit = $questionDTO->getTimeLimit();
         if ($indexQuestionOverride) {
             $question->index_question = $indexQuestionOverride;
         }

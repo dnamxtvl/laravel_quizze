@@ -29,6 +29,7 @@ class QuestionController extends Controller
         $question = new CreateQuestionDTO(
             title: $request->input(key: 'title'),
             answers: $answersDTOs,
+            timeLimit: $request->input(key: 'time_limit')
         );
 
         try {
@@ -54,7 +55,8 @@ class QuestionController extends Controller
             $question = new CreateQuestionDTO(
                 title: $request->input(key: 'title'),
                 answers: $answersDTOs,
-                quizId: $quizId
+                quizId: $quizId,
+                timeLimit: $request->input(key: 'time_limit'),
             );
             $this->questionService->addQuestion(quizId: $quizId, questionDTO: $question);
 

@@ -54,7 +54,8 @@ class QuizzesController extends Controller
                 }
                 $questions[] = new CreateQuestionDTO(
                     title: $question['title'],
-                    answers: $answers
+                    answers: $answers,
+                    timeLimit: $request->input(key: 'quizze')['time_limit']
                 );
             }
             $this->quizzesService->createQuiz(quizDTO: $quiz, questionDTO: $questions);
