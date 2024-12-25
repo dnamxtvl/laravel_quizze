@@ -15,6 +15,7 @@ use App\Enums\Exception\ExceptionCodeEnum;
 use App\Enums\Room\RoomStatusEnum;
 use App\Enums\Room\RoomTypeEnum;
 use App\Events\AdminEndgameEvent;
+use App\Events\GetGamerNumberEvent;
 use App\Events\NextQuestionEvent;
 use App\Events\StartGameEvent;
 use App\Exceptions\Admin\UnAuthorizationStartRoomException;
@@ -22,6 +23,7 @@ use App\Helper\QuizHelper;
 use App\Models\Gamer;
 use App\Models\GamerToken;
 use App\Models\Room;
+use App\Repository\Implement\AnswerRepository;
 use App\Repository\Interface\GamerRepositoryInterface;
 use App\Repository\Interface\GamerTokenRepositoryInterface;
 use App\Repository\Interface\QuestionRepositoryInterface;
@@ -56,6 +58,7 @@ readonly class RoomService implements RoomServiceInterface
         private QuestionRepositoryInterface $questionRepository,
         private QuizzesRepositoryInterface $quizzesRepository,
         private UserShareQuizRepositoryInterface $userShareQuizRepository,
+        private AnswerRepository $answerRepository,
     ) {}
 
     public function createRoom(string $quizId, CreateRoomParamsDTO $createRoomParams): Model
@@ -98,6 +101,7 @@ readonly class RoomService implements RoomServiceInterface
     public function checkValidRoom(string $roomId): CheckValidRoomResponseDTO
     {
         $room = $this->roomRepository->findById(roomId: $roomId);
+        $listCurrentAnswers = new Collection();
         if (is_null($room)) {
             throw new NotFoundHttpException(message: 'Màn chơi không tồn tại!');
         }
@@ -106,13 +110,33 @@ readonly class RoomService implements RoomServiceInterface
             throw new BadRequestHttpException(message: 'Màn chơi đã kết thúc trước đó!', code: ExceptionCodeEnum::ROOM_CANCELLED->value);
         }
         $questions = $this->getQuestionByRoom(room: $room);
-        $gamers = $room->gamers()->withSum('gamerAnswers', 'score')
-            ->with('gamerAnswers')
+        $gamers = $room->gamers()->withSum('gamerAnswers', 'score')->with('gamerAnswers')
             ->orderBy('gamer_answers_sum_score', 'desc')
             ->get();
-        $timeRemaining = (int) now()->diffInSeconds(Carbon::parse($room->current_question_end_at));
 
-        return new CheckValidRoomResponseDTO(room: $room, questions: $questions, gamers: $gamers, timeRemaining: $timeRemaining);
+        $timeRemaining = (int) now()->diffInSeconds(Carbon::parse($room->current_question_end_at));
+        if($room->current_question_id !== null) {
+            $listCurrentAnswers = $this->answerRepository->getByQuestionId($room->current_question_id, $room->id);
+        }
+
+        if (
+            $room->status != RoomStatusEnum::HAPPENING->value &&
+            ($room->current_question_end_at && now()->gt(Carbon::parse($room->current_question_end_at)))
+        ) {
+            Log::info('order_number_gamers_json: ', $gamers->toArray());
+            broadcast(new GetGamerNumberEvent(
+                roomId: $roomId,
+                orderNumberGamers: $gamers->map(fn($item, $key) => ['id' => $key + 1, 'gamer_id' => $item->id])->toArray())
+            )->toOthers();
+        }
+
+        return new CheckValidRoomResponseDTO(
+            room: $room,
+            questions: $questions,
+            gamers: $gamers,
+            timeRemaining: $timeRemaining,
+            listCurrentAnswers: $listCurrentAnswers
+        );
     }
 
     public function validateRoomCode(int $code, UserDeviceInformationDTO $gamerInfo): VerifyCodeResponseDTO
@@ -158,13 +182,17 @@ readonly class RoomService implements RoomServiceInterface
         }
 
         $room = $gamerToken->room;
+        if (is_null($room)) {
+            throw new NotFoundHttpException(message: 'Màn chơi không tồn tại!');
+        }
 
-        $gamer = $gamerToken->gamer()
-            ->withSum('gamerAnswers', 'score')
-            ->with('gamerAnswers')
-            ->first();
+        $gamers = $room->gamers()->withSum('gamerAnswers', 'score')->with('gamerAnswers')
+            ->orderBy('gamer_answers_sum_score', 'desc')
+            ->get();
 
-        if (is_null($gamer) || is_null($room) || $room->status == RoomStatusEnum::CANCELLED->value) {
+        $gamer = $gamers->where('id', $gamerToken->gamer_id)->first();
+
+        if (is_null($gamer) || $room->status == RoomStatusEnum::CANCELLED->value) {
             throw new NotFoundHttpException(message: 'Room không hợp lệ!', code: ExceptionCodeEnum::INVALID_ROOM->value);
         }
 
@@ -182,6 +210,7 @@ readonly class RoomService implements RoomServiceInterface
             gamer: $gamer,
             timeRemaining: $timeRemaining,
             gamerToken: $gamerToken,
+            orderResultGamers: $gamers->map(fn($item, $key) => ['index' => $key + 1, 'gamer_id' => $item->id])->toArray()
         );
     }
 

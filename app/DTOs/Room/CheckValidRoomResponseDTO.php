@@ -2,6 +2,7 @@
 
 namespace App\DTOs\Room;
 
+use App\Models\Question;
 use App\Models\Room;
 use Illuminate\Database\Eloquent\Collection;
 
@@ -12,6 +13,7 @@ readonly class CheckValidRoomResponseDTO
         private Collection $questions,
         private Collection $gamers,
         private int $timeRemaining,
+        private Collection $listCurrentAnswers,
     ) {}
 
     public function toArray(): array
@@ -21,6 +23,7 @@ readonly class CheckValidRoomResponseDTO
             'questions' => $this->questions,
             'gamers' => $this->gamers,
             'time_remaining' => $this->timeRemaining,
+            'list_current_answers' => $this->listCurrentAnswers,
         ];
     }
 }

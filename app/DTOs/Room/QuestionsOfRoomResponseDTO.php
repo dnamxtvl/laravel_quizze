@@ -15,6 +15,7 @@ readonly class QuestionsOfRoomResponseDTO
         private Gamer $gamer,
         private int $timeRemaining,
         private GamerToken $gamerToken,
+        private array $orderResultGamers,
     ) {}
 
     public function toArray(): array
@@ -25,6 +26,7 @@ readonly class QuestionsOfRoomResponseDTO
             'gamer' => $this->gamer,
             'time_remaining' => $this->timeRemaining,
             'gamer_token' => $this->gamerToken,
+            'order_result_gamers' => $this->orderResultGamers,
         ];
     }
 }
