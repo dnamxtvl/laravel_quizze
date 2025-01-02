@@ -1,6 +1,6 @@
 <?php
 
-namespace App\DTOs\User;
+namespace App\DTOs\Gamer;
 
 use Carbon\Carbon;
 

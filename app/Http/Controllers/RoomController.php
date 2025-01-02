@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\DTOs\Gamer\UserDeviceInformationDTO;
 use App\DTOs\Room\CreateRoomParamsDTO;
 use App\DTOs\Room\ListRoomReportParamDTO;
-use App\DTOs\User\UserDeviceInformationDTO;
 use App\Enums\Room\RoomStatusEnum;
 use App\Enums\Room\RoomTypeEnum;
 use App\Http\Requests\AdminCreateRoomRequest;

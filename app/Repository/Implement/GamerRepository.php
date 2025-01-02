@@ -2,7 +2,7 @@
 
 namespace App\Repository\Implement;
 
-use App\DTOs\User\UserDeviceInformationDTO;
+use App\DTOs\Gamer\UserDeviceInformationDTO;
 use App\Models\Gamer;
 use App\Repository\Interface\GamerRepositoryInterface;
 use Illuminate\Database\Eloquent\Collection;

@@ -2,8 +2,8 @@
 
 namespace App\Services\Implement;
 
+use App\DTOs\Gamer\CreateGameSettingDTO;
 use App\DTOs\Gamer\SaveAnswerDTO;
-use App\DTOs\User\CreateGameSettingDTO;
 use App\Enums\Exception\ExceptionCodeEnum;
 use App\Enums\Room\RoomStatusEnum;
 use App\Enums\Room\RoomTypeEnum;

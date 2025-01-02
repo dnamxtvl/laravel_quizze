@@ -133,10 +133,11 @@ return [
         'max_score' => 1000,
         'min_score' => 1,
         'min_question' => 1,
+        'limit_pagination_search' => 10,
     ],
 
     'room_report' => [
-        'limit_pagination' => 12,
+        'limit_pagination' => 10,
     ],
 
     'question' => [
@@ -161,5 +162,9 @@ return [
     'notify' => [
         'limit_pagination' => 5,
         'notify_id_length' => 36,
+    ],
+
+    'user' => [
+        'limit_pagination' => 15,
     ],
 ];

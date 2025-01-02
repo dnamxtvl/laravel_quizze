@@ -2,12 +2,14 @@
 
 namespace App\DTOs\Quizz;
 
-readonly class CreateQuizzDTO
+class CreateQuizDTO
 {
     public function __construct(
-        private string $title,
-        private int $categoryId,
-        private string $userId,
+        private readonly string $title,
+        private readonly int $categoryId,
+        private readonly string $userId,
+        private readonly bool $createdBySys = false,
+        private string $code = '',
     ) {}
 
     public function getTitle(): string
@@ -23,6 +25,21 @@ readonly class CreateQuizzDTO
     public function getUserId(): string
     {
         return $this->userId;
+    }
+
+    public function getCreatedBySys(): bool
+    {
+        return $this->createdBySys;
+    }
+
+    public function getCode(): string
+    {
+        return $this->code;
+    }
+
+    public function setCode(string $code): void
+    {
+        $this->code = $code;
     }
 
     public function toArray(): array

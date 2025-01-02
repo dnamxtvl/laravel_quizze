@@ -2,7 +2,7 @@
 
 namespace App\Services\Interface;
 
-use App\DTOs\User\CreateGameSettingDTO;
+use App\DTOs\Gamer\CreateGameSettingDTO;
 use Illuminate\Database\Eloquent\Model;
 
 interface GamerServiceInterface

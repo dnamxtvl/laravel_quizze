@@ -7,6 +7,7 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\QuestionController;
 use App\Http\Controllers\QuizzesController;
 use App\Http\Controllers\RoomController;
+use App\Http\Controllers\UserController;
 use App\Http\Middleware\GamerMiddleware;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -16,11 +17,27 @@ Route::get('/user', function (Request $request) {
 })->middleware(['auth:sanctum', 'verified']);
 
 Route::post('/admin/login', [AuthController::class, 'login'])->name('auth.admin.login');
+Route::prefix('auth')->group(function () {
+    Route::post('/register-user', [AuthController::class, 'register'])->name('auth.register');
+    Route::post('/email/verify-register/', [AuthController::class, 'verifyOTPAfterRegister'])->name('auth.verifyOTPAfterRegister');
+    Route::post('/email/verify-login/', [AuthController::class, 'verifyOTPAfterLogin'])->name('auth.verifyOTPAfterLogin');
+    Route::get('/email/verification-notification/{userId}', [AuthController::class, 'resendVerificationNotification'])->middleware(['throttle:6,1'])->name('auth.resendVerificationNotification');
+    Route::post('forgot-password', [AuthController::class, 'forgotPassword'])->middleware(['throttle:6,1', 'guest'])->name('auth.forgotPassword');
+    Route::post('/forgot-password/verify-otp', [AuthController::class, 'verifyOTPForgotPassword'])->middleware('guest')->name('auth.verifyOTPForgotPassword');
+    Route::get('/forgot-password/resend-otp/{userId}', [AuthController::class, 'resendOTPForgotPassword'])->middleware(['throttle:6,1'])->name('auth.resendOTPForgotPassword');
+    Route::post('/forgot-password/set-new-password', [AuthController::class, 'setNewPasswordAfterForgot'])->middleware('guest')->name('auth.setNewPasswordAfterForgot');
+});
+
 Route::group(['middleware' => ['auth:api', 'verified']], function () {
     Route::prefix('admin')->group(function () {
         Route::post('/logout', [AuthController::class, 'logout'])->name('auth.admin.logout');
         Route::prefix('quizzes')->group(function () {
-            Route::get('/list', [QuizzesController::class, 'listQuizzesPagination'])->name('quizzes.list');
+            Route::middleware(['is_admin'])->group(function () {
+                Route::get('/list', [QuizzesController::class, 'listQuizzesPagination'])->name('quizzes.list');
+                Route::post('/accept-share/{token}', [QuizzesController::class, 'acceptShareQuiz'])->name('quizzes.accept-share');
+                Route::get('/detail-share/{token}', [QuizzesController::class, 'detailShareQuiz'])->name('quizzes.detail-share');
+                Route::post('/reject-share/{token}', [QuizzesController::class, 'rejectShareQuiz'])->name('quizzes.reject-share');
+            });
             Route::post('/create', [QuizzesController::class, 'createQuiz'])->name('quizzes.create');
             Route::post('/delete/{quizId}', [QuizzesController::class, 'deleteQuiz'])->name('quizzes.delete');
             Route::get('/list-question/{quizId}', [QuizzesController::class, 'listQuestionOfQuiz'])->name('quizzes.list-question-of-quiz');
@@ -28,24 +45,36 @@ Route::group(['middleware' => ['auth:api', 'verified']], function () {
             Route::post('/create-question/{quizId}', [QuestionController::class, 'createQuestion'])->name('questions.add');
             Route::post('/delete-question/{questionId}', [QuestionController::class, 'deleteQuestion'])->name('questions.delete');
             Route::post('/share/{quizId}', [QuizzesController::class, 'shareQuiz'])->name('quizzes.share');
-            Route::post('/accept-share/{token}', [QuizzesController::class, 'acceptShareQuiz'])->name('quizzes.accept-share');
-            Route::get('/detail-share/{token}', [QuizzesController::class, 'detailShareQuiz'])->name('quizzes.detail-share');
-            Route::post('/reject-share/{token}', [QuizzesController::class, 'rejectShareQuiz'])->name('quizzes.reject-share');
+            Route::get('/search', [QuizzesController::class, 'allQuizzesPagination'])->name('quizzes.all')->middleware('is_system');;
         });
         Route::prefix('room')->group(function () {
-            Route::post('/create/{quizId}', [RoomController::class, 'createRoom'])->name('rooms.create');
-            Route::get('/check-valid/{quizId}', [RoomController::class, 'checkValidRoom'])->name('rooms.check-valid');
-            Route::get('/detail/{roomId}', [RoomController::class, 'getDetailRoomReport'])->name('rooms.detail');
-            Route::post('/start', [RoomController::class, 'startRoom'])->name('rooms.start');
-            Route::post('/next-question', [RoomController::class, 'nextQuestion'])->name('rooms.next-question');
-            Route::post('/end-game/{roomId}', [RoomController::class, 'adminEndGame'])->name('rooms.end-game');
+            Route::middleware(['is_admin'])->group(function () {
+                Route::post('/create/{quizId}', [RoomController::class, 'createRoom'])->name('rooms.create');
+                Route::get('/check-valid/{quizId}', [RoomController::class, 'checkValidRoom'])->name('rooms.check-valid');
+                Route::post('/start', [RoomController::class, 'startRoom'])->name('rooms.start');
+                Route::post('/next-question', [RoomController::class, 'nextQuestion'])->name('rooms.next-question');
+                Route::post('/end-game/{roomId}', [RoomController::class, 'adminEndGame'])->name('rooms.end-game');
+            });
             Route::get('/list-report', [RoomController::class, 'getListRoomReport'])->name('rooms.list-report');
             Route::post('/delete-report/{roomId}', [RoomController::class, 'deleteReport'])->name('rooms.delete-report');
+            Route::get('/detail/{roomId}', [RoomController::class, 'getDetailRoomReport'])->name('rooms.detail');
         });
         Route::prefix('notification')->group(function () {
             Route::get('/list', [NotificationController::class, 'listNotify'])->name('notifications.list');
             Route::post('/delete/{notifyId}', [NotificationController::class, 'deleteNotify'])->name('notifications.delete');
         });
+
+        Route::middleware(['is_system'])->group(function () {
+            Route::prefix('user')->group(function () {
+                Route::get('/search', [UserController::class, 'search'])->name('user.search');
+                Route::get('/detail/{userId}', [UserController::class, 'detail'])->name('user.search');
+                Route::post('/update/{userId}', [UserController::class, 'update'])->name('user.update');
+                Route::post('/disable/{userId}', [UserController::class, 'disable'])->name('user.disable');
+                Route::post('/active/{userId}', [UserController::class, 'active'])->name('user.active');
+                Route::post('/delete/{userId}', [UserController::class, 'delete'])->name('user.delete');
+            });
+        });
+
         Route::prefix('category')->group(function () {
             Route::get('/list', [CategoryController::class, 'listCategory'])->name('categories.list');
         });

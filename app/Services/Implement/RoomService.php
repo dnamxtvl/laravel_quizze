@@ -2,27 +2,30 @@
 
 namespace App\Services\Implement;
 
+use App\DTOs\Gamer\CreateGamerTokenDTO;
+use App\DTOs\Gamer\UserDeviceInformationDTO;
+use App\DTOs\Gamer\VerifyCodeResponseDTO;
 use App\DTOs\Room\CheckValidRoomResponseDTO;
 use App\DTOs\Room\CreateRoomParamsDTO;
 use App\DTOs\Room\DetailRoomReportDTO;
 use App\DTOs\Room\ListRoomReportParamDTO;
 use App\DTOs\Room\QuestionsOfRoomResponseDTO;
 use App\DTOs\Room\SetNextQuestionRoomDTO;
-use App\DTOs\User\CreateGamerTokenDTO;
-use App\DTOs\User\UserDeviceInformationDTO;
-use App\DTOs\User\VerifyCodeResponseDTO;
 use App\Enums\Exception\ExceptionCodeEnum;
 use App\Enums\Room\RoomStatusEnum;
 use App\Enums\Room\RoomTypeEnum;
+use App\Enums\User\UserRoleEnum;
 use App\Events\AdminEndgameEvent;
 use App\Events\GetGamerNumberEvent;
 use App\Events\NextQuestionEvent;
 use App\Events\StartGameEvent;
 use App\Exceptions\Admin\UnAuthorizationStartRoomException;
+use App\Exceptions\User\UnAuthorizeException;
 use App\Helper\QuizHelper;
 use App\Models\Gamer;
 use App\Models\GamerToken;
 use App\Models\Room;
+use App\Models\User;
 use App\Repository\Implement\AnswerRepository;
 use App\Repository\Interface\GamerRepositoryInterface;
 use App\Repository\Interface\GamerTokenRepositoryInterface;
@@ -368,10 +371,13 @@ readonly class RoomService implements RoomServiceInterface
 
     public function getListRoomReport(ListRoomReportParamDTO $listRoomReportParam): LengthAwarePaginator
     {
-        return $this->roomRepository->getListRoomByAdminId(
-            userId: Auth::id(),
+        $user = Auth::user();
+        /* @var User $user */
+        return $this->roomRepository->getListRoom(
             page: $listRoomReportParam->getPage(),
-            filters: $listRoomReportParam->toArray()
+            filters: $user->type == UserRoleEnum::ADMIN->value ?
+                array_merge($listRoomReportParam->toArray(), ['user_id' => $user->id]):
+                $listRoomReportParam->toArray()
         );
     }
 
@@ -387,6 +393,13 @@ readonly class RoomService implements RoomServiceInterface
         /* @var Room $room */
         if ($room->status != RoomStatusEnum::FINISHED->value && $room->status != RoomStatusEnum::CANCELLED->value) {
             throw new BadRequestHttpException(message: 'Môn chơi chưa kết thúc, không thể xóa!');
+        }
+
+        $user = Auth::user();
+        /* @var User $user */
+        if (!(($room->user_id == $user->id && $user->type == UserRoleEnum::ADMIN->value) ||
+            $user->type == UserRoleEnum::SYSTEM->value)) {
+                throw new UnAuthorizeException(message: 'Bạn không có quyền xóa room này!');
         }
 
         DB::beginTransaction();

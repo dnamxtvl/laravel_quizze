@@ -1,6 +1,6 @@
 <?php
 
-namespace App\DTOs\User;
+namespace App\DTOs\Auth;
 
 readonly class UserDeviceInformationDTO
 {
@@ -9,9 +9,8 @@ readonly class UserDeviceInformationDTO
         private string $device,
         private ?string $longitude = null,
         private ?string $latitude = null,
-        private ?string $country = null,
-        private ?string $city = null,
-    ) {}
+    ) {
+    }
 
     public function getIp(): string
     {
@@ -23,23 +22,13 @@ readonly class UserDeviceInformationDTO
         return $this->device;
     }
 
-    public function getLongitude(): ?string
+    public function getLongitude(): string
     {
         return $this->longitude;
     }
 
-    public function getLatitude(): ?string
+    public function getLatitude(): string
     {
         return $this->latitude;
-    }
-
-    public function getCountry(): ?string
-    {
-        return $this->country;
-    }
-
-    public function getCity(): ?string
-    {
-        return $this->city;
     }
 }

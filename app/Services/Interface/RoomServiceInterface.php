@@ -2,13 +2,13 @@
 
 namespace App\Services\Interface;
 
+use App\DTOs\Gamer\UserDeviceInformationDTO;
+use App\DTOs\Gamer\VerifyCodeResponseDTO;
 use App\DTOs\Room\CheckValidRoomResponseDTO;
 use App\DTOs\Room\CreateRoomParamsDTO;
 use App\DTOs\Room\DetailRoomReportDTO;
 use App\DTOs\Room\ListRoomReportParamDTO;
 use App\DTOs\Room\QuestionsOfRoomResponseDTO;
-use App\DTOs\User\UserDeviceInformationDTO;
-use App\DTOs\User\VerifyCodeResponseDTO;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Pagination\LengthAwarePaginator;
 

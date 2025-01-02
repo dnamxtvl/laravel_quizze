@@ -4,12 +4,17 @@ namespace App\Http\Controllers;
 
 use App\DTOs\Answer\CreateAnswerDTO;
 use App\DTOs\Question\CreateQuestionDTO;
-use App\DTOs\Quizz\CreateQuizzDTO;
+use App\DTOs\Quizz\CreateQuizDTO;
+use App\DTOs\Quizz\SearchQuizDTO;
+use App\Enums\Quiz\CreatedByEnum;
 use App\Enums\Quiz\TypeQuizEnum;
+use App\Enums\User\UserRoleEnum;
 use App\Http\Requests\ListQuizzesRequest;
+use App\Http\Requests\SearchQuizzeRequest;
 use App\Http\Requests\ShareQuizRequest;
 use App\Http\Requests\AdminCreateQuizzeRequest;
 use App\Http\Requests\ShareQuestionRequest;
+use App\Models\User;
 use App\Services\Interface\QuizzesServiceInterface;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -37,11 +42,14 @@ class QuizzesController extends Controller
 
     public function createQuiz(AdminCreateQuizzeRequest $request): JsonResponse
     {
+        $authUser = Auth::user();
+        /** @var User $authUser */
         try {
-            $quiz = new CreateQuizzDTO(
+            $quiz = new CreateQuizDTO(
                 title: $request->input(key: 'quizze')['title'],
                 categoryId: $request->input(key: 'quizze')['category_id'],
                 userId: Auth::id(),
+                createdBySys: $authUser->type == UserRoleEnum::SYSTEM->value,
             );
             $questions = [];
             foreach ($request->input(key: 'questions') as $question) {
@@ -125,6 +133,26 @@ class QuizzesController extends Controller
         try {
             $this->quizzesService->rejectShareQuiz(token: $token, notifyId: $request->input(key: 'notification_id'));
             return $this->respondWithJson(content: []);
+        } catch (Throwable $th) {
+            return $this->respondWithJsonError(e: $th);
+        }
+    }
+
+    public function allQuizzesPagination(SearchQuizzeRequest $request): JsonResponse
+    {
+        try {
+            $searchQuizDTO = new SearchQuizDTO(
+                userIds: $request->input(key: 'user_ids'),
+                code: $request->input(key: 'code'),
+                createdAt: !empty($request->input('start_time')) && !empty($request->input('end_time')) ?
+                    [$request->input(key: 'start_time'), $request->input(key: 'end_time')] : [],
+                categoryId: $request->input(key: 'category_id'),
+                createdBy: !empty($request->input(key: 'created_by')) ?
+                    CreatedByEnum::tryFrom($request->input(key: 'created_by')) : null,
+            );
+            $listQuizzes = $this->quizzesService->searchQuiz(searchQuizDTO: $searchQuizDTO);
+
+            return $this->respondWithJson(content: $listQuizzes->toArray());
         } catch (Throwable $th) {
             return $this->respondWithJsonError(e: $th);
         }

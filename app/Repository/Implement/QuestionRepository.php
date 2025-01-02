@@ -4,14 +4,17 @@ namespace App\Repository\Implement;
 
 use App\DTOs\Answer\CreateAnswerDTO;
 use App\DTOs\Question\CreateQuestionDTO;
+use App\Enums\User\UserRoleEnum;
 use App\Models\Answer;
 use App\Models\Question;
+use App\Models\User;
 use App\Pipeline\Global\QuizzIdFilter;
 use App\Repository\Interface\QuestionRepositoryInterface;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pipeline\Pipeline;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Auth;
 
 readonly class QuestionRepository implements QuestionRepositoryInterface
 {
@@ -115,7 +118,7 @@ readonly class QuestionRepository implements QuestionRepositoryInterface
     public function createQuestion(CreateQuestionDTO $questionDTO, ?int $indexQuestionOverride = null): Question
     {
         $now = now();
-        $question = new Question;
+        $question = new Question();
         $question->quizze_id = $questionDTO->getQuizId();
         $question->title = $questionDTO->getTitle();
         if ($indexQuestionOverride) {
@@ -125,11 +128,16 @@ readonly class QuestionRepository implements QuestionRepositoryInterface
 
         $answersInsert = [];
         foreach ($questionDTO->getAnswers() as $answer) {
+            $authUser = Auth::user();
+            /** @var User $authUser */
+            $isSystemAdmin = $authUser->type == UserRoleEnum::SYSTEM->value;
             /* @var CreateAnswerDTO $answer */
             $answersInsert[] = [
                 'question_id' => $question->id,
                 'answer' => $answer->getAnswer(),
                 'is_correct' => $answer->getIsCorrect(),
+                'created_by_sys' => $isSystemAdmin,
+                'updated_by_sys' => $isSystemAdmin,
                 'created_at' => $now,
                 'updated_at' => $now,
             ];

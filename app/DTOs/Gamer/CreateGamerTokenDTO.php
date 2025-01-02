@@ -1,6 +1,6 @@
 <?php
 
-namespace App\DTOs\User;
+namespace App\DTOs\Gamer;
 
 readonly class CreateGamerTokenDTO
 {

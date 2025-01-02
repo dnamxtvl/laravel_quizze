@@ -2,7 +2,7 @@
 
 namespace App\Repository\Interface;
 
-use App\DTOs\User\CreateGamerTokenDTO;
+use App\DTOs\Gamer\CreateGamerTokenDTO;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 

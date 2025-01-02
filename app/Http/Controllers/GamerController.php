@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\DTOs\User\CreateGameSettingDTO;
+use App\DTOs\Gamer\CreateGameSettingDTO;
 use App\Http\Requests\CreateGameSettingRequest;
 use App\Http\Requests\SubmitAnswerRequest;
 use App\Http\Requests\SubmitHomeworkRequest;
