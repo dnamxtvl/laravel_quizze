@@ -18,14 +18,17 @@ Route::get('/user', function (Request $request) {
 
 Route::post('/admin/login', [AuthController::class, 'login'])->name('auth.admin.login');
 Route::prefix('auth')->group(function () {
-    Route::post('/register-user', [AuthController::class, 'register'])->name('auth.register');
+    Route::post('/register', [AuthController::class, 'register'])->name('auth.register');
     Route::post('/email/verify-register/', [AuthController::class, 'verifyOTPAfterRegister'])->name('auth.verifyOTPAfterRegister');
     Route::post('/email/verify-login/', [AuthController::class, 'verifyOTPAfterLogin'])->name('auth.verifyOTPAfterLogin');
-    Route::get('/email/verification-notification/{userId}', [AuthController::class, 'resendVerificationNotification'])->middleware(['throttle:6,1'])->name('auth.resendVerificationNotification');
+    Route::get('/email/resend-verify-email/{otpId}', [AuthController::class, 'resendVerifyEmail'])->middleware(['throttle:6,1'])->name('auth.resendVerificationNotification');
     Route::post('forgot-password', [AuthController::class, 'forgotPassword'])->middleware(['throttle:6,1', 'guest'])->name('auth.forgotPassword');
     Route::post('/forgot-password/verify-otp', [AuthController::class, 'verifyOTPForgotPassword'])->middleware('guest')->name('auth.verifyOTPForgotPassword');
-    Route::get('/forgot-password/resend-otp/{userId}', [AuthController::class, 'resendOTPForgotPassword'])->middleware(['throttle:6,1'])->name('auth.resendOTPForgotPassword');
-    Route::post('/forgot-password/set-new-password', [AuthController::class, 'setNewPasswordAfterForgot'])->middleware('guest')->name('auth.setNewPasswordAfterForgot');
+    Route::get('/forgot-password/resend-otp/{otpId}', [AuthController::class, 'resendOTPForgotPassword'])->middleware(['throttle:6,1'])->name('auth.resendOTPForgotPassword');
+    Route::post('/reset-password', [AuthController::class, 'resetPassword'])->middleware('guest')->name('auth.resetPassword');
+    Route::get('/reset-password/{token}', function (string $token) {
+        return view('auth.reset-password', ['token' => $token]);
+    })->middleware('guest')->name('password.reset');
 });
 
 Route::group(['middleware' => ['auth:api', 'verified']], function () {

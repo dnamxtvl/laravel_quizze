@@ -2,6 +2,7 @@
 
 namespace App\Repository\Interface;
 
+use App\DTOs\Auth\RegisterParamsDTO;
 use App\DTOs\User\SearchUserDTO;
 use App\DTOs\User\UserDisableLogDTO;
 use App\Models\User;
@@ -24,4 +25,6 @@ interface UserRepositoryInterface
     public function enable(User $user): void;
 
     public function verifyEmail(User $user): void;
+
+    public function create(RegisterParamsDTO $registerParams): User;
 }

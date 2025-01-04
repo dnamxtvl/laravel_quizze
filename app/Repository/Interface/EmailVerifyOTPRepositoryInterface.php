@@ -12,7 +12,7 @@ interface EmailVerifyOTPRepositoryInterface
 {
     public function getQuery(array $columnSelects = [], array $filters = []): Builder;
 
-    public function save(SaveEmailVerifyOTPDTO $saveEmailVerify): Model;
+    public function save(SaveEmailVerifyOTPDTO $saveEmailVerify): EmailVerifyOTP;
 
     public function findById(string $emailVerifyOtpId): ?EmailVerifyOTP;
 

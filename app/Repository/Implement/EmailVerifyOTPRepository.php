@@ -9,7 +9,6 @@ use App\Pipeline\Global\UserIdFilter;
 use App\Pipeline\User\VerifyCodeOTPFilter;
 use App\Repository\Interface\EmailVerifyOTPRepositoryInterface;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Pipeline\Pipeline;
 use App\DTOs\Auth\TypeCodeOTPEnum;
 
@@ -37,7 +36,7 @@ readonly class EmailVerifyOTPRepository implements EmailVerifyOTPRepositoryInter
             ->thenReturn();
     }
 
-    public function save(SaveEmailVerifyOTPDTO $saveEmailVerify): Model
+    public function save(SaveEmailVerifyOTPDTO $saveEmailVerify): EmailVerifyOTP
     {
         $emailVerifyOtp = new EmailVerifyOTP();
 

@@ -4,7 +4,7 @@ namespace App\Models;
 
 use App\Notifications\VerifyEmailRegister;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Illuminate\Database\Eloquent\Concerns\HasUlids;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -23,10 +23,11 @@ use Laravel\Sanctum\HasApiTokens;
  * @property Carbon|mixed $disabled_at
  * @property mixed|string $latest_ip_login
  * @property \Illuminate\Support\Carbon|mixed $latest_login
+ * @property mixed|string $password
  */
 class User extends Authenticatable implements MustVerifyEmail
 {
-    use HasApiTokens, HasFactory, HasUlids, Notifiable;
+    use HasApiTokens, HasFactory, HasUuids, Notifiable;
 
     /**
      * The attributes that are mass assignable.

@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Events\EmailNotVerifyEvent;
 use App\Listeners\SendEmailVerifyOTPNotification;
+use App\Models\User;
 use App\Repository\Implement\AnswerRepository;
 use App\Repository\Implement\BlockUserLoginTemporaryRepository;
 use App\Repository\Implement\CategoryRepository;
@@ -46,9 +47,11 @@ use App\Services\Interface\QuestionServiceInterface;
 use App\Services\Interface\QuizzesServiceInterface;
 use App\Services\Interface\RoomServiceInterface;
 use App\Services\Interface\UserServiceInterface;
+use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 
@@ -97,5 +100,10 @@ class AppServiceProvider extends ServiceProvider
             EmailNotVerifyEvent::class,
             SendEmailVerifyOTPNotification::class,
         );
+
+        ResetPassword::createUrlUsing(function (User $user, string $token) {
+            Log::info('Reset password url: ' . env('FRONT_END_URL') . '/auth/reset-password/' . $user->id . '?token=' . $token);
+            return env('FRONT_END_URL') . '/auth/reset-password/' . $user->id . '?token='.$token;
+        });
     }
 }

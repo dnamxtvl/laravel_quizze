@@ -17,4 +17,6 @@ enum AuthExceptionEnum: int
     case OTP_NOT_FOUND = 4546464;
 
     case LOGIN_WRONG_PASSWORD_MANY = 4546964;
+
+    case EMAIL_ALREADY_EXISTS = 4546468;
 }

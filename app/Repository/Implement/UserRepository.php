@@ -2,6 +2,7 @@
 
 namespace App\Repository\Implement;
 
+use App\DTOs\Auth\RegisterParamsDTO;
 use App\DTOs\User\SearchUserDTO;
 use App\DTOs\User\UserDisableLogDTO;
 use App\Models\User;
@@ -92,5 +93,18 @@ readonly class UserRepository implements UserRepositoryInterface
     {
         $user->email_verified_at = now();
         $user->save();
+    }
+
+    public function create(RegisterParamsDTO $registerParams): User
+    {
+        $user = new User();
+
+        $user->name = $registerParams->getName();
+        $user->email = $registerParams->getEmail();
+        $user->password = $registerParams->getPassword();
+        $user->type = $registerParams->getUserRole()->value;
+        $user->save();
+
+        return $user;
     }
 }
