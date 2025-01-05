@@ -4,8 +4,10 @@ namespace App\Repository\Interface;
 
 use App\DTOs\Auth\RegisterParamsDTO;
 use App\DTOs\User\SearchUserDTO;
+use App\DTOs\User\UserChangePasswordLogDTO;
 use App\DTOs\User\UserDisableLogDTO;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
 
 interface UserRepositoryInterface
@@ -27,4 +29,8 @@ interface UserRepositoryInterface
     public function verifyEmail(User $user): void;
 
     public function create(RegisterParamsDTO $registerParams): User;
+
+    public function searchByElk(string $keyword): Collection;
+
+    public function changePassword(User $user, UserChangePasswordLogDTO $userChangePasswordLog): void;
 }

@@ -13,6 +13,7 @@ readonly class RegisterParamsDTO
         private string $password,
         private UserRoleEnum $role,
         private ?Carbon $emailVerifiedAt = null,
+        private ?string $googleId = null,
     ) {
     }
 
@@ -54,5 +55,13 @@ readonly class RegisterParamsDTO
     public function getEmailVerifiedAt(): ?Carbon
     {
         return $this->emailVerifiedAt;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getGoogleId(): ?string
+    {
+        return $this->googleId;
     }
 }

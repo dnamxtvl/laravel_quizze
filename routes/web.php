@@ -1,6 +1,9 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\UserController;
+use Stevebauman\Location\Facades\Location;
 
-Route::get('/test/{id}', [UserController::class, 'test']);
+Route::get('/test/', function () {
+    dd(Location::get('116.96.46.236'));
+    dd(\App\Models\User::search('Sta')->get());
+});

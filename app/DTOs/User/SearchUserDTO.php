@@ -2,7 +2,6 @@
 
 namespace App\DTOs\User;
 
-use App\Enums\Quiz\CreatedByEnum;
 use App\Enums\User\UserRoleEnum;
 
 readonly class SearchUserDTO

@@ -4,17 +4,21 @@ namespace App\Repository\Implement;
 
 use App\DTOs\Auth\RegisterParamsDTO;
 use App\DTOs\User\SearchUserDTO;
+use App\DTOs\User\UserChangePasswordLogDTO;
 use App\DTOs\User\UserDisableLogDTO;
 use App\Models\User;
+use App\Models\UserChangePasswordLog;
 use App\Models\UserDisableLog;
 use App\Pipeline\Global\CreatedAtBetweenFilter;
-use App\Pipeline\Global\UserIdsFiler;
+use App\Pipeline\Global\IdsFilter;
 use App\Pipeline\User\RoleFilter;
 use App\Pipeline\User\StatusFilter;
 use App\Repository\Interface\UserRepositoryInterface;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Pipeline\Pipeline;
+use Illuminate\Support\Facades\Hash;
 
 readonly class UserRepository implements UserRepositoryInterface
 {
@@ -32,7 +36,7 @@ readonly class UserRepository implements UserRepositoryInterface
         return app(abstract: Pipeline::class)
             ->send($query)
             ->through([
-                new UserIdsFiler(filters: $filters),
+                new IdsFilter(filters: $filters),
                 new CreatedAtBetweenFilter(filters: $filters),
                 new StatusFilter(filters: $filters),
                 new RoleFilter(filters: $filters),
@@ -103,8 +107,30 @@ readonly class UserRepository implements UserRepositoryInterface
         $user->email = $registerParams->getEmail();
         $user->password = $registerParams->getPassword();
         $user->type = $registerParams->getUserRole()->value;
+        $user->email_verified_at = $registerParams->getEmailVerifiedAt();
+        $user->google_id = $registerParams->getGoogleId();
         $user->save();
 
         return $user;
+    }
+
+    public function searchByElk(string $keyword): Collection
+    {
+        return User::search($keyword)->get();
+    }
+
+    public function changePassword(User $user, UserChangePasswordLogDTO $userChangePasswordLog): void
+    {
+        $user->password = $userChangePasswordLog->getNewPassword();
+        $user->save();
+
+        $userChangePassword = new UserChangePasswordLog();
+        $userChangePassword->user_id = $user->id;
+        $userChangePassword->ip = $userChangePasswordLog->getIp();
+        $userChangePassword->user_agent = $userChangePasswordLog->getUserAgent();
+        $userChangePassword->old_password = Hash::make($userChangePasswordLog->getOldPassword());
+        $userChangePassword->new_password = Hash::make($userChangePasswordLog->getNewPassword());
+        $userChangePassword->change_by = $userChangePasswordLog->getChangeBy();
+        $userChangePassword->save();
     }
 }

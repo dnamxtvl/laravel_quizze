@@ -24,4 +24,8 @@ interface AuthServiceInterface
     public function forgotPassword(string $email): void;
 
     public function resetPassword(string $userId, string $token, string $password): void;
+
+    public function getGoogleSignInUrl(): string;
+
+    public function loginCallback(string $credentials): AdminLoginResponseDataDTO;
 }

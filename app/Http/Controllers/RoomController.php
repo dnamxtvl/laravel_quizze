@@ -71,6 +71,7 @@ class RoomController extends Controller
                 type: ! is_null($request->input(key: 'type')) ? RoomTypeEnum::tryFrom($request->input(key: 'type')) : null,
                 status: ! is_null($request->input(key: 'status')) ? RoomStatusEnum::tryFrom($request->input(key: 'status')) : null,
                 code: $request->input(key: 'code') ?? null,
+                codeQuiz: $request->input(key: 'code_quiz') ?? null,
                 startTime: $request->input(key: 'start_time') ? Carbon::parse($request->input(key: 'start_time')) : null,
                 endTime: $request->input(key: 'end_time') ? Carbon::parse($request->input(key: 'end_time')) : now(),
                 page: $request->input(key: 'page', default: self::DEFAULT_PAGE),

@@ -12,6 +12,7 @@ use App\DTOs\Auth\UserLoginHistoryDTO;
 use App\Enums\Auth\AuthExceptionEnum;
 use App\Enums\Auth\TypeUserHistoryLoginEnum;
 use App\Enums\Exception\ExceptionCodeEnum;
+use App\Enums\User\UserRoleEnum;
 use App\Enums\User\UserStatusEnum;
 use App\Events\EmailNotVerifyEvent;
 use App\Exceptions\Auth\EmailAlreadyExistsException;
@@ -37,10 +38,12 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
+use Laravel\Socialite\Facades\Socialite;
 use Symfony\Component\CssSelector\Exception\InternalErrorException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Throwable;
+use Google\Client as GoogleClient;
 
 readonly class AuthService implements AuthServiceInterface
 {
@@ -360,5 +363,50 @@ readonly class AuthService implements AuthServiceInterface
         if ($status !== PasswordBrokerAlias::PASSWORD_RESET) {
             throw new InternalErrorException(message: 'Link đặt lại mật khẩu không hợp lệ hoặc đã hết hạn!');
         }
+    }
+
+    public function getGoogleSignInUrl(): string
+    {
+        return Socialite::driver('google')->stateless()
+            ->redirect()->getTargetUrl();
+    }
+
+    public function loginCallback(string $credentials): AdminLoginResponseDataDTO
+    {
+        $client = new GoogleClient();
+        $client->setClientId(env('GOOGLE_CLIENT_ID'));
+        $client->setClientSecret(env('GOOGLE_CLIENT_SECRET'));
+        $payload = $client->verifyIdToken($credentials);
+
+        if (!$payload) {
+            throw new BadRequestHttpException(message: 'Yêu cầu không hợp lệ!');
+        }
+
+        $user = $this->userRepository->findByEmail(email: $payload['email']);
+        if ($user) {
+            Auth::login($user);
+            $user->latest_login = now();
+            $user->latest_ip_login = request()->ip();
+            $user->save();
+
+            return $this->generateToken();
+        }
+
+        $registerParams = new RegisterParamsDTO(
+            name: $payload['name'],
+            email: $payload['email'],
+            password: Str::random(60),
+            role: UserRoleEnum::ADMIN,
+            emailVerifiedAt: now(),
+            googleId: $payload['sub'],
+        );
+
+        $newUser = $this->userRepository->create(registerParams: $registerParams);
+        Auth::login($newUser);
+        $newUser->latest_login = now();
+        $newUser->latest_ip_login =  request()->ip();
+        $newUser->save();
+
+        return $this->generateToken();
     }
 }

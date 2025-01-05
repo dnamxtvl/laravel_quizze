@@ -12,6 +12,7 @@ readonly class ListRoomReportParamDTO
         private ?RoomTypeEnum $type = null,
         private ?RoomStatusEnum $status = null,
         private ?int $code = null,
+        private ?string $codeQuiz = null,
         private ?Carbon $startTime = null,
         private ?Carbon $endTime = null,
         private ?int $page = null
@@ -53,6 +54,7 @@ readonly class ListRoomReportParamDTO
             'type' => $this->type?->value,
             'status' => $this->status?->value,
             'code' => $this->code,
+            'code_quiz' => $this->codeQuiz,
             'start_time' => $this->startTime,
             'end_time' => $this->endTime,
         ];

@@ -8,6 +8,7 @@ use App\Enums\Room\RoomStatusEnum;
 use App\Enums\Room\RoomTypeEnum;
 use App\Models\Room;
 use App\Pipeline\Global\CodeFilter;
+use App\Pipeline\Room\CodeQuizFilter;
 use App\Pipeline\Global\EndTimeFilter;
 use App\Pipeline\Global\QuizzIdFilter;
 use App\Pipeline\Global\StartTimeFilter;
@@ -45,6 +46,7 @@ readonly class RoomRepository implements RoomRepositoryInterface
                 new TypeFilter(filters: $filters),
                 new StartTimeFilter(filters: $filters),
                 new EndTimeFilter(filters: $filters),
+                new CodeQuizFilter(filters: $filters),
             ])
             ->thenReturn();
     }

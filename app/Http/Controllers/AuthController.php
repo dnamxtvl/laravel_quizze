@@ -13,6 +13,7 @@ use App\Http\Requests\ResetPasswordRequest;
 use App\Http\Requests\VerifyEmailOTPAfterLoginRequest;
 use App\Http\Requests\VerifyEmailRequest;
 use App\Services\Interface\AuthServiceInterface;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Throwable;
@@ -138,6 +139,30 @@ class AuthController extends Controller
             );
 
             return $this->respondWithJson(content: []);
+        } catch (Throwable $th) {
+            return $this->respondWithJsonError(e: $th);
+        }
+    }
+
+    public function getGoogleSignInUrl(): JsonResponse
+    {
+        try {
+            $url = $this->authService->getGoogleSignInUrl();
+
+            return $this->respondWithJson(content: ['url' => $url]);
+        } catch (Throwable $th) {
+            return $this->respondWithJsonError(e: $th);
+        }
+    }
+
+    public function loginCallback(Request $request): JsonResponse
+    {
+        try {
+            $adminInfo = $this->authService->loginCallback(
+                credentials: $request->input(key: 'credentials'),
+            );
+
+            return $this->respondWithJson(content: $adminInfo->toArray());
         } catch (Throwable $th) {
             return $this->respondWithJsonError(e: $th);
         }

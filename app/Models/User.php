@@ -11,6 +11,8 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
 use Laravel\Sanctum\HasApiTokens;
+use Laravel\Scout\Searchable;
+use JeroenG\Explorer\Application\Explored;
 
 /**
  * @property mixed $email_verified_at
@@ -24,10 +26,12 @@ use Laravel\Sanctum\HasApiTokens;
  * @property mixed|string $latest_ip_login
  * @property \Illuminate\Support\Carbon|mixed $latest_login
  * @property mixed|string $password
+ * @property mixed|string|null $google_id
+ * @property mixed $created_at
  */
-class User extends Authenticatable implements MustVerifyEmail
+class User extends Authenticatable implements MustVerifyEmail, Explored
 {
-    use HasApiTokens, HasFactory, HasUuids, Notifiable;
+    use HasApiTokens, HasFactory, HasUuids, Notifiable, Searchable;
 
     /**
      * The attributes that are mass assignable.
@@ -77,5 +81,25 @@ class User extends Authenticatable implements MustVerifyEmail
     public function userLoginHistories(): HasMany
     {
         return $this->hasMany(UserLoginHistory::class);
+    }
+
+    public function toSearchableArray(): array
+    {
+        return [
+            'id' => $this->id,
+            'name' => $this->name,
+            'email' => $this->email,
+            'created_at' => $this->created_at,
+        ];
+    }
+
+    public function mappableAs(): array
+    {
+        return [
+            'id' => 'keyword',
+            'name' => 'text',
+            'email' => 'text',
+            'created_at' => 'date',
+        ];
     }
 }

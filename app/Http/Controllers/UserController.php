@@ -3,9 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\DTOs\User\SearchUserDTO;
+use App\DTOs\User\UserChangePasswordLogDTO;
 use App\Enums\User\UserRoleEnum;
+use App\Http\Requests\ChangePasswordRequest;
 use App\Http\Requests\SearchUserRequest;
 use App\Services\Interface\UserServiceInterface;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Throwable;
@@ -77,6 +80,38 @@ class UserController extends Controller
     {
         try {
             $this->userService->activeUser(userId: $userId);
+
+            return $this->respondWithJson(content: []);
+        } catch (Throwable $e) {
+            Log::error($e);
+            return $this->respondWithJsonError(e: $e);
+        }
+    }
+
+    public function searchByElk(string $keyword): JsonResponse
+    {
+        try {
+            $listUsers = $this->userService->searchByElk(keyword: $keyword);
+
+            return $this->respondWithJson(content: $listUsers->toArray());
+        } catch (Throwable $e) {
+            Log::error($e);
+            return $this->respondWithJsonError(e: $e);
+        }
+    }
+
+    public function changePassword(ChangePasswordRequest $request, string $userId): JsonResponse
+    {
+        try {
+            $changePasswordLog = new UserChangePasswordLogDTO(
+                userId: $userId,
+                ip: $request->ip(),
+                userAgent: $request->header(key: 'User-Agent'),
+                oldPassword: $request->input(key: 'old_password'),
+                newPassword: $request->input(key: 'new_password'),
+                changeBy: Auth::id(),
+            );
+            $this->userService->changePassword(userChangePasswordLog: $changePasswordLog);
 
             return $this->respondWithJson(content: []);
         } catch (Throwable $e) {

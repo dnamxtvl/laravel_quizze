@@ -29,6 +29,8 @@ Route::prefix('auth')->group(function () {
     Route::get('/reset-password/{token}', function (string $token) {
         return view('auth.reset-password', ['token' => $token]);
     })->middleware('guest')->name('password.reset');
+    Route::get('/google-sign-in-url', [AuthController::class, 'getGoogleSignInUrl'])->name('auth.loginGoogle');
+    Route::get('/google-callback', [AuthController::class, 'loginCallback'])->name('auth.loginCallback');
 });
 
 Route::group(['middleware' => ['auth:api', 'verified']], function () {
@@ -48,7 +50,7 @@ Route::group(['middleware' => ['auth:api', 'verified']], function () {
             Route::post('/create-question/{quizId}', [QuestionController::class, 'createQuestion'])->name('questions.add');
             Route::post('/delete-question/{questionId}', [QuestionController::class, 'deleteQuestion'])->name('questions.delete');
             Route::post('/share/{quizId}', [QuizzesController::class, 'shareQuiz'])->name('quizzes.share');
-            Route::get('/search', [QuizzesController::class, 'allQuizzesPagination'])->name('quizzes.all')->middleware('is_system');;
+            Route::get('/search', [QuizzesController::class, 'allQuizzesPagination'])->name('quizzes.all')->middleware('is_system');
         });
         Route::prefix('room')->group(function () {
             Route::middleware(['is_admin'])->group(function () {
@@ -70,13 +72,15 @@ Route::group(['middleware' => ['auth:api', 'verified']], function () {
         Route::middleware(['is_system'])->group(function () {
             Route::prefix('user')->group(function () {
                 Route::get('/search', [UserController::class, 'search'])->name('user.search');
-                Route::get('/detail/{userId}', [UserController::class, 'detail'])->name('user.search');
                 Route::post('/update/{userId}', [UserController::class, 'update'])->name('user.update');
                 Route::post('/disable/{userId}', [UserController::class, 'disable'])->name('user.disable');
                 Route::post('/active/{userId}', [UserController::class, 'active'])->name('user.active');
                 Route::post('/delete/{userId}', [UserController::class, 'delete'])->name('user.delete');
+                Route::get('/search-elk/{keyword}', [UserController::class, 'searchByElk'])->name('user.search-by-elk');
             });
         });
+        Route::get('/get-profile/{userId}', [UserController::class, 'detail'])->name('user.detail');
+        Route::post('/change-password/{userId}', [UserController::class, 'changePassword'])->name('user.change-password');
 
         Route::prefix('category')->group(function () {
             Route::get('/list', [CategoryController::class, 'listCategory'])->name('categories.list');
