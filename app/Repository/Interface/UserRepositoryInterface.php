@@ -4,6 +4,7 @@ namespace App\Repository\Interface;
 
 use App\DTOs\Auth\RegisterParamsDTO;
 use App\DTOs\User\SearchUserDTO;
+use App\DTOs\User\UpdateProfileDTO;
 use App\DTOs\User\UserChangePasswordLogDTO;
 use App\DTOs\User\UserDisableLogDTO;
 use App\Models\User;
@@ -33,4 +34,6 @@ interface UserRepositoryInterface
     public function searchByElk(string $keyword): Collection;
 
     public function changePassword(User $user, UserChangePasswordLogDTO $userChangePasswordLog): void;
+
+    public function updateProfile(User $user, UpdateProfileDTO $updateProfile): void;
 }

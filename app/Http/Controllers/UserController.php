@@ -3,10 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\DTOs\User\SearchUserDTO;
+use App\DTOs\User\UpdateProfileDTO;
 use App\DTOs\User\UserChangePasswordLogDTO;
 use App\Enums\User\UserRoleEnum;
 use App\Http\Requests\ChangePasswordRequest;
 use App\Http\Requests\SearchUserRequest;
+use App\Http\Requests\UpdateProfileRequest;
 use App\Services\Interface\UserServiceInterface;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -111,7 +113,24 @@ class UserController extends Controller
                 newPassword: $request->input(key: 'new_password'),
                 changeBy: Auth::id(),
             );
-            $this->userService->changePassword(userChangePasswordLog: $changePasswordLog);
+            $this->userService->changePassword(userChangePasswordLog: $changePasswordLog, userId: $userId);
+
+            return $this->respondWithJson(content: []);
+        } catch (Throwable $e) {
+            Log::error($e);
+            return $this->respondWithJsonError(e: $e);
+        }
+    }
+
+    public function updateProfile(UpdateProfileRequest $request, string $userId): JsonResponse
+    {
+        try {
+            $updateProfile = new UpdateProfileDTO(
+                userId: $userId,
+                name: $request->input(key: 'name'),
+                avatar: $request->file('avatar'),
+            );
+            $this->userService->updateProfile(updateProfile: $updateProfile);
 
             return $this->respondWithJson(content: []);
         } catch (Throwable $e) {

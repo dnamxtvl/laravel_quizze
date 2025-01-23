@@ -3,6 +3,7 @@
 namespace App\Services\Interface;
 
 use App\DTOs\User\SearchUserDTO;
+use App\DTOs\User\UpdateProfileDTO;
 use App\DTOs\User\UserChangePasswordLogDTO;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Collection;
@@ -22,5 +23,7 @@ interface UserServiceInterface
 
     public function searchByElk(string $keyword): Collection;
 
-    public function changePassword(UserChangePasswordLogDTO $userChangePasswordLog): void;
+    public function changePassword(UserChangePasswordLogDTO $userChangePasswordLog, string $userId): void;
+
+    public function updateProfile(UpdateProfileDTO $updateProfile): void;
 }

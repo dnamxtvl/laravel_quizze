@@ -8,7 +8,7 @@ readonly class UserChangePasswordLogDTO
         private string $userId,
         private string $ip,
         private string $userAgent,
-        private string $oldPassword,
+        private ?string $oldPassword,
         private string $newPassword,
         private string $changeBy,
     ) {
@@ -29,7 +29,7 @@ readonly class UserChangePasswordLogDTO
         return $this->userAgent;
     }
 
-    public function getOldPassword(): string
+    public function getOldPassword(): ?string
     {
         return $this->oldPassword;
     }

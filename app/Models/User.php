@@ -24,10 +24,11 @@ use JeroenG\Explorer\Application\Explored;
  * @property mixed|true $disabled
  * @property Carbon|mixed $disabled_at
  * @property mixed|string $latest_ip_login
- * @property \Illuminate\Support\Carbon|mixed $latest_login
+ * @property Carbon|mixed $latest_login
  * @property mixed|string $password
  * @property mixed|string|null $google_id
  * @property mixed $created_at
+ * @property mixed|string|null $avatar
  */
 class User extends Authenticatable implements MustVerifyEmail, Explored
 {

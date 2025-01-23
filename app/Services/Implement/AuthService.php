@@ -374,8 +374,8 @@ readonly class AuthService implements AuthServiceInterface
     public function loginCallback(string $credentials): AdminLoginResponseDataDTO
     {
         $client = new GoogleClient();
-        $client->setClientId(env('GOOGLE_CLIENT_ID'));
-        $client->setClientSecret(env('GOOGLE_CLIENT_SECRET'));
+        $client->setClientId(config('services.google.client_id'));
+        $client->setClientSecret(config('services.google.client_secret'));
         $payload = $client->verifyIdToken($credentials);
 
         if (!$payload) {

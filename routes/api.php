@@ -79,7 +79,8 @@ Route::group(['middleware' => ['auth:api', 'verified']], function () {
                 Route::get('/search-elk/{keyword}', [UserController::class, 'searchByElk'])->name('user.search-by-elk');
             });
         });
-        Route::get('/get-profile/{userId}', [UserController::class, 'detail'])->name('user.detail');
+        Route::get('/get-profile/{userId}', [UserController::class, 'detail'])->name('user.detail')->middleware('view_profile');
+        Route::post('/update-profile/{userId}', [UserController::class, 'updateProfile'])->name('user.update-profile')->middleware('view_profile');
         Route::post('/change-password/{userId}', [UserController::class, 'changePassword'])->name('user.change-password');
 
         Route::prefix('category')->group(function () {

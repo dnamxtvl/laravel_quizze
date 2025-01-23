@@ -4,6 +4,7 @@ namespace App\Repository\Implement;
 
 use App\DTOs\Auth\RegisterParamsDTO;
 use App\DTOs\User\SearchUserDTO;
+use App\DTOs\User\UpdateProfileDTO;
 use App\DTOs\User\UserChangePasswordLogDTO;
 use App\DTOs\User\UserDisableLogDTO;
 use App\Models\User;
@@ -132,5 +133,12 @@ readonly class UserRepository implements UserRepositoryInterface
         $userChangePassword->new_password = Hash::make($userChangePasswordLog->getNewPassword());
         $userChangePassword->change_by = $userChangePasswordLog->getChangeBy();
         $userChangePassword->save();
+    }
+
+    public function updateProfile(User $user, UpdateProfileDTO $updateProfile): void
+    {
+        $user->name = $updateProfile->getName();
+        $user->avatar = $updateProfile->getPath();
+        $user->save();
     }
 }

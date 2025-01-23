@@ -3,8 +3,10 @@
 namespace App\Services\Implement;
 
 use App\DTOs\User\SearchUserDTO;
+use App\DTOs\User\UpdateProfileDTO;
 use App\DTOs\User\UserChangePasswordLogDTO;
 use App\DTOs\User\UserDisableLogDTO;
+use App\Enums\User\UserRoleEnum;
 use App\Enums\User\UserStatusEnum;
 use App\Exceptions\User\UnAuthorizeException;
 use App\Models\User;
@@ -16,6 +18,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use Symfony\Component\CssSelector\Exception\InternalErrorException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -70,6 +73,10 @@ readonly class UserService implements UserServiceInterface
             throw new UnAuthorizeException(message: 'Không thể vô hiệu hóa super admin');
         }
 
+        if ($user->disabled) {
+            throw new UnAuthorizeException(message: 'User đã bị vô hiệu hóa trước đó!');
+        }
+
         $userDisableLog = new UserDisableLogDTO(
             disableBy: Auth::id(),
             userId: $user->id,
@@ -81,6 +88,7 @@ readonly class UserService implements UserServiceInterface
         try {
             $this->userRepository->disable(user: $user);
             $this->userRepository->saveDisableLog(userDisableLog: $userDisableLog);
+            $user->tokens()->delete();
 
             DB::commit();
         } catch (Throwable $e) {
@@ -132,22 +140,45 @@ readonly class UserService implements UserServiceInterface
     /**
      * @throws InternalErrorException
      */
-    public function changePassword(UserChangePasswordLogDTO $userChangePasswordLog): void
+    public function changePassword(UserChangePasswordLogDTO $userChangePasswordLog, string $userId): void
     {
-        $user = Auth::user();
-        /* @var User $user */
-        if (Hash::check($userChangePasswordLog->getOldPassword(), $user->password)) {
-            throw new BadRequestHttpException(message: 'Mật khẩu cũ không chinh xác!');
+        $authUser = Auth::user();
+        $user = $this->userRepository->findById(userId: $userId);
+        if (is_null($user)) {
+            throw new NotFoundHttpException(message: 'Không tìm thấy người dùng');
+        }
+        /* @var User $authUser */
+        if (($authUser->type != UserRoleEnum::SYSTEM->value || $authUser->id == $user->id) && $userChangePasswordLog->getOldPassword()) {
+            if (!Hash::check($userChangePasswordLog->getOldPassword(), $user->password)) {
+                throw new BadRequestHttpException(message: 'Mật khẩu cũ không chinh xác!');
+            }
         }
 
         DB::beginTransaction();
         try {
             $this->userRepository->changePassword(user: $user, userChangePasswordLog: $userChangePasswordLog);
+            if ($authUser->id == $user->id) {
+                $authUser->tokens()->delete();
+            }
+
             DB::commit();
         } catch (Throwable $e) {
             DB::rollBack();
             Log::error($e);
             throw new InternalErrorException(message: 'Đã xảy ra lỗi!');
         }
+    }
+
+    public function updateProfile(UpdateProfileDTO $updateProfile): void
+    {
+        $user = $this->userRepository->findById(userId: $updateProfile->getUserId());
+        if (is_null($user)) {
+            throw new NotFoundHttpException(message: 'Không tìm thấy user!');
+        }
+
+        $path = Storage::disk('s3')->put('avatar', $updateProfile->getAvatar(), 'public');
+        $updateProfile->setPath(path: config('filesystems.disks.s3.url'). '/' . $path);
+
+        $this->userRepository->updateProfile(user: $user, updateProfile: $updateProfile);
     }
 }

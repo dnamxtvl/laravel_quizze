@@ -26,7 +26,7 @@ class ChangePasswordRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'old_password' => [new RequiredIf(Auth::user()->role != UserRoleEnum::SYSTEM->value), 'string', 'min:'.config('validation.password.min_length'), 'max:'.config('validation.password.max_length')],
+            'old_password' => ['nullable', new RequiredIf(Auth::user()->type != UserRoleEnum::SYSTEM->value), 'string', 'min:'.config('validation.password.min_length'), 'max:'.config('validation.password.max_length')],
             'new_password' => 'required|string|min:'.config('validation.password.min_length').'|max:'.config('validation.password.max_length'),
         ];
     }

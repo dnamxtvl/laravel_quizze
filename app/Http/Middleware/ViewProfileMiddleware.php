@@ -11,7 +11,7 @@ class ViewProfileMiddleware
 {
     public function handle(Request $request, Closure $next): Response
     {
-        if ($request->user()->role == UserRoleEnum::SYSTEM->value) {
+        if ($request->user()->type == UserRoleEnum::SYSTEM->value) {
             return $next($request);
         }
 
