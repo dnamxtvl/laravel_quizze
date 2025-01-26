@@ -82,6 +82,7 @@ Route::group(['middleware' => ['auth:api', 'verified']], function () {
         Route::get('/get-profile/{userId}', [UserController::class, 'detail'])->name('user.detail')->middleware('view_profile');
         Route::post('/update-profile/{userId}', [UserController::class, 'updateProfile'])->name('user.update-profile')->middleware('view_profile');
         Route::post('/change-password/{userId}', [UserController::class, 'changePassword'])->name('user.change-password');
+        Route::post('/upload-image', [UserController::class, 'uploadImage'])->name('user.upload-image');
 
         Route::prefix('category')->group(function () {
             Route::get('/list', [CategoryController::class, 'listCategory'])->name('categories.list');

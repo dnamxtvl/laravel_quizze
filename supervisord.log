@@ -1455,3 +1455,43 @@
 2025-01-23 04:56:21,389 INFO success: laravel-reverb entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
 2025-01-23 04:56:21,391 INFO spawned: 'laravel-worker_00' with pid 62
 2025-01-23 04:56:22,393 INFO success: laravel-worker_00 entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2025-01-23 16:45:08,689 INFO reaped unknown pid 716 (exit status 0)
+2025-01-24 02:25:51,702 WARN received SIGQUIT indicating exit request
+2025-01-24 02:25:51,718 INFO waiting for laravel-reverb, laravel-worker_00, php-fpm to die
+2025-01-24 02:25:51,835 INFO stopped: php-fpm (exit status 0)
+2025-01-24 02:25:52,181 INFO stopped: laravel-worker_00 (exit status 0)
+2025-01-24 02:25:52,359 INFO stopped: laravel-reverb (exit status 0)
+2025-01-24 17:51:15,500 CRIT Supervisor is running as root.  Privileges were not dropped because no user is specified in the config file.  If you intend to run as root, you can set user=root in the config file to avoid this message.
+2025-01-24 17:51:15,504 INFO supervisord started with pid 1
+2025-01-24 17:51:16,508 INFO spawned: 'laravel-reverb' with pid 7
+2025-01-24 17:51:16,511 INFO spawned: 'laravel-worker_00' with pid 8
+2025-01-24 17:51:16,514 INFO spawned: 'php-fpm' with pid 9
+2025-01-24 17:51:17,574 INFO success: laravel-reverb entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2025-01-24 17:51:17,574 INFO success: laravel-worker_00 entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2025-01-24 17:51:17,574 INFO success: php-fpm entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2025-01-24 20:08:01,613 WARN received SIGQUIT indicating exit request
+2025-01-24 20:08:01,683 INFO waiting for laravel-reverb, laravel-worker_00, php-fpm to die
+2025-01-24 20:08:01,984 INFO stopped: php-fpm (exit status 0)
+2025-01-24 20:08:02,576 WARN stopped: laravel-worker_00 (exit status 1)
+2025-01-24 20:08:02,891 INFO stopped: laravel-reverb (exit status 0)
+2025-01-25 07:18:15,627 CRIT Supervisor is running as root.  Privileges were not dropped because no user is specified in the config file.  If you intend to run as root, you can set user=root in the config file to avoid this message.
+2025-01-25 07:18:15,631 INFO supervisord started with pid 1
+2025-01-25 07:18:16,635 INFO spawned: 'laravel-reverb' with pid 7
+2025-01-25 07:18:16,637 INFO spawned: 'laravel-worker_00' with pid 8
+2025-01-25 07:18:16,641 INFO spawned: 'php-fpm' with pid 9
+2025-01-25 07:18:17,725 INFO success: laravel-reverb entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2025-01-25 07:18:17,725 INFO success: laravel-worker_00 entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2025-01-25 07:18:17,726 INFO success: php-fpm entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2025-01-25 18:40:35,331 WARN received SIGQUIT indicating exit request
+2025-01-25 18:40:35,354 INFO waiting for laravel-reverb, laravel-worker_00, php-fpm to die
+2025-01-25 18:40:35,501 INFO stopped: php-fpm (exit status 0)
+2025-01-25 18:40:36,065 WARN stopped: laravel-worker_00 (exit status 1)
+2025-01-25 18:40:36,298 INFO stopped: laravel-reverb (exit status 0)
+2025-01-26 08:56:36,163 CRIT Supervisor is running as root.  Privileges were not dropped because no user is specified in the config file.  If you intend to run as root, you can set user=root in the config file to avoid this message.
+2025-01-26 08:56:36,169 INFO supervisord started with pid 1
+2025-01-26 08:56:37,174 INFO spawned: 'laravel-reverb' with pid 7
+2025-01-26 08:56:37,179 INFO spawned: 'laravel-worker_00' with pid 8
+2025-01-26 08:56:37,185 INFO spawned: 'php-fpm' with pid 9
+2025-01-26 08:56:38,390 INFO success: laravel-reverb entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2025-01-26 08:56:38,390 INFO success: laravel-worker_00 entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2025-01-26 08:56:38,390 INFO success: php-fpm entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)

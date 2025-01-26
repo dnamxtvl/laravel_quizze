@@ -67,6 +67,9 @@ readonly class QuestionRepository implements QuestionRepositoryInterface
                 'id' => $questionId,
                 'quizze_id' => $quizId,
                 'title' => $question->getTitle(),
+                'image' => $question->getImage(),
+                'content_html' => $question->getTitle(),
+                'time_reply' => $question->getTimeReply(),
                 'index_question' => $index + 1,
                 'created_at' => $now,
                 'updated_at' => $now,
@@ -162,5 +165,10 @@ readonly class QuestionRepository implements QuestionRepositoryInterface
     {
         $question->is_old_question = $isOldQuestion;
         $question->save();
+    }
+
+    public function getAll(): Collection
+    {
+        return $this->question->query()->get();
     }
 }

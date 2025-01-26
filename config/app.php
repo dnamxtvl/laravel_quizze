@@ -130,6 +130,8 @@ return [
         'room_code_length' => 6,
         'min_answer' => 2,
         'time_reply' => 15,
+        'min_time_reply' => 10,
+        'max_time_reply' => 60,
         'max_score' => 1000,
         'min_score' => 1,
         'min_question' => 1,

@@ -62,7 +62,9 @@ class QuizzesController extends Controller
                 }
                 $questions[] = new CreateQuestionDTO(
                     title: $question['title'],
-                    answers: $answers
+                    answers: $answers,
+                    image: $question['image'] ?? null,
+                    timeReply: $question['time_reply'] ?? config('app.quizzes.time_reply')
                 );
             }
             $this->quizzesService->createQuiz(quizDTO: $quiz, questionDTO: $questions);

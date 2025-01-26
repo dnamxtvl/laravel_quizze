@@ -9,9 +9,11 @@ use App\Enums\User\UserRoleEnum;
 use App\Http\Requests\ChangePasswordRequest;
 use App\Http\Requests\SearchUserRequest;
 use App\Http\Requests\UpdateProfileRequest;
+use App\Http\Requests\UploadImageRequest;
 use App\Services\Interface\UserServiceInterface;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Throwable;
 
@@ -133,6 +135,19 @@ class UserController extends Controller
             $this->userService->updateProfile(updateProfile: $updateProfile);
 
             return $this->respondWithJson(content: []);
+        } catch (Throwable $e) {
+            Log::error($e);
+            return $this->respondWithJsonError(e: $e);
+        }
+    }
+
+    public function uploadImage(UploadImageRequest $request): JsonResponse
+    {
+        try {
+            $path = Storage::disk('s3')->put('avatar', $request->file('image'), 'public');
+            $path = config('filesystems.disks.s3.url'). '/' . $path;
+
+            return $this->respondWithJson(content: ['path' => $path]);
         } catch (Throwable $e) {
             Log::error($e);
             return $this->respondWithJsonError(e: $e);
