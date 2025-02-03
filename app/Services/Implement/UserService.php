@@ -2,6 +2,7 @@
 
 namespace App\Services\Implement;
 
+use App\DTOs\Auth\RegisterParamsDTO;
 use App\DTOs\User\SearchUserDTO;
 use App\DTOs\User\UpdateProfileDTO;
 use App\DTOs\User\UserChangePasswordLogDTO;
@@ -180,5 +181,27 @@ readonly class UserService implements UserServiceInterface
         $updateProfile->setPath(path: config('filesystems.disks.s3.url'). '/' . $path);
 
         $this->userRepository->updateProfile(user: $user, updateProfile: $updateProfile);
+    }
+
+    public function getLatestUser(): User
+    {
+        $user = $this->userRepository->getLatestUser();
+        if (is_null($user)) {
+            throw new NotFoundHttpException(message: 'Không tìm thấy user!');
+        }
+
+        return $user;
+    }
+
+    public function countCustomer(): int
+    {
+        return $this->userRepository->countCustomer();
+    }
+
+    public function createUser(RegisterParamsDTO $registerParams): void
+    {
+        $path = Storage::disk('s3')->put('avatar', $registerParams->getAvatar(), 'public');
+        $registerParams->setPath(path: config('filesystems.disks.s3.url'). '/' . $path);
+        $this->userRepository->create(registerParams: $registerParams);
     }
 }

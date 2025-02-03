@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\GamerController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\QuestionController;
@@ -11,6 +12,8 @@ use App\Http\Controllers\UserController;
 use App\Http\Middleware\GamerMiddleware;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+
+Route::get('dashboard/index', [DashboardController::class, 'index'])->name('dashboard.index');
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -46,7 +49,7 @@ Route::group(['middleware' => ['auth:api', 'verified']], function () {
             Route::post('/create', [QuizzesController::class, 'createQuiz'])->name('quizzes.create');
             Route::post('/delete/{quizId}', [QuizzesController::class, 'deleteQuiz'])->name('quizzes.delete');
             Route::get('/list-question/{quizId}', [QuizzesController::class, 'listQuestionOfQuiz'])->name('quizzes.list-question-of-quiz');
-            Route::put('/update-question/{questionId}', [QuestionController::class, 'updateQuestion'])->name('questions.update');
+            Route::post('/update-question/{questionId}', [QuestionController::class, 'updateQuestion'])->name('questions.update');
             Route::post('/create-question/{quizId}', [QuestionController::class, 'createQuestion'])->name('questions.add');
             Route::post('/delete-question/{questionId}', [QuestionController::class, 'deleteQuestion'])->name('questions.delete');
             Route::post('/share/{quizId}', [QuizzesController::class, 'shareQuiz'])->name('quizzes.share');
@@ -78,6 +81,9 @@ Route::group(['middleware' => ['auth:api', 'verified']], function () {
                 Route::post('/delete/{userId}', [UserController::class, 'delete'])->name('user.delete');
                 Route::get('/search-elk/{keyword}', [UserController::class, 'searchByElk'])->name('user.search-by-elk');
             });
+
+            Route::get('dashboard/index', [DashboardController::class, 'index'])->name('dashboard.index');
+            Route::post('/create-user', [UserController::class, 'createUser'])->name('user.create');
         });
         Route::get('/get-profile/{userId}', [UserController::class, 'detail'])->name('user.detail')->middleware('view_profile');
         Route::post('/update-profile/{userId}', [UserController::class, 'updateProfile'])->name('user.update-profile')->middleware('view_profile');

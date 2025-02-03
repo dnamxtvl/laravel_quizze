@@ -4,16 +4,19 @@ namespace App\DTOs\Auth;
 
 use App\Enums\User\UserRoleEnum;
 use Carbon\Carbon;
+use Illuminate\Http\UploadedFile;
 
-readonly class RegisterParamsDTO
+class RegisterParamsDTO
 {
     public function __construct(
-        private string $name,
-        private string $email,
-        private string $password,
-        private UserRoleEnum $role,
-        private ?Carbon $emailVerifiedAt = null,
-        private ?string $googleId = null,
+        private readonly string $name,
+        private readonly string $email,
+        private readonly string $password,
+        private readonly UserRoleEnum $role,
+        private readonly?Carbon $emailVerifiedAt = null,
+        private readonly ?string $googleId = null,
+        private readonly ?UploadedFile $avatar = null,
+        private ?string $path = null
     ) {
     }
 
@@ -63,5 +66,23 @@ readonly class RegisterParamsDTO
     public function getGoogleId(): ?string
     {
         return $this->googleId;
+    }
+
+    public function getAvatar(): ?UploadedFile
+    {
+        return $this->avatar;
+    }
+
+    public function setPath(string $path): void
+    {
+        $this->path = $path;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getPath(): ?string
+    {
+        return $this->path;
     }
 }

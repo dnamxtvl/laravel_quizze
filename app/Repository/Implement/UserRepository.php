@@ -7,6 +7,7 @@ use App\DTOs\User\SearchUserDTO;
 use App\DTOs\User\UpdateProfileDTO;
 use App\DTOs\User\UserChangePasswordLogDTO;
 use App\DTOs\User\UserDisableLogDTO;
+use App\Enums\User\UserRoleEnum;
 use App\Models\User;
 use App\Models\UserChangePasswordLog;
 use App\Models\UserDisableLog;
@@ -110,6 +111,7 @@ readonly class UserRepository implements UserRepositoryInterface
         $user->type = $registerParams->getUserRole()->value;
         $user->email_verified_at = $registerParams->getEmailVerifiedAt();
         $user->google_id = $registerParams->getGoogleId();
+        $user->avatar = $registerParams->getPath();
         $user->save();
 
         return $user;
@@ -140,5 +142,15 @@ readonly class UserRepository implements UserRepositoryInterface
         $user->name = $updateProfile->getName();
         $user->avatar = $updateProfile->getPath();
         $user->save();
+    }
+
+    public function getLatestUser(): ?User
+    {
+        return $this->user->query()->where('type', UserRoleEnum::ADMIN->value)->latest()->first();
+    }
+
+    public function countCustomer(): int
+    {
+        return $this->user->query()->where('type', UserRoleEnum::ADMIN->value)->count();
     }
 }

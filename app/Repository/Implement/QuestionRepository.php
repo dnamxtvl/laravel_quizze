@@ -70,6 +70,7 @@ readonly class QuestionRepository implements QuestionRepositoryInterface
                 'image' => $question->getImage(),
                 'content_html' => $question->getTitle(),
                 'time_reply' => $question->getTimeReply(),
+                'type' => (int)!is_null($question->getImage()),
                 'index_question' => $index + 1,
                 'created_at' => $now,
                 'updated_at' => $now,
@@ -124,6 +125,15 @@ readonly class QuestionRepository implements QuestionRepositoryInterface
         $question = new Question();
         $question->quizze_id = $questionDTO->getQuizId();
         $question->title = $questionDTO->getTitle();
+        $question->content_html = $questionDTO->getTitle();
+        $question->image = $questionDTO->getImage();
+        $question->type = (int)!is_null($questionDTO->getImage());
+        $question->time_reply = $questionDTO->getTimeReply();
+        /** @var User $authUser */
+        $authUser = Auth::user();
+        $isSystemAdmin = $authUser->type == UserRoleEnum::SYSTEM->value;
+        $question->created_by_sys = $isSystemAdmin;
+        $question->updated_by_sys = $isSystemAdmin;
         if ($indexQuestionOverride) {
             $question->index_question = $indexQuestionOverride;
         }
@@ -131,16 +141,11 @@ readonly class QuestionRepository implements QuestionRepositoryInterface
 
         $answersInsert = [];
         foreach ($questionDTO->getAnswers() as $answer) {
-            $authUser = Auth::user();
-            /** @var User $authUser */
-            $isSystemAdmin = $authUser->type == UserRoleEnum::SYSTEM->value;
             /* @var CreateAnswerDTO $answer */
             $answersInsert[] = [
                 'question_id' => $question->id,
                 'answer' => $answer->getAnswer(),
                 'is_correct' => $answer->getIsCorrect(),
-                'created_by_sys' => $isSystemAdmin,
-                'updated_by_sys' => $isSystemAdmin,
                 'created_at' => $now,
                 'updated_at' => $now,
             ];
@@ -170,5 +175,12 @@ readonly class QuestionRepository implements QuestionRepositoryInterface
     public function getAll(): Collection
     {
         return $this->question->query()->get();
+    }
+
+    public function countQuestion(): int
+    {
+        return $this->question->query()
+            ->where('is_old_question', false)
+            ->count();
     }
 }

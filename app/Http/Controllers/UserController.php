@@ -2,16 +2,19 @@
 
 namespace App\Http\Controllers;
 
+use App\DTOs\Auth\RegisterParamsDTO;
 use App\DTOs\User\SearchUserDTO;
 use App\DTOs\User\UpdateProfileDTO;
 use App\DTOs\User\UserChangePasswordLogDTO;
 use App\Enums\User\UserRoleEnum;
+use App\Http\Requests\AdminCreateUserRequest;
 use App\Http\Requests\ChangePasswordRequest;
 use App\Http\Requests\SearchUserRequest;
 use App\Http\Requests\UpdateProfileRequest;
 use App\Http\Requests\UploadImageRequest;
 use App\Services\Interface\UserServiceInterface;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -148,6 +151,26 @@ class UserController extends Controller
             $path = config('filesystems.disks.s3.url'). '/' . $path;
 
             return $this->respondWithJson(content: ['path' => $path]);
+        } catch (Throwable $e) {
+            Log::error($e);
+            return $this->respondWithJsonError(e: $e);
+        }
+    }
+
+    public function createUser(AdminCreateUserRequest $request): JsonResponse
+    {
+        try {
+            $createUser = new RegisterParamsDTO(
+                name: $request->input(key: 'username'),
+                email: $request->input(key: 'email'),
+                password: Hash::make($request->input(key: 'password')),
+                role: UserRoleEnum::tryFrom((int)$request->input(key: 'type')),
+                emailVerifiedAt: now(),
+                avatar: $request->file('avatar'),
+            );
+            $this->userService->createUser(registerParams: $createUser);
+
+            return $this->respondWithJson(content: []);
         } catch (Throwable $e) {
             Log::error($e);
             return $this->respondWithJsonError(e: $e);

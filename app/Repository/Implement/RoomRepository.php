@@ -7,6 +7,7 @@ use App\DTOs\Room\SetNextQuestionRoomDTO;
 use App\Enums\Room\RoomStatusEnum;
 use App\Enums\Room\RoomTypeEnum;
 use App\Models\Room;
+use App\Models\RoomChangeLog;
 use App\Pipeline\Global\CodeFilter;
 use App\Pipeline\Room\CodeQuizFilter;
 use App\Pipeline\Global\EndTimeFilter;
@@ -16,6 +17,7 @@ use App\Pipeline\Global\StatusFilter;
 use App\Pipeline\Global\TypeFilter;
 use App\Pipeline\Global\UserIdFilter;
 use App\Repository\Interface\RoomRepositoryInterface;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -26,7 +28,8 @@ use Illuminate\Support\Facades\Auth;
 readonly class RoomRepository implements RoomRepositoryInterface
 {
     public function __construct(
-        private Room $room
+        private Room $room,
+        private RoomChangeLog $roomChangeLog,
     ) {}
 
     public function getQuery(array $columnSelects = [], array $filters = []): Builder
@@ -126,5 +129,36 @@ readonly class RoomRepository implements RoomRepositoryInterface
             ->where('quizze_id', $quizId)
             ->whereNotIn('status', [RoomStatusEnum::FINISHED->value, RoomStatusEnum::CANCELLED->value])
             ->get();
+    }
+
+    public function countRoom(): int
+    {
+        return $this->room->query()->count();
+    }
+
+    public function groupByYear(Carbon $startTime, Carbon $endTime): Collection
+    {
+        return $this->room->query()
+            ->whereBetween('created_at', [$endTime, $startTime])
+            ->selectRaw("DATE_FORMAT(created_at, '%Y-%m') as month_year, COUNT(*) as total")
+            ->groupBy('month_year')
+            ->orderBy('month_year')
+            ->get();
+    }
+
+    public function countByTime(Carbon $startTime, Carbon $endTime): int
+    {
+        return $this->room->query()->whereBetween('created_at', [$endTime, $startTime])->count();
+    }
+
+    public function saveRoomChangeLog(Room $room, RoomStatusEnum $status, ?string $previousQuestionId = null): void
+    {
+        $log = new RoomChangeLog();
+        $log->room_id = $room->id;
+        $log->previous_question_id = $room->$previousQuestionId;
+        $log->current_question_id = $room->current_question_id;
+        $log->status = $status->value;
+
+        $log->save();
     }
 }

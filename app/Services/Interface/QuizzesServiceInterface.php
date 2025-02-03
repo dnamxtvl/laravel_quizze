@@ -6,6 +6,7 @@ use App\DTOs\Quizz\CreateQuizDTO;
 use App\DTOs\Quizz\SearchQuizDTO;
 use App\Enums\Quiz\TypeQuizEnum;
 use App\Models\UserShareQuiz;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
 
@@ -28,4 +29,10 @@ interface QuizzesServiceInterface
     public function rejectShareQuiz(string $token, ?string $notifyId = null): void;
 
     public function searchQuiz(SearchQuizDTO $searchQuizDTO): LengthAwarePaginator;
+
+    public function countByTime(Carbon $startTime, Carbon $endTime): array;
+
+    public function countAllByTime(Carbon $startTime, Carbon $endTime): int;
+
+    public function totalShareQuiz(Carbon $startTime, Carbon $endTime): int;
 }

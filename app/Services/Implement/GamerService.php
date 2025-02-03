@@ -15,6 +15,7 @@ use App\Repository\Interface\GamerRepositoryInterface;
 use App\Repository\Interface\GamerTokenRepositoryInterface;
 use App\Services\Interface\GamerServiceInterface;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -92,14 +93,14 @@ readonly class GamerService implements GamerServiceInterface
                     code: ExceptionCodeEnum::INVALID_ANSWER->value
                 );
             }
-            $maxTime = ((int) config(key: 'app.quizzes.time_reply')) * 1000;
+            $maxTime = (!empty($answer->question->time_reply) ? (int) $answer->question->time_reply : (int) config(key: 'app.quizzes.time_reply')) * 1000;
             $maxScore = (int) config(key: 'app.quizzes.max_score');
             $diffInMilliseconds = (int) now()->diffInMilliseconds(Carbon::parse($room->current_question_start_at));
             $minScore = (int) config('app.quizzes.min_score');
             $calculatedScore = abs(($diffInMilliseconds / $maxTime) * $maxScore);
             $score = 0;
             if ($answer->is_correct) {
-                $score = $calculatedScore > $minScore ? $calculatedScore : $minScore;
+                $score = max($calculatedScore, $minScore);
             }
         }
 
@@ -170,5 +171,20 @@ readonly class GamerService implements GamerServiceInterface
             Log::error(message: $e->getMessage());
             throw new InternalErrorException(message: 'Có lỗi xảy ra!');
         }
+    }
+
+    public function countGamer(): int
+    {
+        return $this->gamerRepository->countAll();
+    }
+
+    public function groupByYear(Carbon $startTime, Carbon $endTime): Collection
+    {
+        return $this->gamerRepository->groupByYear(startTime: $startTime, endTime: $endTime);
+    }
+
+    public function countByTime(Carbon $startTime, Carbon $endTime): int
+    {
+        return $this->gamerRepository->countByTime(startTime: $startTime, endTime: $endTime);
     }
 }

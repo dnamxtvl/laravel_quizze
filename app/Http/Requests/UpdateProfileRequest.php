@@ -29,7 +29,7 @@ class UpdateProfileRequest extends FormRequest
             'name.string' => 'Username phải là chuỗi',
             'name.max' => 'Username không được quá '.config('validation.username.max_length').' ký tự',
             'name.min' => 'Username không ít hơn '.config('validation.username.min_length').' ký tự',
-            'name.mimes' => 'Avatar phải có định dạng là jpeg, png, jpg, gif',
+            'avatar.mimes' => 'Avatar phải có định dạng là jpeg, png, jpg, gif',
         ];
     }
 }

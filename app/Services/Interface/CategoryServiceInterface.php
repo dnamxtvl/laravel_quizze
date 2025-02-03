@@ -1,14 +1,12 @@
 <?php
 
-namespace App\Repository\Interface;
+namespace App\Services\Interface;
 
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 
-interface CategoryRepositoryInterface
+interface CategoryServiceInterface
 {
-    public function listCategory(): Collection;
-
     public function getCategoryWithCountQuiz(Carbon $startTime, Carbon $endTime): Collection;
 
     public function getByIds(array $ids, Carbon $startTime, Carbon $endTime): Collection;

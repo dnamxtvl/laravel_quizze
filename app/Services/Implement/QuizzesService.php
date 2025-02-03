@@ -23,6 +23,7 @@ use App\Repository\Interface\RoomRepositoryInterface;
 use App\Repository\Interface\UserRepositoryInterface;
 use App\Repository\Interface\UserShareQuizRepositoryInterface;
 use App\Services\Interface\QuizzesServiceInterface;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
@@ -320,5 +321,20 @@ readonly class QuizzesService implements QuizzesServiceInterface
     public function searchQuiz(SearchQuizDTO $searchQuizDTO): LengthAwarePaginator
     {
         return $this->quizzesRepository->searchQuiz(searchQuizDTO: $searchQuizDTO);
+    }
+
+    public function countByTime(Carbon $startTime, Carbon $endTime): array
+    {
+        return $this->quizzesRepository->countByTime(startTime: $startTime, endTime: $endTime);
+    }
+
+    public function countAllByTime(Carbon $startTime, Carbon $endTime): int
+    {
+        return $this->quizzesRepository->countAllByTime(startTime: $startTime, endTime: $endTime);
+    }
+
+    public function totalShareQuiz(Carbon $startTime, Carbon $endTime): int
+    {
+        return $this->quizzesRepository->totalShareQuiz(startTime: $startTime, endTime: $endTime);
     }
 }

@@ -28,6 +28,8 @@ class Quizze extends Model
 
     protected $primaryKey = 'id';
 
+    public $timestamps = true;
+
     public function questions(): HasMany
     {
         return $this->hasMany(related: Question::class);

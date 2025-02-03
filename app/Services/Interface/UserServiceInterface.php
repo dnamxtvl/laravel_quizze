@@ -2,6 +2,7 @@
 
 namespace App\Services\Interface;
 
+use App\DTOs\Auth\RegisterParamsDTO;
 use App\DTOs\User\SearchUserDTO;
 use App\DTOs\User\UpdateProfileDTO;
 use App\DTOs\User\UserChangePasswordLogDTO;
@@ -26,4 +27,10 @@ interface UserServiceInterface
     public function changePassword(UserChangePasswordLogDTO $userChangePasswordLog, string $userId): void;
 
     public function updateProfile(UpdateProfileDTO $updateProfile): void;
+
+    public function getLatestUser(): User;
+
+    public function countCustomer(): int;
+
+    public function createUser(RegisterParamsDTO $registerParams): void;
 }

@@ -15,6 +15,12 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property int|mixed $index_question
  * @property mixed $quizze_id
  * @property mixed|string|null $title
+ * @property mixed|string|null $image
+ * @property mixed|string|null $content_html
+ * @property int|mixed $type
+ * @property int|mixed $time_reply
+ * @property bool|mixed $created_by_sys
+ * @property bool|mixed $updated_by_sys
  */
 class Question extends Model
 {

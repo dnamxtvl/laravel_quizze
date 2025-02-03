@@ -9,6 +9,8 @@ use App\DTOs\Room\CreateRoomParamsDTO;
 use App\DTOs\Room\DetailRoomReportDTO;
 use App\DTOs\Room\ListRoomReportParamDTO;
 use App\DTOs\Room\QuestionsOfRoomResponseDTO;
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Pagination\LengthAwarePaginator;
 
@@ -33,4 +35,10 @@ interface RoomServiceInterface
     public function adminEndGame(string $roomId): void;
 
     public function deleteReport(string $roomId): void;
+
+    public function countRoom(): int;
+
+    public function groupByYear(Carbon $startTime, Carbon $endTime): Collection;
+
+    public function countByTime(Carbon $startTime, Carbon $endTime): int;
 }

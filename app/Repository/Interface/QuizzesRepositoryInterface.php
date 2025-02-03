@@ -6,6 +6,7 @@ use App\DTOs\Quizz\CreateQuizDTO;
 use App\DTOs\Quizz\SearchQuizDTO;
 use App\Enums\Quiz\TypeQuizEnum;
 use App\Models\Quizze;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
 
@@ -24,4 +25,12 @@ interface QuizzesRepositoryInterface
     public function getAll(): Collection;
 
     public function getMaxCode(bool $createdBySys): string;
+
+    public function countByTime(Carbon $startTime, Carbon $endTime): array;
+
+    public function countAllByTime(Carbon $startTime, Carbon $endTime): int;
+
+    public function totalShareQuiz(Carbon $startTime, Carbon $endTime): int;
+
+    public function updateQuizHistory(string $quizId, ?string $oldQuestionId = null, ?string $newQuestionId = null): void;
 }

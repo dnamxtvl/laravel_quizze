@@ -6,6 +6,8 @@ use App\DTOs\Quizz\CreateQuizDTO;
 use App\DTOs\Quizz\SearchQuizDTO;
 use App\Enums\Quiz\TypeQuizEnum;
 use App\Models\Quizze;
+use App\Models\UpdateQuizzeHistory;
+use App\Models\UserShareQuiz;
 use App\Pipeline\Global\CodeFilter;
 use App\Pipeline\Global\CreatedAtBetweenFilter;
 use App\Pipeline\Global\CreatedBySysFilter;
@@ -13,6 +15,7 @@ use App\Pipeline\Global\UserIdFilter;
 use App\Pipeline\Global\UserIdsFiler;
 use App\Pipeline\Quizzes\CategoryIdFilter;
 use App\Repository\Interface\QuizzesRepositoryInterface;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -28,6 +31,8 @@ readonly class QuizzesRepository implements QuizzesRepositoryInterface
 
     public function __construct(
         private Quizze $quizzes,
+        private UserShareQuiz $userShareQuiz,
+        private UpdateQuizzeHistory $updateQuizzeHistory,
     ) {}
 
     public function getQuery(array $columnSelects = [], array $filters = []): Builder
@@ -156,5 +161,40 @@ readonly class QuizzesRepository implements QuizzesRepositoryInterface
         }
 
         return $lastCode;
+    }
+
+    public function countByTime(Carbon $startTime, Carbon $endTime): array
+    {
+        $totalQuiz = $this->countAllByTime(startTime: $startTime, endTime: $endTime);
+
+        $totalQuizByUser = $this->quizzes->query()
+            ->whereBetween('created_at', [$endTime, $startTime])
+            ->where('created_by_sys', false)
+            ->count();
+
+        return [$totalQuiz, $totalQuizByUser];
+    }
+
+    public function countAllByTime(Carbon $startTime, Carbon $endTime): int
+    {
+        return $this->quizzes->query()
+            ->whereBetween('created_at', [$endTime, $startTime])
+            ->count();
+    }
+
+    public function totalShareQuiz(Carbon $startTime, Carbon $endTime): int
+    {
+        return $this->userShareQuiz->query()->whereBetween('created_at', [$endTime, $startTime])->count();
+    }
+
+    public function updateQuizHistory(string $quizId, ?string $oldQuestionId = null, ?string $newQuestionId = null): void
+    {
+        $editQuizLog = new UpdateQuizzeHistory();
+        $editQuizLog->id = $quizId;
+        $editQuizLog->old_question_id = $oldQuestionId;
+        $editQuizLog->new_question_id = $newQuestionId;
+        $editQuizLog->updated_by = Auth::id();
+
+        $editQuizLog->save();
     }
 }

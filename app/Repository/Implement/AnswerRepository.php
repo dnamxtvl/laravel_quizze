@@ -10,6 +10,7 @@ use App\Pipeline\Room\GamerIdFiler;
 use App\Pipeline\Room\QuestionIdFilter;
 use App\Pipeline\Room\RoomIdFilter;
 use App\Repository\Interface\AnswerRepositoryInterface;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Pipeline\Pipeline;
@@ -108,5 +109,19 @@ readonly class AnswerRepository implements AnswerRepositoryInterface
                 $query->where('room_id', $roomId);
             }])
             ->get();
+    }
+
+    public function countAnswerByTime(Carbon $startTime, Carbon $endTime): array
+    {
+        $totalAnswer = $this->gamerAnswer->query()
+            ->whereBetween('created_at', [$endTime, $startTime])
+            ->count();
+
+        $correctAnswer = $this->gamerAnswer->query()
+            ->whereBetween('created_at', [$endTime, $startTime])
+            ->where('score', '>', 0)
+            ->count();
+
+        return [$totalAnswer, $correctAnswer];
     }
 }

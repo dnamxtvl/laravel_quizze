@@ -1495,3 +1495,112 @@
 2025-01-26 08:56:38,390 INFO success: laravel-reverb entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
 2025-01-26 08:56:38,390 INFO success: laravel-worker_00 entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
 2025-01-26 08:56:38,390 INFO success: php-fpm entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2025-01-26 14:13:45,803 WARN received SIGQUIT indicating exit request
+2025-01-26 14:13:45,821 INFO waiting for laravel-reverb, laravel-worker_00, php-fpm to die
+2025-01-26 14:13:45,945 INFO stopped: php-fpm (exit status 0)
+2025-01-26 14:13:48,955 INFO waiting for laravel-reverb, laravel-worker_00 to die
+2025-01-26 14:13:49,237 INFO stopped: laravel-worker_00 (exit status 0)
+2025-01-26 14:13:49,460 INFO stopped: laravel-reverb (exit status 0)
+2025-01-26 14:59:30,282 CRIT Supervisor is running as root.  Privileges were not dropped because no user is specified in the config file.  If you intend to run as root, you can set user=root in the config file to avoid this message.
+2025-01-26 14:59:30,289 INFO supervisord started with pid 1
+2025-01-26 14:59:31,294 INFO spawned: 'laravel-reverb' with pid 8
+2025-01-26 14:59:31,300 INFO spawned: 'laravel-worker_00' with pid 9
+2025-01-26 14:59:31,305 INFO spawned: 'php-fpm' with pid 10
+2025-01-26 14:59:32,517 INFO success: laravel-reverb entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2025-01-26 14:59:32,518 INFO success: laravel-worker_00 entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2025-01-26 14:59:32,518 INFO success: php-fpm entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2025-01-27 05:54:08,891 WARN received SIGQUIT indicating exit request
+2025-01-27 05:54:08,916 INFO waiting for laravel-reverb, laravel-worker_00, php-fpm to die
+2025-01-27 05:54:09,187 INFO stopped: php-fpm (exit status 0)
+2025-01-27 05:54:09,489 INFO stopped: laravel-worker_00 (exit status 0)
+2025-01-27 05:54:09,710 INFO stopped: laravel-reverb (exit status 0)
+2025-01-27 13:53:58,257 CRIT Supervisor is running as root.  Privileges were not dropped because no user is specified in the config file.  If you intend to run as root, you can set user=root in the config file to avoid this message.
+2025-01-27 13:53:58,263 INFO supervisord started with pid 1
+2025-01-27 13:53:59,268 INFO spawned: 'laravel-reverb' with pid 6
+2025-01-27 13:53:59,273 INFO spawned: 'laravel-worker_00' with pid 7
+2025-01-27 13:53:59,279 INFO spawned: 'php-fpm' with pid 8
+2025-01-27 13:54:00,484 INFO success: laravel-reverb entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2025-01-27 13:54:00,485 INFO success: laravel-worker_00 entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2025-01-27 13:54:00,486 INFO success: php-fpm entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2025-01-27 17:16:24,905 WARN received SIGQUIT indicating exit request
+2025-01-27 17:16:24,922 INFO waiting for laravel-reverb, laravel-worker_00, php-fpm to die
+2025-01-27 17:16:25,039 INFO stopped: php-fpm (exit status 0)
+2025-01-27 17:16:25,386 INFO stopped: laravel-worker_00 (exit status 0)
+2025-01-27 17:16:25,612 INFO stopped: laravel-reverb (exit status 0)
+2025-01-28 05:50:43,209 CRIT Supervisor is running as root.  Privileges were not dropped because no user is specified in the config file.  If you intend to run as root, you can set user=root in the config file to avoid this message.
+2025-01-28 05:50:43,216 INFO supervisord started with pid 1
+2025-01-28 05:50:44,222 INFO spawned: 'laravel-reverb' with pid 6
+2025-01-28 05:50:44,228 INFO spawned: 'laravel-worker_00' with pid 7
+2025-01-28 05:50:44,233 INFO spawned: 'php-fpm' with pid 8
+2025-01-28 05:50:45,454 INFO success: laravel-reverb entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2025-01-28 05:50:45,454 INFO success: laravel-worker_00 entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2025-01-28 05:50:45,454 INFO success: php-fpm entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2025-01-30 08:42:23,877 CRIT Supervisor is running as root.  Privileges were not dropped because no user is specified in the config file.  If you intend to run as root, you can set user=root in the config file to avoid this message.
+2025-01-30 08:42:23,882 INFO supervisord started with pid 1
+2025-01-30 08:42:24,885 INFO spawned: 'laravel-reverb' with pid 7
+2025-01-30 08:42:24,888 INFO spawned: 'laravel-worker_00' with pid 8
+2025-01-30 08:42:24,890 INFO spawned: 'php-fpm' with pid 9
+2025-01-30 08:42:26,091 INFO success: laravel-reverb entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2025-01-30 08:42:26,091 INFO success: laravel-worker_00 entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2025-01-30 08:42:26,091 INFO success: php-fpm entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2025-01-30 10:53:33,565 WARN received SIGQUIT indicating exit request
+2025-01-30 10:53:33,600 INFO waiting for laravel-reverb, laravel-worker_00, php-fpm to die
+2025-01-30 10:53:33,834 INFO stopped: php-fpm (exit status 0)
+2025-01-30 10:53:34,533 INFO stopped: laravel-worker_00 (exit status 0)
+2025-01-30 10:53:35,551 WARN stopped: laravel-reverb (terminated by SIGTERM)
+2025-01-30 10:54:53,332 CRIT Supervisor is running as root.  Privileges were not dropped because no user is specified in the config file.  If you intend to run as root, you can set user=root in the config file to avoid this message.
+2025-01-30 10:54:53,336 INFO supervisord started with pid 1
+2025-01-30 10:54:54,340 INFO spawned: 'laravel-reverb' with pid 7
+2025-01-30 10:54:54,343 INFO spawned: 'laravel-worker_00' with pid 8
+2025-01-30 10:54:54,346 INFO spawned: 'php-fpm' with pid 9
+2025-01-30 10:54:55,419 INFO success: laravel-reverb entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2025-01-30 10:54:55,419 INFO success: laravel-worker_00 entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2025-01-30 10:54:55,419 INFO success: php-fpm entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2025-01-30 15:52:29,263 CRIT Supervisor is running as root.  Privileges were not dropped because no user is specified in the config file.  If you intend to run as root, you can set user=root in the config file to avoid this message.
+2025-01-30 15:52:29,268 INFO supervisord started with pid 1
+2025-01-30 15:52:30,272 INFO spawned: 'laravel-reverb' with pid 6
+2025-01-30 15:52:30,275 INFO spawned: 'laravel-worker_00' with pid 7
+2025-01-30 15:52:30,278 INFO spawned: 'php-fpm' with pid 8
+2025-01-30 15:52:31,437 INFO success: laravel-reverb entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2025-01-30 15:52:31,437 INFO success: laravel-worker_00 entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2025-01-30 15:52:31,437 INFO success: php-fpm entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2025-01-30 16:02:57,052 WARN received SIGQUIT indicating exit request
+2025-01-30 16:02:57,067 INFO waiting for laravel-reverb, laravel-worker_00, php-fpm to die
+2025-01-30 16:02:57,174 INFO stopped: php-fpm (exit status 0)
+2025-01-30 16:03:00,183 INFO waiting for laravel-reverb, laravel-worker_00 to die
+2025-01-30 16:03:00,482 INFO stopped: laravel-worker_00 (exit status 0)
+2025-01-30 16:03:00,716 INFO stopped: laravel-reverb (exit status 0)
+2025-01-30 16:03:11,238 CRIT Supervisor is running as root.  Privileges were not dropped because no user is specified in the config file.  If you intend to run as root, you can set user=root in the config file to avoid this message.
+2025-01-30 16:03:11,246 INFO supervisord started with pid 1
+2025-01-30 16:03:12,252 INFO spawned: 'laravel-reverb' with pid 7
+2025-01-30 16:03:12,259 INFO spawned: 'laravel-worker_00' with pid 8
+2025-01-30 16:03:12,268 INFO spawned: 'php-fpm' with pid 9
+2025-01-30 16:03:13,502 INFO success: laravel-reverb entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2025-01-30 16:03:13,503 INFO success: laravel-worker_00 entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2025-01-30 16:03:13,504 INFO success: php-fpm entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2025-01-30 16:04:13,929 WARN received SIGQUIT indicating exit request
+2025-01-30 16:04:13,930 INFO waiting for laravel-reverb, laravel-worker_00, php-fpm to die
+2025-01-30 16:04:13,977 INFO stopped: php-fpm (exit status 0)
+2025-01-30 16:04:14,039 INFO stopped: laravel-worker_00 (exit status 0)
+2025-01-30 16:04:14,128 INFO stopped: laravel-reverb (exit status 0)
+2025-01-30 16:05:34,358 CRIT Supervisor is running as root.  Privileges were not dropped because no user is specified in the config file.  If you intend to run as root, you can set user=root in the config file to avoid this message.
+2025-01-30 16:05:34,426 INFO supervisord started with pid 1
+2025-01-30 16:05:35,430 INFO spawned: 'laravel-reverb' with pid 7
+2025-01-30 16:05:35,433 INFO spawned: 'laravel-worker_00' with pid 8
+2025-01-30 16:05:35,437 INFO spawned: 'php-fpm' with pid 9
+2025-01-30 16:05:36,595 INFO success: laravel-reverb entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2025-01-30 16:05:36,595 INFO success: laravel-worker_00 entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2025-01-30 16:05:36,595 INFO success: php-fpm entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2025-02-02 08:23:44,941 WARN received SIGQUIT indicating exit request
+2025-02-02 08:23:45,046 INFO waiting for laravel-reverb, laravel-worker_00, php-fpm to die
+2025-02-02 08:23:45,312 INFO stopped: php-fpm (exit status 0)
+2025-02-02 08:23:45,350 WARN stopped: laravel-worker_00 (terminated by SIGTERM)
+2025-02-02 08:23:45,642 INFO stopped: laravel-reverb (exit status 0)
+2025-02-03 05:28:18,309 CRIT Supervisor is running as root.  Privileges were not dropped because no user is specified in the config file.  If you intend to run as root, you can set user=root in the config file to avoid this message.
+2025-02-03 05:28:18,313 INFO supervisord started with pid 1
+2025-02-03 05:28:19,317 INFO spawned: 'laravel-reverb' with pid 7
+2025-02-03 05:28:19,320 INFO spawned: 'laravel-worker_00' with pid 8
+2025-02-03 05:28:19,322 INFO spawned: 'php-fpm' with pid 9
+2025-02-03 05:28:20,332 INFO success: laravel-reverb entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2025-02-03 05:28:20,333 INFO success: laravel-worker_00 entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2025-02-03 05:28:20,333 INFO success: php-fpm entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)

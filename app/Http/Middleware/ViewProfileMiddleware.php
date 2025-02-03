@@ -15,7 +15,7 @@ class ViewProfileMiddleware
             return $next($request);
         }
 
-        if ($request->user()->id != $request->input('user_id')) {
+        if ($request->user()->id != $request->userId) {
             $content = [
                 'message' => 'Bạn không có quyền truy cập trang này!',
                 'errors' => [

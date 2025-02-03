@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Events\EmailNotVerifyEvent;
 use App\Listeners\SendEmailVerifyOTPNotification;
 use App\Models\User;
+use App\Observers\UserObserver;
 use App\Repository\Implement\AnswerRepository;
 use App\Repository\Implement\BlockUserLoginTemporaryRepository;
 use App\Repository\Implement\CategoryRepository;
@@ -34,6 +35,7 @@ use App\Repository\Interface\UserLoginHistoryRepositoryInterface;
 use App\Repository\Interface\UserRepositoryInterface;
 use App\Repository\Interface\UserShareQuizRepositoryInterface;
 use App\Services\Implement\AuthService;
+use App\Services\Implement\CategoryService;
 use App\Services\Implement\GamerService;
 use App\Services\Implement\NotificationService;
 use App\Services\Implement\QuestionService;
@@ -41,6 +43,7 @@ use App\Services\Implement\QuizzesService;
 use App\Services\Implement\RoomService;
 use App\Services\Implement\UserService;
 use App\Services\Interface\AuthServiceInterface;
+use App\Services\Interface\CategoryServiceInterface;
 use App\Services\Interface\GamerServiceInterface;
 use App\Services\Interface\NotificationServiceInterface;
 use App\Services\Interface\QuestionServiceInterface;
@@ -85,6 +88,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(abstract: EmailVerifyOTPRepositoryInterface::class, concrete: EmailVerifyOTPRepository::class);
         $this->app->singleton(abstract: UserForgotPasswordLogRepositoryInterface::class, concrete: UserForgotPasswordLogRepository::class);
         $this->app->singleton(abstract: UserLoginHistoryRepositoryInterface::class, concrete: UserLoginHistoryRepository::class);
+        $this->app->singleton(abstract: CategoryServiceInterface::class, concrete: CategoryService::class);
     }
 
     /**
@@ -105,5 +109,7 @@ class AppServiceProvider extends ServiceProvider
             Log::info('Reset password url: ' . env('FRONT_END_URL') . '/auth/reset-password/' . $user->id . '?token=' . $token);
             return env('FRONT_END_URL') . '/auth/reset-password/' . $user->id . '?token='.$token;
         });
+
+        User::observe(UserObserver::class);
     }
 }

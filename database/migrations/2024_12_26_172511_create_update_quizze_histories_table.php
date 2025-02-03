@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('update_quizze_histories', function (Blueprint $table) {
             $table->id();
             $table->uuid('quizze_id')->index();
-            $table->uuid('old_question_id');
+            $table->uuid('old_question_id')->nullable();
             $table->uuid('new_question_id')->nullable();
             $table->uuid('updated_by')->index();
             $table->timestamps();
