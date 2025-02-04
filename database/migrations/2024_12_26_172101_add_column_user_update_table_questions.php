@@ -12,14 +12,14 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('questions', function (Blueprint $table) {
-//            $table->boolean('created_by_sys')->after('quizze_id')->default(false);
-//            $table->uuid('updated_by')->after('is_old_question')->index()->nullable();
-//            $table->boolean('updated_by_sys')->after('updated_by')->default(false);
+            $table->boolean('created_by_sys')->after('quizze_id')->default(false);
+            $table->uuid('updated_by')->after('is_old_question')->index()->nullable();
+            $table->boolean('updated_by_sys')->after('updated_by')->default(false);
         });
         Schema::table('quizzes', function (Blueprint $table) {
-//            $table->string('code', 10)->after('title')->unique();
-//            $table->boolean('created_by_sys')->after('user_id')->default(false);
-//            $table->uuid('deleted_by')->after('created_by_sys')->index()->nullable();
+            $table->string('code', 10)->after('title')->unique();
+            $table->boolean('created_by_sys')->after('user_id')->default(false);
+            $table->uuid('deleted_by')->after('created_by_sys')->index()->nullable();
         });
     }
 
