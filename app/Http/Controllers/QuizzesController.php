@@ -64,7 +64,7 @@ class QuizzesController extends Controller
                     title: $question['title'],
                     answers: $answers,
                     image: $question['image'] ?? null,
-                    timeReply: $question['time_reply'] ?? config('app.quizzes.time_reply')
+                    timeReply: !empty($question['time_reply']) ? $question['time_reply'] : config('app.quizzes.time_reply')
                 );
             }
             $this->quizzesService->createQuiz(quizDTO: $quiz, questionDTO: $questions);

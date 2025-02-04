@@ -29,7 +29,7 @@ class AdminCreateQuizzeRequest extends FormRequest
             'questions' => 'required|array|min:1',
             'questions.*.title' => 'required|string|max:10000',
             'questions.*.image' => 'nullable|url:http,https',
-            'questions.*.time_reply' => 'required|numeric|min:' . config('app.quizzes.min_time_reply') . '|max:' . config('app.quizzes.max_time_reply'),
+            'questions.*.time_reply' => 'nullable|numeric|min:' . config('app.quizzes.min_time_reply') . '|max:' . config('app.quizzes.max_time_reply'),
             'questions.*.answers' => ['required', 'array', 'min:1', new InvalidQuestionRule],
             'questions.*.answers.*.answer' => 'required|string|max:255',
             'questions.*.answers.*.is_correct' => 'required|boolean',
