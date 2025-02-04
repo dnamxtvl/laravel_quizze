@@ -135,9 +135,9 @@ class UserController extends Controller
                 name: $request->input(key: 'name'),
                 avatar: $request->file('avatar'),
             );
-            $this->userService->updateProfile(updateProfile: $updateProfile);
+            $user = $this->userService->updateProfile(updateProfile: $updateProfile);
 
-            return $this->respondWithJson(content: []);
+            return $this->respondWithJson(content: ['user' => $user->toArray()]);
         } catch (Throwable $e) {
             Log::error($e);
             return $this->respondWithJsonError(e: $e);

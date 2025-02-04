@@ -137,11 +137,13 @@ readonly class UserRepository implements UserRepositoryInterface
         $userChangePassword->save();
     }
 
-    public function updateProfile(User $user, UpdateProfileDTO $updateProfile): void
+    public function updateProfile(User $user, UpdateProfileDTO $updateProfile): User
     {
         $user->name = $updateProfile->getName();
         $user->avatar = $updateProfile->getPath();
         $user->save();
+
+        return $user;
     }
 
     public function getLatestUser(): ?User

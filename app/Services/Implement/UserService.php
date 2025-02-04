@@ -170,7 +170,7 @@ readonly class UserService implements UserServiceInterface
         }
     }
 
-    public function updateProfile(UpdateProfileDTO $updateProfile): void
+    public function updateProfile(UpdateProfileDTO $updateProfile): User
     {
         $user = $this->userRepository->findById(userId: $updateProfile->getUserId());
         if (is_null($user)) {
@@ -182,7 +182,7 @@ readonly class UserService implements UserServiceInterface
             $updateProfile->setPath(path: config('filesystems.disks.s3.url'). '/' . $path);
         }
 
-        $this->userRepository->updateProfile(user: $user, updateProfile: $updateProfile);
+        return $this->userRepository->updateProfile(user: $user, updateProfile: $updateProfile);
     }
 
     public function getLatestUser(): User

@@ -26,7 +26,7 @@ interface UserServiceInterface
 
     public function changePassword(UserChangePasswordLogDTO $userChangePasswordLog, string $userId): void;
 
-    public function updateProfile(UpdateProfileDTO $updateProfile): void;
+    public function updateProfile(UpdateProfileDTO $updateProfile): User;
 
     public function getLatestUser(): User;
 

@@ -35,7 +35,7 @@ interface UserRepositoryInterface
 
     public function changePassword(User $user, UserChangePasswordLogDTO $userChangePasswordLog): void;
 
-    public function updateProfile(User $user, UpdateProfileDTO $updateProfile): void;
+    public function updateProfile(User $user, UpdateProfileDTO $updateProfile): User;
 
     public function getLatestUser(): ?User;
 
