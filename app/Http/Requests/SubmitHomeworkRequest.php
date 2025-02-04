@@ -51,11 +51,15 @@ class SubmitHomeworkRequest extends FormRequest
             );
         }
 
+        $autoSubmit = $this->input('auto_submit', false);
+        $autoSubmit = filter_var($autoSubmit, FILTER_VALIDATE_BOOLEAN);
+
         $results = $this->input(key: 'results');
         asort($results);
         $this->merge([
             'list_question' => array_keys($results),
             'list_answer' => array_values($results),
+            'auto_submit' => $autoSubmit,
         ]);
     }
 }
