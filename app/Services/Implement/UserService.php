@@ -177,8 +177,10 @@ readonly class UserService implements UserServiceInterface
             throw new NotFoundHttpException(message: 'Không tìm thấy user!');
         }
 
-        $path = Storage::disk('s3')->put('avatar', $updateProfile->getAvatar(), 'public');
-        $updateProfile->setPath(path: config('filesystems.disks.s3.url'). '/' . $path);
+        if ($updateProfile->getAvatar()) {
+            $path = Storage::disk('s3')->put('avatar', $updateProfile->getAvatar(), 'public');
+            $updateProfile->setPath(path: config('filesystems.disks.s3.url'). '/' . $path);
+        }
 
         $this->userRepository->updateProfile(user: $user, updateProfile: $updateProfile);
     }
@@ -200,8 +202,11 @@ readonly class UserService implements UserServiceInterface
 
     public function createUser(RegisterParamsDTO $registerParams): void
     {
-        $path = Storage::disk('s3')->put('avatar', $registerParams->getAvatar(), 'public');
-        $registerParams->setPath(path: config('filesystems.disks.s3.url'). '/' . $path);
+        if ($registerParams->getAvatar()) {
+            $path = Storage::disk('s3')->put('avatar', $registerParams->getAvatar(), 'public');
+            $registerParams->setPath(path: config('filesystems.disks.s3.url'). '/' . $path);
+        }
+
         $this->userRepository->create(registerParams: $registerParams);
     }
 }
