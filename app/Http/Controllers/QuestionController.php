@@ -29,6 +29,8 @@ class QuestionController extends Controller
         $question = new CreateQuestionDTO(
             title: $request->input(key: 'title'),
             answers: $answersDTOs,
+            image: $request->input(key: 'image'),
+            timeReply: $request->input(key: 'time_reply') ?? config('app.quizzes.time_reply'),
         );
 
         try {
@@ -54,6 +56,8 @@ class QuestionController extends Controller
             $question = new CreateQuestionDTO(
                 title: $request->input(key: 'title'),
                 answers: $answersDTOs,
+                image: $request->input(key: 'image'),
+                timeReply: $request->input(key: 'time_reply') ?? config('app.quizzes.time_reply'),
                 quizId: $quizId
             );
             $this->questionService->addQuestion(quizId: $quizId, questionDTO: $question);

@@ -2,7 +2,7 @@
 
 namespace App\Repository\Implement;
 
-use App\DTOs\User\CreateGamerTokenDTO;
+use App\DTOs\Gamer\CreateGamerTokenDTO;
 use App\Models\GamerToken;
 use App\Pipeline\Room\GamerIdFiler;
 use App\Pipeline\Room\TokenFilter;

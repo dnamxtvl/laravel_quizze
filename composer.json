@@ -6,12 +6,17 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
+        "google/apiclient": "^2.18",
+        "jeroen-g/explorer": "^4.0",
         "laravel/framework": "^11.5",
-        "laravel/horizon": "^5.27",
+        "laravel/horizon": "^5.30",
         "laravel/pulse": "^1.2",
         "laravel/reverb": "@beta",
         "laravel/sanctum": "^4.0",
+        "laravel/scout": "^10.11",
+        "laravel/socialite": "^5.16",
         "laravel/tinker": "^2.9",
+        "league/flysystem-aws-s3-v3": "^3.29",
         "predis/predis": "^2.2",
         "stevebauman/location": "^7.3"
     },

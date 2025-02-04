@@ -130,13 +130,16 @@ return [
         'room_code_length' => 6,
         'min_answer' => 2,
         'time_reply' => 15,
+        'min_time_reply' => 10,
+        'max_time_reply' => 60,
         'max_score' => 1000,
         'min_score' => 1,
         'min_question' => 1,
+        'limit_pagination_search' => 10,
     ],
 
     'room_report' => [
-        'limit_pagination' => 12,
+        'limit_pagination' => 10,
     ],
 
     'question' => [
@@ -161,5 +164,9 @@ return [
     'notify' => [
         'limit_pagination' => 5,
         'notify_id_length' => 36,
+    ],
+
+    'user' => [
+        'limit_pagination' => 15,
     ],
 ];

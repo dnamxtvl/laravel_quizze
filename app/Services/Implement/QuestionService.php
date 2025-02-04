@@ -3,10 +3,13 @@
 namespace App\Services\Implement;
 
 use App\DTOs\Question\CreateQuestionDTO;
+use App\Jobs\UpdateQuizLog;
 use App\Models\Question;
+use App\Repository\Interface\AnswerRepositoryInterface;
 use App\Repository\Interface\QuestionRepositoryInterface;
 use App\Repository\Interface\QuizzesRepositoryInterface;
 use App\Services\Interface\QuestionServiceInterface;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\CssSelector\Exception\InternalErrorException;
@@ -19,6 +22,7 @@ readonly class QuestionService implements QuestionServiceInterface
     public function __construct(
         private QuestionRepositoryInterface $questionRepository,
         private QuizzesRepositoryInterface $quizzesRepository,
+        private AnswerRepositoryInterface $answerRepository,
     ) {}
 
     /**
@@ -34,8 +38,9 @@ readonly class QuestionService implements QuestionServiceInterface
         DB::beginTransaction();
         try {
             $questionDTO->setQuizId(quizId: $question->quizze_id);
-            $this->questionRepository->createQuestion(questionDTO: $questionDTO, indexQuestionOverride: $question->index_question);
+            $newQuestion = $this->questionRepository->createQuestion(questionDTO: $questionDTO, indexQuestionOverride: $question->index_question);
             $this->questionRepository->setIsOldQuestion(question: $question, isOldQuestion: true);
+            UpdateQuizLog::dispatch($question->quizze_id, $questionId, $newQuestion->id);
 
             DB::commit();
         } catch (Throwable $th) {
@@ -61,6 +66,7 @@ readonly class QuestionService implements QuestionServiceInterface
         try {
             $questionDTO->setQuizId(quizId: $quizId);
             $newQuestion = $this->questionRepository->createQuestion(questionDTO: $questionDTO, indexQuestionOverride: $questionIndex);
+            UpdateQuizLog::dispatch($quizId, null, $newQuestion->id);
             DB::commit();
 
             return $newQuestion;
@@ -89,11 +95,23 @@ readonly class QuestionService implements QuestionServiceInterface
         DB::beginTransaction();
         try {
             $this->questionRepository->deleteQuestion(question: $question);
+            UpdateQuizLog::dispatch($question->quizze_id, $questionId, null);
+
             DB::commit();
         } catch (Throwable $th) {
             Log::error(message: $th->getMessage());
             DB::rollBack();
             throw new InternalErrorException(message: 'Có lỗi xảy ra!');
         }
+    }
+
+    public function countQuestion(): int
+    {
+        return $this->questionRepository->countQuestion();
+    }
+
+    public function countAnswerByTime(Carbon $startTime, Carbon $endTime): array
+    {
+        return $this->answerRepository->countAnswerByTime(startTime: $startTime, endTime: $endTime);
     }
 }

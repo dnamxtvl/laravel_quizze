@@ -1,11 +1,11 @@
 <?php
 
-use App\Http\Middleware\GamerMiddleware;
-use Illuminate\Auth\AuthenticationException;
+use App\Http\Middleware\AdminMiddleware;
+use App\Http\Middleware\SystemMiddleware;
+use App\Http\Middleware\ViewProfileMiddleware;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
-use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 return Application::configure(basePath: dirname(__DIR__))
@@ -17,7 +17,11 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-
+        $middleware->alias([
+            'is_admin' => AdminMiddleware::class,
+            'is_system' => SystemMiddleware::class,
+            'view_profile' => ViewProfileMiddleware::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
 //        $exceptions->render(function (AuthenticationException $e, Request $request) {

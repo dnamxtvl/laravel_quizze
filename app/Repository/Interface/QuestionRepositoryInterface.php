@@ -27,4 +27,8 @@ interface QuestionRepositoryInterface
     public function findById(string $questionId): ?Question;
 
     public function setIsOldQuestion(Question $question, bool $isOldQuestion): void;
+
+    public function getAll(): Collection;
+
+    public function countQuestion(): int;
 }

@@ -2,9 +2,10 @@
 
 namespace App\Repository\Implement;
 
-use App\DTOs\User\UserDeviceInformationDTO;
+use App\DTOs\Gamer\UserDeviceInformationDTO;
 use App\Models\Gamer;
 use App\Repository\Interface\GamerRepositoryInterface;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
@@ -37,5 +38,25 @@ readonly class GamerRepository implements GamerRepositoryInterface
     public function findByIds(array $ids): Collection
     {
         return $this->gamer->query()->whereIn('id', $ids)->get();
+    }
+
+    public function countAll(): int
+    {
+        return $this->gamer->query()->count();
+    }
+
+    public function groupByYear(Carbon $startTime, Carbon $endTime): Collection
+    {
+        return $this->gamer->query()
+            ->whereBetween('created_at', [$endTime, $startTime])
+            ->selectRaw("DATE_FORMAT(created_at, '%Y-%m') as month_year, COUNT(*) as total")
+            ->groupBy('month_year')
+            ->orderBy('month_year')
+            ->get();
+    }
+
+    public function countByTime(Carbon $startTime, Carbon $endTime): int
+    {
+        return $this->gamer->query()->whereBetween('created_at', [$endTime, $startTime])->count();
     }
 }

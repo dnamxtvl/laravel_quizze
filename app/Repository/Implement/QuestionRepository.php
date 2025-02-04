@@ -4,14 +4,17 @@ namespace App\Repository\Implement;
 
 use App\DTOs\Answer\CreateAnswerDTO;
 use App\DTOs\Question\CreateQuestionDTO;
+use App\Enums\User\UserRoleEnum;
 use App\Models\Answer;
 use App\Models\Question;
+use App\Models\User;
 use App\Pipeline\Global\QuizzIdFilter;
 use App\Repository\Interface\QuestionRepositoryInterface;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pipeline\Pipeline;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Auth;
 
 readonly class QuestionRepository implements QuestionRepositoryInterface
 {
@@ -64,6 +67,10 @@ readonly class QuestionRepository implements QuestionRepositoryInterface
                 'id' => $questionId,
                 'quizze_id' => $quizId,
                 'title' => $question->getTitle(),
+                'image' => $question->getImage(),
+                'content_html' => $question->getTitle(),
+                'time_reply' => $question->getTimeReply(),
+                'type' => (int)!is_null($question->getImage()),
                 'index_question' => $index + 1,
                 'created_at' => $now,
                 'updated_at' => $now,
@@ -115,9 +122,18 @@ readonly class QuestionRepository implements QuestionRepositoryInterface
     public function createQuestion(CreateQuestionDTO $questionDTO, ?int $indexQuestionOverride = null): Question
     {
         $now = now();
-        $question = new Question;
+        $question = new Question();
         $question->quizze_id = $questionDTO->getQuizId();
         $question->title = $questionDTO->getTitle();
+        $question->content_html = $questionDTO->getTitle();
+        $question->image = $questionDTO->getImage();
+        $question->type = (int)!is_null($questionDTO->getImage());
+        $question->time_reply = $questionDTO->getTimeReply();
+        /** @var User $authUser */
+        $authUser = Auth::user();
+        $isSystemAdmin = $authUser->type == UserRoleEnum::SYSTEM->value;
+        $question->created_by_sys = $isSystemAdmin;
+        $question->updated_by_sys = $isSystemAdmin;
         if ($indexQuestionOverride) {
             $question->index_question = $indexQuestionOverride;
         }
@@ -154,5 +170,17 @@ readonly class QuestionRepository implements QuestionRepositoryInterface
     {
         $question->is_old_question = $isOldQuestion;
         $question->save();
+    }
+
+    public function getAll(): Collection
+    {
+        return $this->question->query()->get();
+    }
+
+    public function countQuestion(): int
+    {
+        return $this->question->query()
+            ->where('is_old_question', false)
+            ->count();
     }
 }

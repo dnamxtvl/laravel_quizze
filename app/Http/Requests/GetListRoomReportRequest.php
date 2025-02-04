@@ -22,6 +22,7 @@ class GetListRoomReportRequest extends FormRequest
             'type' => 'nullable|integer|in:'.implode(',', array_map(fn ($enum) => $enum->value, RoomTypeEnum::cases())),
             'status' => 'nullable|integer|in:'.implode(',', array_map(fn ($enum) => $enum->value, RoomStatusEnum::cases())),
             'code' => 'nullable|integer',
+            'code_quiz' => 'nullable|string',
             'start_time' => 'nullable|date_format:Y-m-d H:i:s',
             'end_time' => 'nullable|date_format:Y-m-d H:i:s',
         ];

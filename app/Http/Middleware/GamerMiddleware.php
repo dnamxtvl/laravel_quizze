@@ -18,7 +18,7 @@ class GamerMiddleware
                 ],
             ];
 
-            return response()->json($content, Response::HTTP_UNAUTHORIZED);
+            return response()->json($content, Response::HTTP_FORBIDDEN);
         }
 
         return $next($request);

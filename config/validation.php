@@ -12,15 +12,13 @@ return [
         'min_length' => 6,
         'max_length' => 255
     ],
-    'first_name' => [
-        'max_length' => 30
-    ],
-    'last_name' => [
-        'max_length' => 30
+    'username' => [
+        'min_length' => 6,
+        'max_length' => 50
     ],
     'password' => [
         'min_length' => 8,
-        'max_length' => 255
+        'max_length' => 50
     ],
     'day' => [
         'min_value' => 1,

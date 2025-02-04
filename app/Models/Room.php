@@ -63,7 +63,7 @@ class Room extends Model
         return $this->hasMany(related: GamerToken::class);
     }
 
-    public function gamerAnswers()
+    public function gamerAnswers(): HasMany
     {
         return $this->hasMany(related: GamerAnswer::class);
     }
