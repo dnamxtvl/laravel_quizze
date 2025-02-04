@@ -18,8 +18,8 @@ return new class extends Migration
         });
         Schema::table('quizzes', function (Blueprint $table) {
 //            $table->string('code', 10)->after('title')->unique();
-            $table->boolean('created_by_sys')->after('user_id')->default(false);
-            $table->uuid('deleted_by')->after('created_by_sys')->index()->nullable();
+//            $table->boolean('created_by_sys')->after('user_id')->default(false);
+//            $table->uuid('deleted_by')->after('created_by_sys')->index()->nullable();
         });
     }
 
