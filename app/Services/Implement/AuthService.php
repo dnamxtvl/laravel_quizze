@@ -58,7 +58,7 @@ readonly class AuthService implements AuthServiceInterface
     {
         $user = $this->userRepository->findByEmail(email: $credentials->getEmail());
         if (is_null($user)) {
-            throw new BadRequestHttpException(message: 'Email chưa được đăng ký', code: ExceptionCodeEnum::INVALID_CREDENTIALS->value);
+            throw new BadRequestHttpException(message: 'Email chưa được đăng ký', code: ExceptionCodeEnum::NOT_REGISTER->value);
         }
 
         if ($user->disabled === UserStatusEnum::DISABLE->value) {
