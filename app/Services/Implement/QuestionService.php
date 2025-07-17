@@ -26,7 +26,7 @@ readonly class QuestionService implements QuestionServiceInterface
     ) {}
 
     /**
-     * @throws InternalErrorException
+     * @throws InternalErrorException|Throwable
      */
     public function updateQuestion(string $questionId, CreateQuestionDTO $questionDTO): void
     {
@@ -51,7 +51,7 @@ readonly class QuestionService implements QuestionServiceInterface
     }
 
     /**
-     * @throws InternalErrorException
+     * @throws InternalErrorException|Throwable
      */
     public function addQuestion(string $quizId, CreateQuestionDTO $questionDTO): Question
     {
@@ -78,7 +78,7 @@ readonly class QuestionService implements QuestionServiceInterface
     }
 
     /**
-     * @throws InternalErrorException
+     * @throws InternalErrorException|Throwable
      */
     public function deleteQuestion(string $questionId): void
     {

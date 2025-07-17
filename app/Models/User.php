@@ -29,6 +29,7 @@ use JeroenG\Explorer\Application\Explored;
  * @property mixed|string|null $google_id
  * @property mixed $created_at
  * @property mixed|string|null $avatar
+ * @property mixed $fcm_token
  */
 class User extends Authenticatable implements MustVerifyEmail, Explored
 {

@@ -93,6 +93,8 @@ Route::group(['middleware' => ['auth:api', 'verified']], function () {
         Route::prefix('category')->group(function () {
             Route::get('/list', [CategoryController::class, 'listCategory'])->name('categories.list');
         });
+
+        Route::post('/update-fcm-token', [AuthController::class, 'updateFcmToken'])->name('auth.admin.updateFcmToken');
     });
 });
 

@@ -14,6 +14,7 @@ use App\Http\Requests\VerifyEmailOTPAfterLoginRequest;
 use App\Http\Requests\VerifyEmailRequest;
 use App\Services\Interface\AuthServiceInterface;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Throwable;
@@ -163,6 +164,19 @@ class AuthController extends Controller
             );
 
             return $this->respondWithJson(content: $adminInfo->toArray());
+        } catch (Throwable $th) {
+            return $this->respondWithJsonError(e: $th);
+        }
+    }
+
+    public function updateFcmToken(Request $request): JsonResponse
+    {
+        try {
+            $user = Auth::user();
+            $user->fcm_token = $request->input(key: 'token');
+            $user->save();
+
+            return $this->respondWithJson(content: []);
         } catch (Throwable $th) {
             return $this->respondWithJsonError(e: $th);
         }

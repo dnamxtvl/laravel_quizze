@@ -33,6 +33,9 @@ use Illuminate\Support\Str;
 use Symfony\Component\CssSelector\Exception\InternalErrorException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Kreait\Firebase\Messaging\CloudMessage;
+use Kreait\Firebase\Messaging\Notification;
+use Kreait\Laravel\Firebase\Facades\Firebase;
 use Throwable;
 
 readonly class QuizzesService implements QuizzesServiceInterface
@@ -228,6 +231,20 @@ readonly class QuizzesService implements QuizzesServiceInterface
                 createdAt: $newNotify->created_at,
                 notifyId: $newNotify->id,
             ))->toOthers();
+
+            $messaging = Firebase::messaging();
+            $deviceToken = $user->fcm_token;
+            if ($deviceToken) {
+                $message = CloudMessage::withTarget('token', $deviceToken)
+                    ->withNotification(Notification::create('🔥' . $newNotify->title, $newNotify->content))
+                    ->withData([
+                        'click_action' => 'FLUTTER_NOTIFICATION_CLICK',
+                        'link' => $notify->getLink()
+                    ]);
+
+                $messaging->send($message);
+            }
+
             DB::commit();
         } catch (Throwable $th) {
             DB::rollBack();
