@@ -8,6 +8,7 @@
         "php": "^8.2",
         "google/apiclient": "^2.18",
         "jeroen-g/explorer": "^4.0",
+        "kreait/laravel-firebase": "^6.1",
         "laravel/framework": "^11.5",
         "laravel/horizon": "^5.30",
         "laravel/pulse": "^1.2",
