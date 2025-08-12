@@ -25,6 +25,7 @@ services:
         volumes:
             - .:/var/www/
             - ./docker/php.ini:/usr/local/etc/php/conf.d/php.ini
+            - ./database/maxmind:/var/www/database/maxmind
         environment:
             APP_ENV: local
         ports:
