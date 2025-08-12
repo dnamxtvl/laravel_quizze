@@ -16,7 +16,7 @@ return new class extends Migration
             $table->uuid('gamer_id')->index();
             $table->uuid('room_id')->index();
             $table->string('token')->unique();
-            $table->timestamp('expires_at')->nullable();
+            $table->timestamp('expired_at')->nullable();
             $table->timestamps();
         });
     }
