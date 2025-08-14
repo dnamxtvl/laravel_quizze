@@ -52,6 +52,9 @@ RUN composer install --no-dev --optimize-autoloader --no-interaction --prefer-di
 # Copy the rest of the application code
 COPY . .
 
+RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache \
+    && chmod -R 775 /var/www/storage /var/www/bootstrap/cache
+
 RUN composer run-script post-install-cmd || true
 
 # Copy supervisor config
