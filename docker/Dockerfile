@@ -43,6 +43,8 @@ RUN usermod -u 1000 www-data
 
 WORKDIR /var/www
 
+RUN chown -R www-data:www-data /var/www
+
 # Copy composer files first to leverage cache
 COPY composer.json composer.lock ./
 
@@ -51,9 +53,6 @@ RUN composer install --no-dev --optimize-autoloader --no-interaction --prefer-di
 
 # Copy the rest of the application code
 COPY . .
-
-RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
-RUN chmod -R 775 /var/www/storage /var/www/bootstrap/cache
 
 RUN composer run-script post-install-cmd || true
 
