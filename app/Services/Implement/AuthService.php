@@ -58,6 +58,7 @@ readonly class AuthService implements AuthServiceInterface
     {
         $user = $this->userRepository->findByEmail(email: $credentials->getEmail());
         if (is_null($user)) {
+            Log::error('Email ' . $credentials->getEmail() . ' chưa được đăng ký!');
             throw new BadRequestHttpException(message: 'Email chưa được đăng ký', code: ExceptionCodeEnum::NOT_REGISTER->value);
         }
 
@@ -103,6 +104,7 @@ readonly class AuthService implements AuthServiceInterface
         }
 
         $user->tokens()->delete();
+        Log::info('Login success' . $user->email . ' đã đăng nhập thành công!');
 
         return $this->generateToken();
     }
