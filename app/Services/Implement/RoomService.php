@@ -99,6 +99,8 @@ readonly class RoomService implements RoomServiceInterface
             );
         }
 
+        Log::info(Auth::user()->name . ' đã tạo room ' . $newRoom->code);
+
         return $newRoom;
     }
 
@@ -264,6 +266,7 @@ readonly class RoomService implements RoomServiceInterface
         }
 
         RoomChangeLog::dispatch($room, null, RoomStatusEnum::PREPARE);
+        Log::info(Auth::user()->name . ' đã bắt đầu room: ' . $room->code);
         broadcast(new StartGameEvent(roomId: $room->id))->toOthers();
     }
 
@@ -332,6 +335,7 @@ readonly class RoomService implements RoomServiceInterface
 
             RoomChangeLog::dispatch($room, $questionId, RoomStatusEnum::PENDING);
             broadcast(new NextQuestionEvent(roomId: $room->id, questionId: $nextQuestion->id))->toOthers();
+            Log::info(Auth::user()->name . ' vừa chuyển tiếp câu hỏi của room : ' . $room->code);
         } catch (Throwable $e) {
             Log::error(message: $e->getMessage());
             throw new InternalErrorException(message: 'Có lỗi xảy ra, vui lòng thử lại sau!');
@@ -358,6 +362,7 @@ readonly class RoomService implements RoomServiceInterface
         $room->ended_at = now();
         $room->save();
         broadcast(new AdminEndgameEvent(roomId: $room->id))->toOthers();
+        Log::info(Auth::user()->name . ' vừa kết thúc màn chơi : ' . $room->code);
     }
 
     public function getDetailRoomReport(string $roomId): DetailRoomReportDTO

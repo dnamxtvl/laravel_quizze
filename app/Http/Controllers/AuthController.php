@@ -16,6 +16,7 @@ use App\Services\Interface\AuthServiceInterface;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Throwable;
 
@@ -44,6 +45,7 @@ class AuthController extends Controller
 
             return $this->respondWithJson(content: $adminInfo->toArray());
         } catch (Throwable $th) {
+            Log::error($th);
             return $this->respondWithJsonError(e: $th);
         }
     }
@@ -55,6 +57,7 @@ class AuthController extends Controller
 
             return $this->respondWithJson(content: []);
         } catch (Throwable $th) {
+            Log::error($th);
             return $this->respondWithJsonError(e: $th);
         }
     }
@@ -69,6 +72,7 @@ class AuthController extends Controller
 
             return $this->respondWithJson(content: $adminInfo->toArray());
         } catch (Throwable $th) {
+            Log::error($th);
             return $this->respondWithJsonError(e: $th);
         }
     }
@@ -89,6 +93,7 @@ class AuthController extends Controller
 
             return $this->respondWithJson(content: ['token' => $tokenRegister, 'otp_id' => $otpId]);
         } catch (Throwable $th) {
+            Log::error($th);
             return $this->respondWithJsonError(e: $th);
         }
     }
@@ -104,6 +109,7 @@ class AuthController extends Controller
 
             return $this->respondWithJson(content: $verifyEmail->toArray());
         } catch (Throwable $th) {
+            Log::error($th);
             return $this->respondWithJsonError(e: $th);
         }
     }
@@ -115,6 +121,7 @@ class AuthController extends Controller
 
             return $this->respondWithJson(content: []);
         } catch (Throwable $th) {
+            Log::error($th);
             return $this->respondWithJsonError(e: $th);
         }
     }
@@ -126,6 +133,7 @@ class AuthController extends Controller
 
             return $this->respondWithJson(content: []);
         } catch (Throwable $th) {
+            Log::error($th);
             return $this->respondWithJsonError(e: $th);
         }
     }
@@ -141,6 +149,7 @@ class AuthController extends Controller
 
             return $this->respondWithJson(content: []);
         } catch (Throwable $th) {
+            Log::error($th);
             return $this->respondWithJsonError(e: $th);
         }
     }
@@ -152,6 +161,7 @@ class AuthController extends Controller
 
             return $this->respondWithJson(content: ['url' => $url]);
         } catch (Throwable $th) {
+            Log::error($th);
             return $this->respondWithJsonError(e: $th);
         }
     }
@@ -165,6 +175,7 @@ class AuthController extends Controller
 
             return $this->respondWithJson(content: $adminInfo->toArray());
         } catch (Throwable $th) {
+            Log::error($th);
             return $this->respondWithJsonError(e: $th);
         }
     }
@@ -178,6 +189,7 @@ class AuthController extends Controller
 
             return $this->respondWithJson(content: []);
         } catch (Throwable $th) {
+            Log::error($th);
             return $this->respondWithJsonError(e: $th);
         }
     }

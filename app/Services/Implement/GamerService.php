@@ -44,8 +44,10 @@ readonly class GamerService implements GamerServiceInterface
         $gamer->display_meme = $createGameSettingDTO->getIsMeme();
         $gamer->save();
         broadcast(new UserJoinRoomEvent(roomId: $gamer->gamerToken->room_id, gamer: $gamer))->toOthers();
+        $room = $gamer->gamerToken->room;
+        Log::info('user ' . $createGameSettingDTO->getName() . ' đã tham gia room ' . $room->code);;
 
-        return $gamer->gamerToken->room;
+        return $room;
     }
 
     public function submitAnswer(string $token, int $answerId): Model
@@ -113,6 +115,7 @@ readonly class GamerService implements GamerServiceInterface
             score: $score,
             roomType: RoomTypeEnum::tryFrom($room->type)
         );
+        Log::info($gamer->name . ' vừa trả lời câu hỏi room ' . $room->code);
 
         return $this->answerRepository->saveAnswer(saveAnswer: $saveAnswerDTO, isUpdate: $isExistGamerAnswer);
     }
@@ -125,6 +128,7 @@ readonly class GamerService implements GamerServiceInterface
         }
         $gamerToken->expired_at = now();
         $gamerToken->save();
+        Log::info($gamerToken->gamer->name . ' vừa thoát room ' . $gamerToken->room->code);
     }
 
     /**

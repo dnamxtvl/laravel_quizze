@@ -71,10 +71,12 @@ readonly class QuizzesService implements QuizzesServiceInterface
             $quizDTO->setCode(code: $maxCode);
             $quiz = $this->quizzesRepository->createQuiz(quizDTO: $quizDTO);
             $this->questionRepository->insertQuestions(questions: $questionDTO, quizId: $quiz->id);
+            Log::info(message: $user->name . ' đã tạo bộ câu hỏi ' . $quiz->title, context: ['quiz' => $quiz]);
 
             DB::commit();
         } catch (Throwable $th) {
             DB::rollBack();
+            Log::error($th);
             throw new InternalErrorException(message: $th->getMessage());
         }
     }
