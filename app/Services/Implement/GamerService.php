@@ -97,9 +97,6 @@ readonly class GamerService implements GamerServiceInterface
             }
             $maxTime = (!empty($answer->question->time_reply) ? (int) $answer->question->time_reply : (int) config(key: 'app.quizzes.time_reply')) * 1000;
             $maxScore = (int) config(key: 'app.quizzes.max_score');
-            Log::info('current_question_start_at: ' . $room->current_question_start_at);
-            Log::info('now: ' . now());
-            Log::info('diffInMilliseconds: ' .  now()->diffInMilliseconds(Carbon::parse($room->current_question_start_at)));
             $diffInMilliseconds = (int) now()->diffInMilliseconds(Carbon::parse($room->current_question_end_at));
             $minScore = (int) config('app.quizzes.min_score');
             $calculatedScore = abs(($diffInMilliseconds / $maxTime) * $maxScore);
