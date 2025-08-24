@@ -12,6 +12,7 @@ class CreateRoomParamsDTO
         private readonly Carbon $startAt,
         private readonly Carbon $endAt,
         private ?array $questionIds = [],
+        private ?array $settings = []
     ) {}
 
     public function getType(): RoomTypeEnum
@@ -46,5 +47,15 @@ class CreateRoomParamsDTO
     public function setQuestionIds(array $questionIds): void
     {
         $this->questionIds = $questionIds;
+    }
+
+    public function getSettings(): ?array
+    {
+        return $this->settings;
+    }
+
+    public function setSettings(array $settings): void
+    {
+        $this->settings = $settings;
     }
 }

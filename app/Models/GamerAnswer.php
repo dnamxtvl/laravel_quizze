@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property int|mixed $score
  * @property mixed|string $room_id
  * @property mixed|string $question_id
+ * @property int|mixed $type
  */
 class GamerAnswer extends Model
 {

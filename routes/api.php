@@ -8,6 +8,7 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\QuestionController;
 use App\Http\Controllers\QuizzesController;
 use App\Http\Controllers\RoomController;
+use App\Http\Controllers\SettingController;
 use App\Http\Controllers\UserController;
 use App\Http\Middleware\GamerMiddleware;
 use Illuminate\Http\Request;
@@ -70,6 +71,11 @@ Route::group(['middleware' => ['auth:api', 'verified']], function () {
         Route::prefix('notification')->group(function () {
             Route::get('/list', [NotificationController::class, 'listNotify'])->name('notifications.list');
             Route::post('/delete/{notifyId}', [NotificationController::class, 'deleteNotify'])->name('notifications.delete');
+        });
+
+        Route::prefix('setting')->group(function () {
+            Route::get('/index/{quizId}', [SettingController::class, 'getSetting'])->name('settings.index');
+            Route::post('/update', [SettingController::class, 'updateSetting'])->name('settings.update');
         });
 
         Route::middleware(['is_system'])->group(function () {

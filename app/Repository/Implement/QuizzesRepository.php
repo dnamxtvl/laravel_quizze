@@ -117,7 +117,7 @@ readonly class QuizzesRepository implements QuizzesRepositoryInterface
 
     public function findById(string $quizId): ?Quizze
     {
-        return $this->quizzes->query()->find(id: $quizId);
+        return $this->quizzes->query()->with('setting')->find(id: $quizId);
     }
 
     public function searchQuiz(SearchQuizDTO $searchQuizDTO): LengthAwarePaginator
@@ -196,5 +196,10 @@ readonly class QuizzesRepository implements QuizzesRepositoryInterface
         $editQuizLog->updated_by = Auth::id();
 
         $editQuizLog->save();
+    }
+
+    public function getByIds(array $ids): Collection
+    {
+        return $this->quizzes->query()->whereIn('id', $ids)->get();
     }
 }

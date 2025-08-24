@@ -30,6 +30,7 @@ use Illuminate\Support\Carbon;
  * @property int|mixed $type
  * @property int|mixed|string|null $user_id
  * @property false|mixed|string $list_question
+ * @property false|mixed|string $room_settings
  */
 class Room extends Model
 {

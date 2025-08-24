@@ -67,6 +67,7 @@ readonly class RoomRepository implements RoomRepositoryInterface
             $room->started_at = $createRoomParams->getStartAt();
             $room->ended_at = $createRoomParams->getEndAt();
         }
+        $room->room_settings = json_encode($createRoomParams->getSettings());
         $room->save();
 
         return $room;

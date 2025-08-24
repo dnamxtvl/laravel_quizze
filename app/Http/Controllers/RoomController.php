@@ -14,6 +14,7 @@ use App\Http\Requests\StartRoomRequest;
 use App\Services\Interface\RoomServiceInterface;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Stevebauman\Location\Facades\Location;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Throwable;
@@ -38,6 +39,7 @@ class RoomController extends Controller
 
             return $this->respondWithJson(content: $newRoom->toArray());
         } catch (Throwable $e) {
+            Log::error($e);
             return $this->respondWithJsonError(e: $e);
         }
     }
