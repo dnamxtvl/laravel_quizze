@@ -16,8 +16,10 @@ return new class extends Migration
             $table->uuid('quizze_id')->index();
             $table->uuid('last_updated_by')->index();
             $table->integer('speed_priority')->default(100);
-            $table->json('background')->nullable();
-            $table->json('music')->nullable();
+            $table->string('background')->nullable();
+            $table->string('background_name')->nullable();
+            $table->string('music')->nullable();
+            $table->string('music_name')->nullable();
             $table->timestamps();
         });
     }

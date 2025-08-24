@@ -105,7 +105,7 @@ readonly class GamerService implements GamerServiceInterface
                 $score = max($calculatedScore, $minScore);
                 if (! empty($room->room_settings)) {
                     $settings = json_decode($room->room_settings, true);
-                    if (! empty($settings['speed_priority'])) {
+                    if (isset($settings['speed_priority'])) {
                         $score = $maxScore - ($maxScore - $calculatedScore) * ((int) $settings['speed_priority'] / 100);
                     }
                 }

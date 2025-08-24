@@ -162,7 +162,7 @@ readonly class QuizzesService implements QuizzesServiceInterface
     }
 
     /**
-     * @throws InternalErrorException
+     * @throws InternalErrorException|Throwable
      */
     public function shareQuiz(string $quizId, string $email): void
     {
@@ -256,7 +256,7 @@ readonly class QuizzesService implements QuizzesServiceInterface
     }
 
     /**
-     * @throws InternalErrorException
+     * @throws InternalErrorException|Throwable
      */
     public function acceptShareQuiz(string $token, ?string $notifyId = null): void
     {
@@ -308,7 +308,7 @@ readonly class QuizzesService implements QuizzesServiceInterface
     }
 
     /**
-     * @throws InternalErrorException
+     * @throws InternalErrorException|Throwable
      */
     public function rejectShareQuiz(string $token, ?string $notifyId = null): void
     {
@@ -355,5 +355,13 @@ readonly class QuizzesService implements QuizzesServiceInterface
     public function totalShareQuiz(Carbon $startTime, Carbon $endTime): int
     {
         return $this->quizzesRepository->totalShareQuiz(startTime: $startTime, endTime: $endTime);
+    }
+
+    public function findByKeyword(?string $keyword = null): Collection
+    {
+        return $this->quizzesRepository->findByKeyword(
+            keyword: $keyword,
+            isAdmin: Auth::user()->type == UserRoleEnum::ADMIN->value
+        );
     }
 }

@@ -55,4 +55,9 @@ class Quizze extends Model
     {
         return $this->hasOne(related: QuizzeSetting::class);
     }
+
+    public function sharedWithMe(): HasMany
+    {
+        return $this->hasMany(related: UserShareQuiz::class);
+    }
 }

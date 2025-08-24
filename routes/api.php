@@ -55,6 +55,8 @@ Route::group(['middleware' => ['auth:api', 'verified']], function () {
             Route::post('/delete-question/{questionId}', [QuestionController::class, 'deleteQuestion'])->name('questions.delete');
             Route::post('/share/{quizId}', [QuizzesController::class, 'shareQuiz'])->name('quizzes.share');
             Route::get('/search', [QuizzesController::class, 'allQuizzesPagination'])->name('quizzes.all')->middleware('is_system');
+            Route::get('/search-keyword/{keyword?}', [QuizzesController::class, 'findByKeyword'])->name('quizzes.search-keyword');
+
         });
         Route::prefix('room')->group(function () {
             Route::middleware(['is_admin'])->group(function () {
@@ -76,6 +78,7 @@ Route::group(['middleware' => ['auth:api', 'verified']], function () {
         Route::prefix('setting')->group(function () {
             Route::get('/index/{quizId}', [SettingController::class, 'getSetting'])->name('settings.index');
             Route::post('/update', [SettingController::class, 'updateSetting'])->name('settings.update');
+            Route::get('/latest-updated', [SettingController::class, 'getLatestUpdated'])->name('settings.latest-updated');
         });
 
         Route::middleware(['is_system'])->group(function () {
