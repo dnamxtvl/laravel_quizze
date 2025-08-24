@@ -13,4 +13,6 @@ interface SettingRepositoryInterface
     public function deleteByIds(Array $ids): void;
 
     public function insertSetting(Array $settings): void;
+
+    public function getLatestUpdated(bool $isAdmin = false): ?QuizzeSetting;
 }

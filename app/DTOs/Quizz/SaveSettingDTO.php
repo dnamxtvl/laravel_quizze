@@ -2,12 +2,16 @@
 
 namespace App\DTOs\Quizz;
 
-readonly class SaveSettingDTO
+use Illuminate\Http\UploadedFile;
+
+class SaveSettingDTO
 {
     public function __construct(
-        private int $speedPriority,
-        private ?array $backgrounds = null,
-        private ?array $musics = null,
+        private readonly int $speedPriority,
+        private readonly ?UploadedFile $backgroundFile = null,
+        private readonly ?UploadedFile $musicFile = null,
+        private ?string $background = null,
+        private ?string $music = null,
     ) {}
 
     public function getSpeedPriority(): int
@@ -15,13 +19,33 @@ readonly class SaveSettingDTO
         return $this->speedPriority;
     }
 
-    public function getBackgrounds(): ?array
+    public function getBackground(): ?string
     {
-        return $this->backgrounds;
+        return $this->background;
     }
 
-    public function getMusics(): ?array
+    public function setBackground(string $background): void
     {
-        return $this->musics;
+        $this->background = $background;
+    }
+
+    public function getMusic(): ?string
+    {
+        return $this->music;
+    }
+
+    public function setMusic(string $music): void
+    {
+        $this->music = $music;
+    }
+
+    public function getBackgroundFile(): ?UploadedFile
+    {
+        return $this->backgroundFile;
+    }
+
+    public function getMusicFile(): ?UploadedFile
+    {
+        return $this->musicFile;
     }
 }

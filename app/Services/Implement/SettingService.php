@@ -11,6 +11,7 @@ use App\Services\Interface\SettingServiceInterface;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use Symfony\Component\CssSelector\Exception\InternalErrorException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -39,6 +40,15 @@ readonly class SettingService implements SettingServiceInterface
      */
     public function updateSetting(array $quizzeIds, SaveSettingDTO $setting): void
     {
+        if ($setting->getBackgroundFile()) {
+            $path = Storage::disk('s3')->put('avatar', $setting->getBackgroundFile(), 'public');
+            $setting->setBackground(background: config('filesystems.disks.s3.url'). '/' . $path);
+        }
+        if ($setting->getMusicFile()) {
+            $path = Storage::disk('s3')->put('avatar', $setting->getMusicFile(), 'public');
+            $setting->setMusic(music: config('filesystems.disks.s3.url'). '/' . $path);
+        }
+
         $quizzes = $this->quizzesRepository->getByIds(ids: $quizzeIds);
         if (count($quizzes) != count($quizzeIds)) {
             throw new BadRequestHttpException(message: 'Không tìm thấy bộ cảu hỏi!');
@@ -58,8 +68,8 @@ readonly class SettingService implements SettingServiceInterface
                 $settings[] = [
                     'quizze_id' => $quizzeId,
                     'speed_priority' => $setting->getSpeedPriority(),
-                    'background' => $setting->getBackgrounds(),
-                    'music' => $setting->getMusics(),
+                    'background' => $setting->getBackground(),
+                    'music' => $setting->getMusic(),
                     'last_updated_by' => $authUser->id,
                 ];
             }
@@ -72,5 +82,12 @@ readonly class SettingService implements SettingServiceInterface
             DB::rollBack();
             throw new InternalErrorException(message: 'Đã xảy ra lỗi không mong muốn!');
         }
+    }
+
+    public function getLatestUpdated(): ?QuizzeSetting
+    {
+        return $this->settingRepository->getLatestUpdated(
+            isAdmin: Auth::user()->type == UserRoleEnum::ADMIN->value
+        );
     }
 }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\DTOs\Quizz\SaveSettingDTO;
 use App\Http\Requests\UpdateSettingRequest;
 use App\Services\Interface\SettingServiceInterface;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Throwable;
@@ -32,13 +33,28 @@ class SettingController extends Controller
         try {
             $setting = new SaveSettingDTO(
                 speedPriority: $request->input(key: 'speed_priority'),
-                backgrounds: $request->input(key: 'background'),
-                musics: $request->input(key: 'music'),
+                backgroundFile: $request->file(key: 'background'),
+                musicFile: $request->file(key: 'music'),
             );
-            $this->settingService->updateSetting(quizzeIds: $request->input(key: 'quizze_ids'), setting: $setting);
+            $this->settingService->updateSetting(
+                quizzeIds: $request->input(key: 'quizze_ids'),
+                setting: $setting
+            );
 
             return $this->respondWithJson(content: []);
         } catch (Throwable $e) {
+            return $this->respondWithJsonError(e: $e);
+        }
+    }
+
+    public function getLatestUpdated(Request $request): JsonResponse
+    {
+        try {
+            $latestUpdated = $this->settingService->getLatestUpdated();
+
+            return $this->respondWithJson(content: $latestUpdated ? $latestUpdated->toArray() : []);
+        } catch (Throwable $e) {
+            Log::error($e);
             return $this->respondWithJsonError(e: $e);
         }
     }

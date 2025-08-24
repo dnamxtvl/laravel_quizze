@@ -17,4 +17,9 @@ class QuizzeSetting extends Model
     {
         return $this->belongsTo(related: Quizze::class);
     }
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(related: User::class, foreignKey: 'last_updated_by');
+    }
 }

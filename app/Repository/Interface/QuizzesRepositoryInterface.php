@@ -35,4 +35,6 @@ interface QuizzesRepositoryInterface
     public function updateQuizHistory(string $quizId, ?string $oldQuestionId = null, ?string $newQuestionId = null): void;
 
     public function getByIds(array $ids): Collection;
+
+    public function findByKeyword(?string $keyword = null, bool $isAdmin = false): Collection;
 }
