@@ -143,8 +143,7 @@ return [
             'level' => 'info',
             'group_name' => env('CLOUDWATCH_LOG_GROUP', 'group-log'),
             'stream_name' => env('CLOUDWATCH_LOG_STREAM', 'error-log'),
-        ],
-
+        ]
     ],
 
 ];

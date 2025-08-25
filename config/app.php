@@ -153,6 +153,18 @@ return [
         ],
         'min_answers' => 2,
         'max_answers' => 4,
+        'speed_priority' => [
+            'min' => 0,
+            'max' => 100
+        ],
+        'background' => [
+            'min' => 1,
+            'max' => 5
+        ],
+        'music' => [
+            'min' => 1,
+            'max' => 5
+        ],
     ],
 
     'quiz' => [

@@ -39,6 +39,7 @@ use Dflydev\DotAccessData\Exception\DataException;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -78,6 +79,10 @@ readonly class RoomService implements RoomServiceInterface
 
         $listQuestion = $this->questionRepository->listQuestionOfQuiz(quizId: $quizId)->pluck('id')->toArray();
         $createRoomParams->setQuestionIds(questionIds: $listQuestion);
+        if (! empty($quiz->setting)) {
+            $settings = Arr::except($quiz->setting->toArray(), ['id', 'quizze_id']);
+            $createRoomParams->setSettings(settings: $settings);
+        }
         $code = $this->quizHelper->generateCode(length: config(key: 'app.quizzes.room_code_length'));
         $newRoom = $this->roomRepository->createRoom(quizId: $quizId, code: $code, createRoomParams: $createRoomParams);
 
@@ -98,6 +103,8 @@ readonly class RoomService implements RoomServiceInterface
                 action: 'set_end'
             );
         }
+
+        Log::info(Auth::user()->name . ' đã tạo room ' . $newRoom->code);
 
         return $newRoom;
     }
@@ -129,7 +136,6 @@ readonly class RoomService implements RoomServiceInterface
             ($room->current_question_end_at && $now->copy()->addSecond()->startOfSecond()->gt(Carbon::parse($room->current_question_end_at))) ||
             $room->status == RoomStatusEnum::PENDING->value)
         ) {
-            Log::info('order_number_gamers_json: ', $gamers->toArray());
             broadcast(new GetGamerNumberEvent(
                 roomId: $roomId,
                 orderNumberGamers: $gamers->map(fn($item, $key) => ['id' => $key + 1, 'gamer_id' => $item->id])->toArray())
@@ -253,7 +259,7 @@ readonly class RoomService implements RoomServiceInterface
         $setNextQuestionRoomDTO = new SetNextQuestionRoomDTO(
             currentQuestionId: $questions->first()->id,
             currentQuestionStartAt: $now,
-            currentQuestionEndAt: $now->addSeconds(value: (int) $questions->first()->time_reply),
+            currentQuestionEndAt: $now->copy()->addSeconds(value: (int) $questions->first()->time_reply),
             status: RoomStatusEnum::HAPPENING,
             startAt: $now,
         );
@@ -264,6 +270,7 @@ readonly class RoomService implements RoomServiceInterface
         }
 
         RoomChangeLog::dispatch($room, null, RoomStatusEnum::PREPARE);
+        Log::info(Auth::user()->name . ' đã bắt đầu room: ' . $room->code);
         broadcast(new StartGameEvent(roomId: $room->id))->toOthers();
     }
 
@@ -322,7 +329,7 @@ readonly class RoomService implements RoomServiceInterface
             $setNextQuestionRoomDTO = new SetNextQuestionRoomDTO(
                 currentQuestionId: $nextQuestion->id,
                 currentQuestionStartAt: $now,
-                currentQuestionEndAt: $now->addSeconds(value: (int)$nextQuestion->time_reply),
+                currentQuestionEndAt: $now->copy()->addSeconds(value: (int)$nextQuestion->time_reply),
                 status: RoomStatusEnum::HAPPENING,
             );
             $this->roomRepository->updateRoomAfterNextQuestion(room: $room, nextQuestionRoomDTO: $setNextQuestionRoomDTO);
@@ -332,6 +339,7 @@ readonly class RoomService implements RoomServiceInterface
 
             RoomChangeLog::dispatch($room, $questionId, RoomStatusEnum::PENDING);
             broadcast(new NextQuestionEvent(roomId: $room->id, questionId: $nextQuestion->id))->toOthers();
+            Log::info(Auth::user()->name . ' vừa chuyển tiếp câu hỏi của room : ' . $room->code);
         } catch (Throwable $e) {
             Log::error(message: $e->getMessage());
             throw new InternalErrorException(message: 'Có lỗi xảy ra, vui lòng thử lại sau!');
@@ -358,6 +366,7 @@ readonly class RoomService implements RoomServiceInterface
         $room->ended_at = now();
         $room->save();
         broadcast(new AdminEndgameEvent(roomId: $room->id))->toOthers();
+        Log::info(Auth::user()->name . ' vừa kết thúc màn chơi : ' . $room->code);
     }
 
     public function getDetailRoomReport(string $roomId): DetailRoomReportDTO

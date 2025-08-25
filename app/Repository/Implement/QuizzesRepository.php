@@ -5,6 +5,7 @@ namespace App\Repository\Implement;
 use App\DTOs\Quizz\CreateQuizDTO;
 use App\DTOs\Quizz\SearchQuizDTO;
 use App\Enums\Quiz\TypeQuizEnum;
+use App\Enums\User\UserRoleEnum;
 use App\Models\Quizze;
 use App\Models\UpdateQuizzeHistory;
 use App\Models\UserShareQuiz;
@@ -117,7 +118,7 @@ readonly class QuizzesRepository implements QuizzesRepositoryInterface
 
     public function findById(string $quizId): ?Quizze
     {
-        return $this->quizzes->query()->find(id: $quizId);
+        return $this->quizzes->query()->with('setting')->find(id: $quizId);
     }
 
     public function searchQuiz(SearchQuizDTO $searchQuizDTO): LengthAwarePaginator
@@ -196,5 +197,24 @@ readonly class QuizzesRepository implements QuizzesRepositoryInterface
         $editQuizLog->updated_by = Auth::id();
 
         $editQuizLog->save();
+    }
+
+    public function getByIds(array $ids): Collection
+    {
+        return $this->quizzes->query()->whereIn('id', $ids)->get();
+    }
+
+    public function findByKeyword(?string $keyword = null, bool $isAdmin = false): Collection
+    {
+        $query = $this->quizzes->query();
+        if ($isAdmin) $query->where('user_id', Auth::id());
+        if (!$keyword) return $isAdmin ? $query->get() : new Collection([]);
+
+        $query->where(function (Builder $q) use ($keyword) {
+            $q->where('code', 'like', '%' . $keyword . '%')
+                ->orWhere('title', 'like', '%' . $keyword . '%');
+        });
+
+        return $query->get();
     }
 }

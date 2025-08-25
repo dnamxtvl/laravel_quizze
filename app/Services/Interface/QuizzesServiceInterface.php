@@ -35,4 +35,6 @@ interface QuizzesServiceInterface
     public function countAllByTime(Carbon $startTime, Carbon $endTime): int;
 
     public function totalShareQuiz(Carbon $startTime, Carbon $endTime): int;
+
+    public function findByKeyword(?string $keyword = null): Collection;
 }
