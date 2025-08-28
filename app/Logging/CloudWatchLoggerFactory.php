@@ -2,6 +2,7 @@
 
 namespace App\Logging;
 
+use App\Handler\CloudWatchFormatter;
 use Aws\CloudWatchLogs\CloudWatchLogsClient;
 use App\Handler\CloudWatch;
 use Exception;
@@ -31,7 +32,7 @@ class CloudWatchLoggerFactory
         );
 
         // Optionally set the JsonFormatter to be able to access your log messages in a structured way
-        $handler->setFormatter(new JsonFormatter());
+        $handler->setFormatter(new CloudWatchFormatter());
 
         $name = $config['name'] ?? 'cloudwatch';
 

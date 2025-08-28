@@ -5,6 +5,7 @@ namespace App\Repository\Implement;
 use App\DTOs\Quizz\CreateQuizDTO;
 use App\DTOs\Quizz\SearchQuizDTO;
 use App\Enums\Quiz\TypeQuizEnum;
+use App\Enums\User\UserRoleEnum;
 use App\Models\Quizze;
 use App\Models\UpdateQuizzeHistory;
 use App\Models\UserShareQuiz;
@@ -61,6 +62,7 @@ readonly class QuizzesRepository implements QuizzesRepositoryInterface
             ->select([
                 'quizzes.id',
                 'quizzes.title',
+                'quizzes.code',
                 'quizzes.category_id',
                 'quizzes.user_id',
                 'quizzes.created_at',
@@ -73,6 +75,7 @@ readonly class QuizzesRepository implements QuizzesRepositoryInterface
             ->select([
                 'quizzes.id',
                 'quizzes.title',
+                'quizzes.code',
                 'quizzes.category_id',
                 'quizzes.user_id',
                 'user_share_quizzes.accepted_at as created_at',
@@ -117,7 +120,7 @@ readonly class QuizzesRepository implements QuizzesRepositoryInterface
 
     public function findById(string $quizId): ?Quizze
     {
-        return $this->quizzes->query()->find(id: $quizId);
+        return $this->quizzes->query()->with('setting')->find(id: $quizId);
     }
 
     public function searchQuiz(SearchQuizDTO $searchQuizDTO): LengthAwarePaginator
@@ -196,5 +199,58 @@ readonly class QuizzesRepository implements QuizzesRepositoryInterface
         $editQuizLog->updated_by = Auth::id();
 
         $editQuizLog->save();
+    }
+
+    public function getByIds(array $ids): Collection
+    {
+        return $this->quizzes->query()->with('sharedWithMe', function ($query) {
+            $query->where('receiver_id', Auth::id())->where('is_accept', true);
+        })->whereIn('id', $ids)->get();
+    }
+
+    public function findByKeyword(?string $keyword = null, bool $isAdmin = false): Collection
+    {
+        $builderQuiz = $this->quizzes->query()
+            ->select([
+                'quizzes.id',
+                'quizzes.title',
+                'quizzes.code',
+                'quizzes.category_id',
+                'quizzes.user_id',
+                'quizzes.created_at',
+                'quizzes.updated_at',
+            ]);
+
+        $builderSharedWithMe = $this->quizzes->query()
+            ->select([
+                'quizzes.id',
+                'quizzes.title',
+                'quizzes.code',
+                'quizzes.category_id',
+                'quizzes.user_id',
+                'user_share_quizzes.accepted_at as created_at',
+                'quizzes.updated_at',
+            ])
+            ->join('user_share_quizzes', 'quizzes.id', '=', 'user_share_quizzes.quizze_id')
+            ->where('user_share_quizzes.is_accept', true);
+
+        if ($isAdmin) {
+            $builderQuiz->where('user_id', Auth::id());
+            $builderSharedWithMe->where('user_share_quizzes.receiver_id', Auth::id());
+        }
+
+        $query = (clone $builderQuiz)->union(clone $builderSharedWithMe);
+        if (!$keyword) return $isAdmin ?
+            $query->orderBy('created_at', 'desc')->get() : new Collection([]);
+
+        $filterByKeyword = fn (Builder $q) => $q
+            ->where('code', 'like', "%{$keyword}%")
+            ->orWhere('title', 'like', "%{$keyword}%");
+
+        $builderQuiz->where($filterByKeyword);
+        $builderSharedWithMe->where($filterByKeyword);
+
+        return $isAdmin ? $builderQuiz->union($builderSharedWithMe)->orderBy('created_at', 'desc')->get() :
+            $builderQuiz->orderBy('created_at', 'desc')->get();
     }
 }

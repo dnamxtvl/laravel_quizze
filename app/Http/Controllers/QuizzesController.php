@@ -159,4 +159,15 @@ class QuizzesController extends Controller
             return $this->respondWithJsonError(e: $th);
         }
     }
+
+    public function findByKeyword(?string $keyword = null): JsonResponse
+    {
+        try {
+            $quizzes = $this->quizzesService->findByKeyword(keyword: $keyword);
+
+            return $this->respondWithJson(content: $quizzes->toArray());
+        } catch (Throwable $th) {
+            return $this->respondWithJsonError(e: $th);
+        }
+    }
 }

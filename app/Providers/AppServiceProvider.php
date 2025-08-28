@@ -16,6 +16,7 @@ use App\Repository\Implement\NotificationRepository;
 use App\Repository\Implement\QuestionRepository;
 use App\Repository\Implement\QuizzesRepository;
 use App\Repository\Implement\RoomRepository;
+use App\Repository\Implement\SettingRepository;
 use App\Repository\Implement\UserForgotPasswordLogRepository;
 use App\Repository\Implement\UserLoginHistoryRepository;
 use App\Repository\Implement\UserRepository;
@@ -30,6 +31,7 @@ use App\Repository\Interface\NotificationRepositoryInterface;
 use App\Repository\Interface\QuestionRepositoryInterface;
 use App\Repository\Interface\QuizzesRepositoryInterface;
 use App\Repository\Interface\RoomRepositoryInterface;
+use App\Repository\Interface\SettingRepositoryInterface;
 use App\Repository\Interface\UserForgotPasswordLogRepositoryInterface;
 use App\Repository\Interface\UserLoginHistoryRepositoryInterface;
 use App\Repository\Interface\UserRepositoryInterface;
@@ -41,6 +43,7 @@ use App\Services\Implement\NotificationService;
 use App\Services\Implement\QuestionService;
 use App\Services\Implement\QuizzesService;
 use App\Services\Implement\RoomService;
+use App\Services\Implement\SettingService;
 use App\Services\Implement\UserService;
 use App\Services\Interface\AuthServiceInterface;
 use App\Services\Interface\CategoryServiceInterface;
@@ -49,6 +52,7 @@ use App\Services\Interface\NotificationServiceInterface;
 use App\Services\Interface\QuestionServiceInterface;
 use App\Services\Interface\QuizzesServiceInterface;
 use App\Services\Interface\RoomServiceInterface;
+use App\Services\Interface\SettingServiceInterface;
 use App\Services\Interface\UserServiceInterface;
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Cache\RateLimiting\Limit;
@@ -89,6 +93,8 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(abstract: UserForgotPasswordLogRepositoryInterface::class, concrete: UserForgotPasswordLogRepository::class);
         $this->app->singleton(abstract: UserLoginHistoryRepositoryInterface::class, concrete: UserLoginHistoryRepository::class);
         $this->app->singleton(abstract: CategoryServiceInterface::class, concrete: CategoryService::class);
+        $this->app->singleton(abstract: SettingRepositoryInterface::class, concrete: SettingRepository::class);
+        $this->app->singleton(abstract: SettingServiceInterface::class, concrete: SettingService::class);
     }
 
     /**

@@ -62,6 +62,7 @@ readonly class UserService implements UserServiceInterface
 
     /**
      * @throws InternalErrorException
+     * @throws Throwable
      */
     public function disableUser(string $userId): void
     {
@@ -101,6 +102,7 @@ readonly class UserService implements UserServiceInterface
 
     /**
      * @throws InternalErrorException
+     * @throws Throwable
      */
     public function activeUser(string $userId): void
     {
@@ -140,6 +142,7 @@ readonly class UserService implements UserServiceInterface
 
     /**
      * @throws InternalErrorException
+     * @throws Throwable
      */
     public function changePassword(UserChangePasswordLogDTO $userChangePasswordLog, string $userId): void
     {

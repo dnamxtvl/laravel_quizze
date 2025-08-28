@@ -71,10 +71,12 @@ readonly class QuizzesService implements QuizzesServiceInterface
             $quizDTO->setCode(code: $maxCode);
             $quiz = $this->quizzesRepository->createQuiz(quizDTO: $quizDTO);
             $this->questionRepository->insertQuestions(questions: $questionDTO, quizId: $quiz->id);
+            Log::info(message: $user->name . ' đã tạo bộ câu hỏi ' . $quiz->title, context: ['quiz' => $quiz]);
 
             DB::commit();
         } catch (Throwable $th) {
             DB::rollBack();
+            Log::error($th);
             throw new InternalErrorException(message: $th->getMessage());
         }
     }
@@ -160,7 +162,7 @@ readonly class QuizzesService implements QuizzesServiceInterface
     }
 
     /**
-     * @throws InternalErrorException
+     * @throws InternalErrorException|Throwable
      */
     public function shareQuiz(string $quizId, string $email): void
     {
@@ -254,7 +256,7 @@ readonly class QuizzesService implements QuizzesServiceInterface
     }
 
     /**
-     * @throws InternalErrorException
+     * @throws InternalErrorException|Throwable
      */
     public function acceptShareQuiz(string $token, ?string $notifyId = null): void
     {
@@ -306,7 +308,7 @@ readonly class QuizzesService implements QuizzesServiceInterface
     }
 
     /**
-     * @throws InternalErrorException
+     * @throws InternalErrorException|Throwable
      */
     public function rejectShareQuiz(string $token, ?string $notifyId = null): void
     {
@@ -353,5 +355,13 @@ readonly class QuizzesService implements QuizzesServiceInterface
     public function totalShareQuiz(Carbon $startTime, Carbon $endTime): int
     {
         return $this->quizzesRepository->totalShareQuiz(startTime: $startTime, endTime: $endTime);
+    }
+
+    public function findByKeyword(?string $keyword = null): Collection
+    {
+        return $this->quizzesRepository->findByKeyword(
+            keyword: $keyword,
+            isAdmin: Auth::user()->type == UserRoleEnum::ADMIN->value
+        );
     }
 }
