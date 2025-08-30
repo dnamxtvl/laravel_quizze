@@ -15,6 +15,7 @@ services:
             - .:/var/www/
         networks:
             - backend
+        restart: unless-stopped
 
     php:
         build:
@@ -33,6 +34,7 @@ services:
             - backend
         depends_on:
             - mysql
+        restart: unless-stopped
 
     redis:
         image: redis:5.0.6
@@ -40,6 +42,7 @@ services:
             - ${DOCKER_REDIS_EXTERNAL_PORT-6379}:6379
         networks:
             - backend
+        restart: unless-stopped
 
     mysql:
         image: mysql:8.0
@@ -54,6 +57,7 @@ services:
         command: [ 'mysqld', '--character-set-server=utf8mb4', '--collation-server=utf8mb4_unicode_ci' ]
         networks:
             - backend
+        restart: unless-stopped
 
     elasticsearch:
         build:
@@ -84,6 +88,7 @@ services:
             - "9300:9300"
         networks:
             - backend
+        restart: unless-stopped
 
     kibana:
         image: docker.elastic.co/kibana/kibana:8.12.1
@@ -96,6 +101,7 @@ services:
             - xpack.security.enabled=false
         networks:
             - backend
+        restart: unless-stopped
 
 
 volumes:
