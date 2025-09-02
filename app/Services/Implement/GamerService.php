@@ -121,7 +121,6 @@ readonly class GamerService implements GamerServiceInterface
             score: $score,
             roomType: RoomTypeEnum::tryFrom($room->type)
         );
-        Log::info($gamer->name . ' vừa trả lời câu hỏi room ' . $room->code);
 
         return $this->answerRepository->saveAnswer(saveAnswer: $saveAnswerDTO, isUpdate: $isExistGamerAnswer);
     }
