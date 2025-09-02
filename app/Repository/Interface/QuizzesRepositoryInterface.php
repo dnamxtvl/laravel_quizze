@@ -32,7 +32,7 @@ interface QuizzesRepositoryInterface
 
     public function totalShareQuiz(Carbon $startTime, Carbon $endTime): int;
 
-    public function updateQuizHistory(string $quizId, ?string $oldQuestionId = null, ?string $newQuestionId = null): void;
+    public function updateQuizHistory(string $quizId, ?string $oldQuestionId = null, ?string $newQuestionId = null, ?string $updatedBy = null): void;
 
     public function getByIds(array $ids): Collection;
 

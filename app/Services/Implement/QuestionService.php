@@ -10,6 +10,7 @@ use App\Repository\Interface\QuestionRepositoryInterface;
 use App\Repository\Interface\QuizzesRepositoryInterface;
 use App\Services\Interface\QuestionServiceInterface;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\CssSelector\Exception\InternalErrorException;
@@ -40,7 +41,7 @@ readonly class QuestionService implements QuestionServiceInterface
             $questionDTO->setQuizId(quizId: $question->quizze_id);
             $newQuestion = $this->questionRepository->createQuestion(questionDTO: $questionDTO, indexQuestionOverride: $question->index_question);
             $this->questionRepository->setIsOldQuestion(question: $question, isOldQuestion: true);
-            UpdateQuizLog::dispatch($question->quizze_id, $questionId, $newQuestion->id);
+            UpdateQuizLog::dispatch($question->quizze_id, $questionId, $newQuestion->id, Auth::id());
 
             DB::commit();
         } catch (Throwable $th) {

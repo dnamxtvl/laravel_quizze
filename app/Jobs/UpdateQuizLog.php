@@ -3,9 +3,10 @@
 namespace App\Jobs;
 
 use App\Repository\Interface\QuizzesRepositoryInterface;
-use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
+use Illuminate\Support\Facades\Log;
+use Throwable;
 
 class UpdateQuizLog implements ShouldQueue
 {
@@ -18,16 +19,16 @@ class UpdateQuizLog implements ShouldQueue
         private readonly string $quizId,
         private readonly ?string $oldQuestionId = null,
         private readonly ?string $newQuestionId = null,
+        private readonly ?string $updatedBy = null,
     ) {
     }
 
     /**
      * Execute the job.
-     * @throws BindingResolutionException
      */
     public function handle(): void
     {
         $quizRepository = app()->make(QuizzesRepositoryInterface::class);
-        $quizRepository->updateQuizHistory(quizId: $this->quizId, oldQuestionId: $this->oldQuestionId, newQuestionId: $this->newQuestionId);
+        $quizRepository->updateQuizHistory(quizId: $this->quizId, oldQuestionId: $this->oldQuestionId, newQuestionId: $this->newQuestionId, updatedBy: $this->updatedBy);
     }
 }

@@ -190,13 +190,13 @@ readonly class QuizzesRepository implements QuizzesRepositoryInterface
         return $this->userShareQuiz->query()->whereBetween('created_at', [$endTime, $startTime])->count();
     }
 
-    public function updateQuizHistory(string $quizId, ?string $oldQuestionId = null, ?string $newQuestionId = null): void
+    public function updateQuizHistory(string $quizId, ?string $oldQuestionId = null, ?string $newQuestionId = null, ?string $updatedBy = null): void
     {
         $editQuizLog = new UpdateQuizzeHistory();
-        $editQuizLog->id = $quizId;
+        $editQuizLog->quizze_id = $quizId;
         $editQuizLog->old_question_id = $oldQuestionId;
         $editQuizLog->new_question_id = $newQuestionId;
-        $editQuizLog->updated_by = Auth::id();
+        $editQuizLog->updated_by = $updatedBy;
 
         $editQuizLog->save();
     }

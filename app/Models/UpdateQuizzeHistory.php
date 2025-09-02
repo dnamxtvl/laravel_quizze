@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property int|mixed|string|null $updated_by
  * @property mixed|string|null $old_question_id
  * @property mixed|string|null $new_question_id
+ * @property mixed|string $quizze_id
  */
 class UpdateQuizzeHistory extends Model
 {
