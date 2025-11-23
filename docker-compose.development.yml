@@ -19,7 +19,7 @@ services:
     php:
         build:
             context: .
-            dockerfile: docker/Dockerfile
+            dockerfile: docker/Dockerfile.development
             args:
                 XDEBUG: "true"
         volumes:

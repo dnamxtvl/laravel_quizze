@@ -1,0 +1,79 @@
+# ---------- Base image ----------
+FROM php:8.2-fpm-alpine
+
+# ---------- Build and runtime dependencies ----------
+RUN apk add --no-cache --virtual .build-deps \
+    $PHPIZE_DEPS \
+    libpng-dev \
+    libjpeg-turbo-dev \
+    freetype-dev \
+    libzip-dev \
+    openssl-dev \
+    libuv-dev \
+    linux-headers \
+    && apk add --no-cache \
+    supervisor \
+    curl \
+    unzip \
+    bash \
+    zip \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install \
+    pdo_mysql \
+    exif \
+    pcntl \
+    bcmath \
+    gd \
+    opcache \
+    && pecl install redis \
+    && pecl install channel://pecl.php.net/uv-0.3.0 \
+    && docker-php-ext-enable redis uv \
+    && apk del .build-deps \
+    && rm -rf /tmp/* /var/cache/apk/*
+
+
+# ---------- Custom PHP configuration ----------
+COPY ./docker/php.ini /usr/local/etc/php/conf.d/custom.ini
+
+# ---------- Install Composer ----------
+COPY --from=composer:2.8 /usr/bin/composer /usr/local/bin/composer
+
+# ---------- Create non-root user ----------
+RUN addgroup -g 1000 -S www && \
+    adduser -u 1000 -S -D -G www -h /var/www -s /bin/sh www
+
+# ---------- Set working directory ----------
+WORKDIR /var/www
+
+# ---------- Copy composer files first (cacheable) ----------
+COPY --chown=www:www composer.json composer.lock ./
+
+# ---------- Install PHP dependencies ----------
+RUN composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist --no-scripts \
+    && rm -rf /root/.composer/cache
+
+# ---------- Copy application code ----------
+COPY --chown=www:www . .
+
+# ---------- Set proper permissions ----------
+RUN chown -R www:www /var/www/storage /var/www/bootstrap/cache \
+    && chmod -R 775 /var/www/storage /var/www/bootstrap/cache
+
+# ---------- Run composer post-install scripts ----------
+RUN composer run-script post-install-cmd || true
+
+# ---------- Copy supervisor configuration ----------
+COPY --chown=root:root ./docker/supervisord.conf /etc/supervisor/supervisord.conf
+
+# ---------- Healthcheck ----------
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+    CMD curl -f http://localhost/health || exit 1
+
+# ---------- Expose PHP-FPM port ----------
+EXPOSE 9000
+
+# ---------- Switch to non-root user ----------
+USER www
+
+# ---------- Start supervisor ----------
+CMD ["supervisord", "-c", "/etc/supervisor/supervisord.conf"]

@@ -5,11 +5,11 @@ namespace App\Console\Commands;
 use App\Enums\Room\RoomStatusEnum;
 use App\Models\Room;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Log;
+use Throwable;
 
 class DailyCancelRoom extends Command
 {
-    const CHUNK = 100;
-
     /**
      * The name and signature of the console command.
      *
@@ -29,12 +29,13 @@ class DailyCancelRoom extends Command
      */
     public function handle(): void
     {
-        Room::query()->whereNotIn('status', [RoomStatusEnum::CANCELLED->value, RoomStatusEnum::PENDING->value])
-            ->where('created_at', '<', now()->subDay())->chunk(self::CHUNK, function ($rooms) {
-                foreach ($rooms as $room) {
-                    $room->status = RoomStatusEnum::CANCELLED->value;
-                    $room->save();
-                }
-            });
+        Log::info('Starting daily room cancellation process.');
+        try {
+            Room::query()->whereNotIn('status', [RoomStatusEnum::CANCELLED->value, RoomStatusEnum::PENDING->value])
+                ->where('created_at', '<', now()->subDays(7))->update(['status' => RoomStatusEnum::CANCELLED->value]);
+            Log::info('Daily room cancellation process completed successfully.');
+        } catch (Throwable $e) {
+            Log::error('Error auto cancelling rooms: ' . $e->getMessage());
+        }
     }
 }

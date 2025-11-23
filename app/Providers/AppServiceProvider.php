@@ -112,8 +112,8 @@ class AppServiceProvider extends ServiceProvider
         );
 
         ResetPassword::createUrlUsing(function (User $user, string $token) {
-            Log::info('Reset password url: ' . env('FRONT_END_URL') . '/auth/reset-password/' . $user->id . '?token=' . $token);
-            return env('FRONT_END_URL') . '/auth/reset-password/' . $user->id . '?token='.$token;
+            Log::info('Reset password url: ' . config('app.front_end_url') . '/auth/reset-password/' . $user->id . '?token=' . $token);
+            return config('app.front_end_url') . '/auth/reset-password/' . $user->id . '?token='.$token;
         });
 
         User::observe(UserObserver::class);
