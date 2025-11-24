@@ -56,7 +56,7 @@ RUN composer install --no-dev --optimize-autoloader --no-interaction --prefer-di
 COPY --chown=www:www . .
 
 # ---------- Clear cached config (QUAN TRỌNG) ----------
-RUN rm -f bootstrap/cache/*.php
+RUN rm -rf bootstrap/cache/*.php
 
 # ---------- Set proper permissions ----------
 RUN chown -R www:www /var/www/storage /var/www/bootstrap/cache \
