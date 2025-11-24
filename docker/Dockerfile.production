@@ -58,6 +58,11 @@ COPY --chown=www:www . .
 # ---------- Clear cached config (QUAN TRỌNG) ----------
 RUN rm -rf bootstrap/cache/*.php
 
+# ---------- Create Laravel cache directories ----------
+RUN mkdir -p storage/framework/sessions \
+    && mkdir -p storage/framework/views \
+    && mkdir -p storage/framework/cache
+
 # ---------- Set proper permissions ----------
 RUN chown -R www:www /var/www/storage /var/www/bootstrap/cache \
     && chmod -R 775 /var/www/storage /var/www/bootstrap/cache
