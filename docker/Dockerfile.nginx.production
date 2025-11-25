@@ -4,7 +4,7 @@ ARG PHP_FPM_SERVER=127.0.0.1
 ARG PHP_FPM_PORT=9000
 RUN mkdir -p /var/www/public
 RUN echo "<html><body><h1>Nginx + PHP-FPM is running</h1></body></html>" > /var/www/public/index.html
-COPY docker/nginx.conf /tmp/nginx.conf
+COPY docker/nginx.production.conf /tmp/nginx.conf
 RUN envsubst '$PHP_FPM_SERVER $PHP_FPM_PORT' < /tmp/nginx.conf > /etc/nginx/conf.d/default.conf
 
 EXPOSE 80 443
