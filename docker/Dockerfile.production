@@ -70,6 +70,8 @@ RUN chown -R www:www /var/www/storage /var/www/bootstrap/cache \
 # ---------- Run composer post-install scripts ----------
 RUN composer run-script post-install-cmd || true
 
+RUN php artisan config:cache
+
 # ---------- Copy supervisor configuration ----------
 COPY --chown=root:root ./docker/supervisord.conf /etc/supervisor/supervisord.conf
 
