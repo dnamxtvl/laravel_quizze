@@ -55,9 +55,6 @@ RUN composer install --no-dev --optimize-autoloader --no-interaction --prefer-di
 # ---------- Copy application code ----------
 COPY --chown=www:www . .
 
-# ---------- Copy environment file ----------
-COPY --chown=www:www .env .env
-
 # ---------- Clear cached config (QUAN TRỌNG) ----------
 RUN rm -rf bootstrap/cache/*.php
 
